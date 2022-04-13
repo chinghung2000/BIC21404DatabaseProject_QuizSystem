@@ -1,0 +1,91 @@
+<%@ page language="java" contentType="application/json; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page trimDirectiveWhitespaces="true"%>
+<%@ page import="java.util.Dictionary"%>
+<%@ page import="java.util.Hashtable"%>
+<%@ page import="java.util.Enumeration"%>
+<%@ page import="java.io.BufferedReader"%>
+<%@ page import="com.google.gson.Gson"%>
+<%@ page import="com.google.gson.GsonBuilder"%>
+<%@ page import="com.google.gson.reflect.TypeToken"%>
+<%@ page import="com.google.gson.JsonSyntaxException"%>
+<%@ page import="com.project.backend.*"%>
+
+
+<%
+Gson gson = new Gson();
+boolean execute = false;
+
+// create a Dictionary of response content ($rc)
+Dictionary<String, Object> rc = new Hashtable<String, Object>();
+rc.put("ok", false);
+
+// check whether request method is 'POST'
+if (request.getMethod().equals("POST")) {
+	
+	// check existence of Content-Type header
+	if (request.getContentType() != null) {
+		
+		// check whether Content-Type is 'application/json'
+		if (request.getContentType().equals("application/json")) {
+			
+			// read raw data from the request body
+			BufferedReader br = request.getReader();
+			String reqBody = br.readLine();
+			br.close();
+			
+			// check whether request body is not null 
+			if (reqBody != null) {
+				
+				// create a Dictionary of data ($d)
+				Dictionary<String, Object> d = new Hashtable<String, Object>();
+				boolean JSONError = true;
+				
+				// try JSON parsing request body and convert into Dictionary $d 
+				try {
+					d = gson.fromJson(reqBody, new TypeToken<Hashtable<String, Object>>() {}.getType());
+					JSONError = false;
+				} catch (JsonSyntaxException e) {}
+				
+				// check whether it's no error in JSON parsing
+				if (!JSONError) {
+					
+					// permit execution
+					execute = true;
+				} else {
+					rc.put("error_code", 400);
+					rc.put("description", "Bad Request: Bad POST Request: Can't parse JSON object");
+				}
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: Bad POST Request: Content is empty");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: Bad POST Request: Unsupported content-type");
+		}
+	} else {
+		rc.put("error_code", 400);
+		rc.put("description", "Bad Request: Bad POST Request: Undefined content-type");
+	}
+} else {
+	rc.put("error_code", 405);
+	rc.put("description", "Method Not Allowed: No POST request was received");
+}
+
+// execution
+if (execute) {
+	// call backend logic...
+	
+	rc.put("ok", true);
+}
+
+// check unknown error
+if (rc.get("ok") == (Object) false && rc.get("description") == null) {
+	rc.put("error_code", 500);
+	rc.put("description", "Internal Server Error: Unknown error found");
+}
+
+// echo JSON string of response content ($rc) 
+out.println(gson.toJson(rc));
+%>
