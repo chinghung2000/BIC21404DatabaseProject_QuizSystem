@@ -18,7 +18,7 @@
 
 	function XHRequest(jsonString) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "login.jsp", true);
+		xhttp.open("POST", "userLogin.jsp", true);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 
