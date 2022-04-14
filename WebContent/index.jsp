@@ -63,10 +63,10 @@
 					$e("span-login-message").innerHTML = "Please choose a user type.";
 				}
 			} else {
-				$e("span-login-message").innerHTML = "Password is required.";
+				$e("span-login-message").innerHTML = "Please enter password.";
 			}
 		} else {
-			$e("span-login-message").innerHTML = "User ID is required.";
+			$e("span-login-message").innerHTML = "Please enter user ID.";
 		}
 	}
 </script>
