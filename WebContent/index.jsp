@@ -23,10 +23,20 @@
 		xhttp.send(jsonString);
 
 		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4) {
+			if (this.readyState === 4) {
 				switch (this.status) {
 					case 200:
 						var r = JSON.parse(this.responseText);
+						
+						if (r["ok"] === true) {
+							location.href = r["target"];
+						} else {
+							if ("message" in r) {
+								$e("span-login-message").innerHTML = r["message"];
+							} else {
+								$e("span-login-message").innerHTML = "Error " + r["error_code"] + ": " + r["description"];
+							}
+						}
 						
 						break;
 					case 404:

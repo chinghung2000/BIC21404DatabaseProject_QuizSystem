@@ -23,10 +23,20 @@
 		xhttp.send(jsonString);
 	
 		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4) {
+			if (this.readyState === 4) {
 				switch (this.status) {
 					case 200:
 						var r = JSON.parse(this.responseText);
+						
+						if (r["ok"] === true) {
+							
+						} else {
+							if ("message" in r) {
+								$e("span-message").innerHTML = r["message"];
+							} else {
+								$e("span-message").innerHTML = "Error " + r["error_code"] + ": " + r["description"];
+							}
+						}
 						
 						break;
 					case 404:
@@ -41,15 +51,18 @@
 	
 	function updatePassword() {
 		var d = {};
+		d["npassword"] = $e("input-npassword").value;
+		d["cpassword"] = $e("input-cpassword").value;
 		
-	}
-	
-	function showEyeIcon() {
-		
-	}
-	
-	function hideEyeIcon() {
-		
+		if (d["npassword"] != null) {
+			if (d["cpassword"] != null) {
+				XHRequest(JSON.stringify(d));
+			} else {
+				$e("span-message").innerHTML = "Please confirm password.";				
+			}
+		} else {
+			$e("span-message").innerHTML = "Please enter new password.";
+		}
 	}
 </script>
 <style type="text/css">
@@ -170,10 +183,10 @@ button:hover {
 		</div>
 		<div class="form">
 			<form>
-				<div class="form-field" onmouseover="$e('icon-password').style.display = 'block';" onmouseleave="$e('icon-password').style.display = 'none';">
-					<label class="form-field" for="input-password">New Password:</label>
-					<input type="password" id="input-password" name="password">
-					<div class="show-password" id="icon-password" onmousedown="$e('input-password').type = 'text';" onmouseup="$e('input-password').type = 'password';"></div>
+				<div class="form-field" onmouseover="$e('icon-npassword').style.display = 'block';" onmouseleave="$e('icon-npassword').style.display = 'none';">
+					<label class="form-field" for="input-npassword">New Password:</label>
+					<input type="password" id="input-npassword" name="password">
+					<div class="show-password" id="icon-npassword" onmousedown="$e('input-npassword').type = 'text';" onmouseup="$e('input-npassword').type = 'password';"></div>
 				</div>
 				<div class="form-field" onmouseover="$e('icon-cpassword').style.display = 'block';" onmouseleave="$e('icon-cpassword').style.display = 'none';">
 					<label class="form-field" for="input-cpassword">Confirm Password:</label>
