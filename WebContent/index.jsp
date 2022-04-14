@@ -55,35 +55,18 @@
 		d["password"] = $e("input-password").value;
 		d["user_type"] = userType;
 		
-		XHRequest(JSON.stringify(d));
-	}
-	
-	function login1() {
-		var ajax = new Ajax;
-
-		var e = $n("user_type");
-		var userType;
-
-		for (i = 0; i < e.length; i++) {
-			if (e[i].checked) {
-				userType = e[i].value;
-			}
-		}
-
-		ajax.sendGetRequest("login.jsp?user_id=" + $e("input-user-id").value
-				+ "&password=" + $e("input-password").value + "&user_type="
-				+ userType);
-
-		ajax.xhr.onreadystatechange = function() {
-			if (this.readyState == 4) {
-				switch (this.status) {
-				case 200:
-					alert(this.responseText);
-					break;
-				default:
-					alert("Error: " + this.statusText);
+		if (d["user_id"] != "") {
+			if (d["password"] != "") {
+				if (d["user_type"] != "") {
+					XHRequest(JSON.stringify(d));
+				} else {
+					$e("span-login-message").innerHTML = "Please choose a user type.";
 				}
+			} else {
+				$e("span-login-message").innerHTML = "Password is required.";
 			}
+		} else {
+			$e("span-login-message").innerHTML = "User ID is required.";
 		}
 	}
 </script>
@@ -102,7 +85,7 @@ div.login-container {
 }
 
 div.login-title {
-	margin: 10px auto;
+	margin: 10px 0px;
 	padding: 10px;
 	text-align: center;
 }
@@ -111,8 +94,18 @@ span.login-title {
 	font-size: 30px;
 }
 
+div.login-message {
+	margin: 10px 0px;
+	height: 20px;
+ 	text-align: center;
+}
+
+span.login-message {
+	color: red;
+}
+
 div.login-form {
-	margin: 10px auto;
+	margin: 10px 0px;
 	padding: 10px;
 	height: 200px;
 	position: relative;
@@ -134,11 +127,11 @@ input[type=text], [type=password] {
 
 div.login-field-radio {
 	margin: 10px 0px;
-	padding: 0px 100px;
+	padding-left: 100px;
 }
 
 div.login-button {
-	margin: 10px auto;
+	margin: 10px 0px;
 	text-align: center;
 	display: block;
 	position: absolute;
@@ -147,7 +140,7 @@ div.login-button {
 	bottom: 0px;
 }
 
-input[type=submit] {
+button {
 	font-family: verdana;
 	font-size: 16px;
 }
@@ -158,33 +151,34 @@ input[type=submit] {
 		<div class="login-title">
 			<span class="login-title">Login</span>
 		</div>
+		<div class="login-message">
+			<span class="login-message" id="span-login-message"></span>
+		</div>
 		<div class="login-form">
-<!-- 			<form action="login.jsp" method="post" enctype="application/x-www-form-urlencoded"> -->
 			<form>
 				<div class="login-field">
 					<label class="login-field" for="input-user-id">User ID:</label>
-					<input type="text" id="input-user-id" name="user_id" autocomplete="off" required>
+					<input type="text" id="input-user-id" name="user_id" autocomplete="off">
 				</div>
 				<div class="login-field">
 					<label class="login-field" for="input-password">Password:</label>
-					<input type="password" id="input-password" name="password" required>
+					<input type="password" id="input-password" name="password">
 				</div>
 				<div class="login-field-radio">
-					<input type="radio" id="input-radio-admin" name="user_type" value="admin" required>
+					<input type="radio" id="input-radio-admin" name="user_type" value="admin">
 					<label for="input-radio-admin">Admin</label>
 					<br>
-					<input type="radio" id="input-radio-lecturer" name="user_type" value="lecturer" required>
+					<input type="radio" id="input-radio-lecturer" name="user_type" value="lecturer">
 					<label for="input-radio-lecturer">Lecturer</label>
 					<br>
-					<input type="radio" id="input-radio-student" name="user_type" value="student" required>
+					<input type="radio" id="input-radio-student" name="user_type" value="student">
 					<label for="input-radio-student">Student</label>
 					<br>
 				</div>
-				<div class="login-button">
-<!-- 					<input type="submit" name="login" value="Login"> -->
-				</div>
 			</form>
-			<button onclick="login();">Login</button>
+			<div class="login-button">
+				<button onclick="login();">Login</button>
+			</div>
 		</div>
 	</div>
 </body>
