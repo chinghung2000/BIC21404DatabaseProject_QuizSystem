@@ -43,12 +43,149 @@
 		var d = {};
 		
 	}
+	
+	function showEyeIcon() {
+		
+	}
+	
+	function hideEyeIcon() {
+		
+	}
 </script>
 <style type="text/css">
+body {
+	font-family: verdana;
+	font-size: 16px;
+}
 
+div.welcome-text {
+	
+}
+
+span.welcome-text {
+	
+}
+
+div.container {
+	border: 2px solid;
+	border-radius: 10px;
+	margin: 100px auto 0px;
+	padding: 10px;
+	width: 400px;
+}
+
+div.title {
+	margin: 10px 0px;
+	padding: 10px;
+	text-align: center;
+}
+
+span.title {
+	font-size: 30px;
+}
+
+div.message {
+	margin: 10px 0px;
+	height: 20px;
+ 	text-align: center;
+}
+
+span.message {
+	color: red;
+}
+
+div.form {
+	margin: 10px 0px;
+	padding: 10px;
+	height: 200px;
+	position: relative;
+}
+
+div.form-field {
+	margin: 10px 0px;
+}
+
+label.form-field {
+	width: 160px;
+	text-align: right;
+	display: inline-block;
+}
+
+input[type=text], [type=password] {
+	width: 150px;
+}
+
+input[type=text]:hover, [type=password]:hover {
+	outline: 1px solid;
+}
+
+div.show-password {
+	background-image: url("img/hide-password.png");
+	background-size: cover;
+	margin-right: 20px;
+	height: 23px;
+	width: 23px;
+	display: none;
+	float: right;
+	cursor: pointer;
+}
+
+div.show-password:active {
+	background-image: url("img/show-password.png");
+}
+
+div.button {
+	margin: 10px 0px;
+	text-align: center;
+	display: block;
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+
+button {
+	border-radius: 5px;
+	font-family: verdana;
+	font-size: 16px;
+	box-shadow: 1px 1px 1px 0px;
+	cursor: pointer;
+}
+
+button:hover {
+	box-shadow: 0px 0px 1px 0px;
+}
 </style>
 </head>
 <body>
-
+	<div class="welcome-text">
+		<span class="welcome-text" id="span-welcome-text"></span>
+	</div>
+	<div class="container">
+		<div class="title">
+			<span class="title">Update Password</span>
+		</div>
+		<div class="message">
+			<span class="message" id="span-message"></span>
+		</div>
+		<div class="form">
+			<form>
+				<div class="form-field" onmouseover="$e('icon-password').style.display = 'block';" onmouseleave="$e('icon-password').style.display = 'none';">
+					<label class="form-field" for="input-password">New Password:</label>
+					<input type="password" id="input-password" name="password">
+					<div class="show-password" id="icon-password" onmousedown="$e('input-password').type = 'text';" onmouseup="$e('input-password').type = 'password';"></div>
+				</div>
+				<div class="form-field" onmouseover="$e('icon-cpassword').style.display = 'block';" onmouseleave="$e('icon-cpassword').style.display = 'none';">
+					<label class="form-field" for="input-cpassword">Confirm Password:</label>
+					<input type="password" id="input-cpassword" name="cpassword">
+					<div class="show-password" id="icon-cpassword" onmousedown="$e('input-cpassword').type = 'text';" onmouseup="$e('input-cpassword').type = 'password';"></div>
+				</div>
+			</form>
+			<div class="button">
+				<button onclick="">Submit</button>
+				<button onclick="">Skip</button>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

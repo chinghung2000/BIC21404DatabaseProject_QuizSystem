@@ -134,6 +134,10 @@ input[type=radio] {
 	cursor: pointer;
 }
 
+input[type=text]:hover, [type=password]:hover, [type=radio]:hover {
+	outline: 1px solid;
+}
+
 label.login-field-radio {
 	cursor: pointer;
 }
@@ -149,9 +153,15 @@ div.login-button {
 }
 
 button {
+	border-radius: 5px;
 	font-family: verdana;
 	font-size: 16px;
+	box-shadow: 1px 1px 1px 0px;
 	cursor: pointer;
+}
+
+button:hover {
+	box-shadow: 0px 0px 1px 0px;
 }
 </style>
 </head>
@@ -167,7 +177,7 @@ button {
 			<form>
 				<div class="login-field">
 					<label class="login-field" for="input-user-id">User ID:</label>
-					<input type="text" id="input-user-id" name="user_id" autocomplete="off">
+					<input type="text" id="input-user-id" name="user_id">
 				</div>
 				<div class="login-field">
 					<label class="login-field" for="input-password">Password:</label>
