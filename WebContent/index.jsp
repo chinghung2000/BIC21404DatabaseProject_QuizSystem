@@ -18,7 +18,7 @@
 
 	function XHRequest(jsonString) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "userLogin.jsp", true);
+		xhttp.open("POST", "api/login.jsp", true);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 
@@ -130,6 +130,14 @@ div.login-field-radio {
 	padding-left: 100px;
 }
 
+input[type=radio] {
+	cursor: pointer;
+}
+
+label.login-field-radio {
+	cursor: pointer;
+}
+
 div.login-button {
 	margin: 10px 0px;
 	text-align: center;
@@ -143,6 +151,7 @@ div.login-button {
 button {
 	font-family: verdana;
 	font-size: 16px;
+	cursor: pointer;
 }
 </style>
 </head>
@@ -166,13 +175,13 @@ button {
 				</div>
 				<div class="login-field-radio">
 					<input type="radio" id="input-radio-admin" name="user_type" value="admin">
-					<label for="input-radio-admin">Admin</label>
+					<label class="login-field-radio" for="input-radio-admin">Admin</label>
 					<br>
 					<input type="radio" id="input-radio-lecturer" name="user_type" value="lecturer">
-					<label for="input-radio-lecturer">Lecturer</label>
+					<label class="login-field-radio" for="input-radio-lecturer">Lecturer</label>
 					<br>
 					<input type="radio" id="input-radio-student" name="user_type" value="student">
-					<label for="input-radio-student">Student</label>
+					<label class="login-field-radio" for="input-radio-student">Student</label>
 					<br>
 				</div>
 			</form>
