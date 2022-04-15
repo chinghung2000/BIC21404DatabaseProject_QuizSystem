@@ -89,7 +89,7 @@ body {
 div.login-container {
 	border: 2px solid;
 	border-radius: 10px;
-	margin: 100px auto 0px;
+	margin: 120px auto 0px;
 	padding: 10px;
 	width: 325px;
 }

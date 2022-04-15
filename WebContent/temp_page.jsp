@@ -18,7 +18,7 @@
 	
 	function XHRequest(jsonString) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/updatePassword.jsp", true);
+		xhttp.open("POST", "api/<api-method>.jsp", true);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 	
@@ -51,18 +51,12 @@
 	
 	function updatePassword() {
 		var d = {};
-		d["npassword"] = $e("input-npassword").value;
-		d["cpassword"] = $e("input-cpassword").value;
+		d["<key>"] = $e("<id>").value;
 		
-		if (d["npassword"] != "") {
-			if (d["cpassword"] != "") {
-				XHRequest(JSON.stringify(d));
-			} else {
-				$e("span-message").innerHTML = "Please confirm password.";
-				setTimeout(clearMessage, 5000);
-			}
+		if (d["<key>"] != "") {
+			XHRequest(JSON.stringify(d));
 		} else {
-			$e("span-message").innerHTML = "Please enter new password.";
+			$e("span-message").innerHTML = "Please enter ???.";
 			setTimeout(clearMessage, 5000);
 		}
 	}
@@ -138,21 +132,6 @@ input[type=text]:hover, [type=password]:hover {
 	outline: 1px solid;
 }
 
-div.show-password {
-	background-image: url("img/hide-password.png");
-	background-size: cover;
-	margin-right: 20px;
-	height: 23px;
-	width: 23px;
-	display: none;
-	float: right;
-	cursor: pointer;
-}
-
-div.show-password:active {
-	background-image: url("img/show-password.png");
-}
-
 div.button {
 	margin: 10px 0px;
 	text-align: center;
@@ -183,28 +162,13 @@ button:hover {
 	<hr>
 	<div class="container">
 		<div class="title">
-			<span class="title">Update Password</span>
+			<span class="title">Title</span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
 		</div>
-		<div class="form">
-			<form>
-				<div class="form-field" onmouseover="$e('icon-npassword').style.display = 'block';" onmouseleave="$e('icon-npassword').style.display = 'none';">
-					<label class="form-field" for="input-npassword">New Password:</label>
-					<input type="password" id="input-npassword" name="password">
-					<div class="show-password" id="icon-npassword" onmousedown="$e('input-npassword').type = 'text';" onmouseup="$e('input-npassword').type = 'password';"></div>
-				</div>
-				<div class="form-field" onmouseover="$e('icon-cpassword').style.display = 'block';" onmouseleave="$e('icon-cpassword').style.display = 'none';">
-					<label class="form-field" for="input-cpassword">Confirm Password:</label>
-					<input type="password" id="input-cpassword" name="cpassword">
-					<div class="show-password" id="icon-cpassword" onmousedown="$e('input-cpassword').type = 'text';" onmouseup="$e('input-cpassword').type = 'password';"></div>
-				</div>
-			</form>
-			<div class="button">
-				<button onclick="updatePassword();">Submit</button>
-				<button onclick="">Skip</button>
-			</div>
+		<div class="content">
+			
 		</div>
 	</div>
 </body>
