@@ -132,6 +132,8 @@ label.form-field {
 
 input[type=text], [type=password] {
 	width: 150px;
+	font-family: verdana;
+	font-size: 16px;
 }
 
 input[type=text]:hover, [type=password]:hover {

@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Admin Registration</title>
+<title>Title</title>
 <script type="text/javascript">
 	function $e(id) {
 		var element = document.getElementById(id);
@@ -79,26 +79,22 @@ span.welcome-name {
 	font-weight: bold;
 }
 
-div.menu {
-	margin: 10px 30px;
-	padding: 10px;
-}
-
 div.container {
 	border: 2px solid;
 	border-radius: 10px;
-	margin: 0px 30px;
+	margin: 50px auto 0px;
 	padding: 10px;
-	height: 500px;
+	width: 400px;
 }
 
 div.title {
 	margin: 10px 0px;
 	padding: 10px;
+	text-align: center;
 }
 
 span.title {
-	font-size: 20px;
+	font-size: 30px;
 }
 
 div.message {
@@ -111,29 +107,21 @@ span.message {
 	color: red;
 }
 
-div.content {
+div.form {
 	margin: 10px 0px;
 	padding: 10px;
+	height: 200px;
+	position: relative;
 }
 
-table {
-	border: 1px solid #bfbfbf;
-	border-collapse: collapse;
+div.form-field {
+	margin: 10px 0px;
 }
 
-table tr {
-	height: 25px;
-}
-
-table th {
-	background-color: #efefef;
-	text-align: left;
-}
-
-table th, table td {
-	border: 1px solid #bfbfbf;
-	padding: 5px 10px;
-	max-width: 400px;
+label.form-field {
+	width: 160px;
+	text-align: right;
+	display: inline-block;
 }
 
 input[type=text], [type=password] {
@@ -174,42 +162,15 @@ button:hover {
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
 	<hr>
-	<div class="menu">
-		<a href=""><button>Home</button></a>
-		<a href=""><button>Admin Registration</button></a>
-		<a href=""><button>Lecturer Registration</button></a>
-		<a href=""><button>Subject Registration</button></a>
-		<a href=""><button>Workload Registration</button></a>
-		<a href=""><button>Student Registration</button></a>
-		<a href=""><button>View Log</button></a>
-		<a href=""><button>Log Out</button></a>
-	</div>
 	<div class="container">
 		<div class="title">
-			<span class="title">Admin Registration</span>
+			<span class="title">Title</span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
 		</div>
-		<div class="content">
-			<table border="1">
-				<thead>
-					<tr>
-						<th>Admin ID</th>
-						<th>Admin Name</th>
-						<th>Update</th>
-						<th>Delete</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td><input type="text" id="input-admin-id" maxlength="6"></td>
-						<td><input type="text" id="input-admin-name" style="width: 300px;" maxlength="50"></td>
-						<td><button onclick="">ADD</button></td>
-						<td></td>
-					</tr>
-				</tbody>
-			</table>
+		<div class="form">
+			
 		</div>
 	</div>
 </body>

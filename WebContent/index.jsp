@@ -133,6 +133,8 @@ label.login-field {
 
 input[type=text], [type=password] {
 	width: 150px;
+	font-family: verdana;
+	font-size: 16px;
 }
 
 div.login-field-radio {
