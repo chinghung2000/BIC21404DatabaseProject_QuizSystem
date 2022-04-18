@@ -12,6 +12,7 @@
 
 
 <%
+// create gson object (for JSON)
 Gson gson = new Gson();
 boolean execute = false;
 
