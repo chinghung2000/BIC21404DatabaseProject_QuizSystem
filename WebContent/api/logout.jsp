@@ -73,72 +73,8 @@ if (request.getMethod().equals("POST")) {
 
 // execution
 if (execute) {
-	
-	// validate parameter 'user_id'
-	if (d.containsKey("user_id")) {
-		if (!d.get("user_id").equals("")) {
-			
-			// validate parameter 'password'
-			if (d.containsKey("password")) {
-				if (!d.get("password").equals("")) {
-					
-					// validate parameter 'user_type'
-					if (d.containsKey("user_type")) {
-						if (!d.get("user_type").equals("")) {
-							ArrayList<String> allowedUserTypes = new ArrayList<String>();
-							Collections.addAll(allowedUserTypes, "admin", "lecturer", "student");
-							
-							if (allowedUserTypes.contains(d.get("user_type"))) {
-								
-								// execute backend logic...
-								// parent if clause for call backend result
-								if (true) {
-									if (session.isNew()) {
-										session.setAttribute("user_id", d.get("user_id"));
-										session.setAttribute("user_type", d.get("user_type"));
-										rc.put("first_login", true);
-									} else {
-										rc.put("first_login", false);
-									}
-									
-									if (d.get("user_type").equals("admin")) {
-										rc.put("home", "/admin.jsp");
-									} else if (d.get("user_type").equals("lecturer")) {
-										rc.put("home", "/lecturer.jsp");
-									} else if (d.get("user_type").equals("student")) {
-										rc.put("home", "/student.jsp");
-									}
-								}
-								
-								rc.put("ok", true);
-							} else {
-								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: Invalid value for 'user_type'");
-							}
-						} else {
-							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'user_type' can't be empty");
-						}
-					} else {
-						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'user_type' is required");
-					}
-				} else {
-					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'password' can't be empty");
-				}
-			} else {
-				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: Parameter 'password' is required");
-			}
-		} else {
-			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: 'user_id' can't be empty");
-		}
-	} else {
-		rc.put("error_code", 400);
-		rc.put("description", "Bad Request: Parameter 'user_id' is required");
-	}
+	session.invalidate();
+	rc.put("ok", true);
 }
 
 // check unknown error
