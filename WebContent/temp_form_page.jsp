@@ -16,9 +16,9 @@
 		return elements;
 	}
 	
-	function XHRequest(jsonString) {
+	function XHRequest(method, jsonString) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/<api-method>.jsp", true);
+		xhttp.open("POST", "api/" + method + ".jsp", true);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 	
@@ -54,7 +54,7 @@
 		d["<key>"] = $e("<id>").value;
 		
 		if (d["<key>"] != "") {
-			XHRequest(JSON.stringify(d));
+			XHRequest("<method>", JSON.stringify(d));
 		} else {
 			$e("span-message").innerHTML = "Please enter ???.";
 			setTimeout(clearMessage, 5000);

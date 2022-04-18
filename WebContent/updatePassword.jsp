@@ -18,9 +18,9 @@
 		return elements;
 	}
 	
-	function XHRequest(jsonString) {
+	function XHRequest(method, jsonString) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/updatePassword.jsp", true);
+		xhttp.open("POST", "api/" + method + ".jsp", true);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 	
@@ -58,7 +58,7 @@
 		
 		if (d["npassword"] != "") {
 			if (d["cpassword"] != "") {
-				XHRequest(JSON.stringify(d));
+				XHRequest("updatePassword", JSON.stringify(d));
 			} else {
 				$e("span-message").innerHTML = "Please confirm password.";
 				setTimeout(clearMessage, 5000);

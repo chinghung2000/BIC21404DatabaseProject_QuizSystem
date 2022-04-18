@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ include file="checkSession.jsp"%>
 
 
 <!DOCTYPE html>
@@ -19,9 +18,9 @@
 		return elements;
 	}
 
-	function XHRequest(jsonString) {
+	function XHRequest(method, jsonString) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/login.jsp", true);
+		xhttp.open("POST", "api/" + method + ".jsp", true);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 
@@ -71,7 +70,7 @@
 		if (d["user_id"] != "") {
 			if (d["password"] != "") {
 				if (d["user_type"] != "") {
-					XHRequest(JSON.stringify(d));
+					XHRequest("login", JSON.stringify(d));
 				} else {
 					$e("span-login-message").innerHTML = "Please choose a user type.";
 				}
