@@ -13,8 +13,8 @@
 		return element;
 	}
 	
-	function $n(name) {
-		var elements = document.getElementsByName(name);
+	function $t(tagName) {
+		var elements = document.getElementsByTagName(tagName);
 		return elements;
 	}
 	
@@ -53,32 +53,100 @@
 		}
 	}
 	
-	function load() {
-		var d = XHRequest("", "");
-	}
-	
-	function add() {
-		var d = {};
-		d["<key>"] = $e("<id>").value;
+	function clearTable() {
+		var tBody = $e("list").tBodies[0];
 		
-		if (d["<key>"] != "") {
-			XHRequest("", JSON.stringify(d));
-		} else {
-			$e("span-message").innerHTML = "Please enter ???.";
-			setTimeout(clearMessage, 5000);
+		for (var i = 0; i < tBody.rows.length; i++) {
+			tBody.deleteRow();
 		}
 	}
 	
-	function remove() {
-		var d = {};
-		d["<key>"] = $e("<id>").value;
+	function loadTable() {
+// 		var d = XHRequest("getAllAdmins", JSON.stringify({}));
+		var d = [];
+		d[0] = {};
+		d[0]["admin_id"] = "1";
+		d[0]["admin_name"] = "Ali";
+		d[1] = {};
+		d[1]["admin_id"] = "2";
+		d[1]["admin_name"] = "Muthu"
 		
-		if (d["<key>"] != "") {
-			XHRequest("", JSON.stringify(d));
+		clearTable();
+		
+		var tBody = $e("list").tBodies[0];
+		var row, cell;
+		
+		for (var i in d) {
+			row = tBody.insertRow();
+			cell = row.insertCell();
+			cell.innerHTML = d[i]["admin_id"];
+			cell = row.insertCell();
+			cell.innerHTML = d[i]["admin_name"];
+			cell = row.insertCell();
+			var btnUpdate = document.createElement("button");
+			btnUpdate.innerHTML = "Update";
+			btnUpdate.setAttribute("onclick", "update('" + d[i]["admin_id"] + "', '" + d[i]["admin_name"] + "');");
+			cell.appendChild(btnUpdate);
+			cell = row.insertCell();
+			var btnDelete = document.createElement("button");
+			btnDelete.innerHTML = "Remove";
+			btnDelete.setAttribute("onclick", "remove('" + d[i]["admin_id"] + "');");
+			cell.appendChild(btnDelete);
+		}
+	}
+	
+	function add(adminId, adminName) {
+		var d = {};
+		d["admin_id"] = adminId;
+		d["admin_name"] = adminName;
+		
+		if (d["admin_id"] != "") {
+			if (d["admin_name"] != "") {
+				XHRequest("addAdmin", JSON.stringify(d));
+			} else {
+				$e("span-message").innerHTML = "Please enter admin name.";
+				setTimeout(clearMessage, 5000);
+			}
 		} else {
-			$e("span-message").innerHTML = "Please enter ???.";
+			$e("span-message").innerHTML = "Please enter admin ID.";
 			setTimeout(clearMessage, 5000);
 		}
+		
+		loadTable();
+	}
+	
+	function update(adminId, adminName) {
+		var d = {};
+		d["admin_id"] = adminId;
+		d["admin_name"] = adminName;
+		
+		if (d["admin_id"] != "") {
+			if (d["admin_name"] != "") {
+				XHRequest("updateAdmin", JSON.stringify(d));
+			} else {
+				$e("span-message").innerHTML = "Missing admin name.";
+				setTimeout(clearMessage, 5000);
+			}
+		} else {
+			$e("span-message").innerHTML = "Missing admin ID.";
+			setTimeout(clearMessage, 5000);
+		}
+		
+		loadTable();
+	}
+	
+	function remove(adminId) {
+		var d = {};
+		d["admin_id"] = adminId;
+		
+		if (d["admin_id"] != "") {
+			XHRequest("deleteAdmin", JSON.stringify(d));
+		} else {
+			$e("span-message").innerHTML = "Missing admin ID.";
+			setTimeout(clearMessage, 5000);
+		}
+		
+		loadTable();
 	}
 	
 	function clearMessage() {
@@ -189,7 +257,7 @@ button:hover {
 }
 </style>
 </head>
-<body>
+<body onload="loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
@@ -212,7 +280,7 @@ button:hover {
 			<span class="message" id="span-message"></span>
 		</div>
 		<div class="content">
-			<table border="1">
+			<table id="list" border="1">
 				<thead>
 					<tr>
 						<th>Admin ID</th>
@@ -221,14 +289,15 @@ button:hover {
 						<th>Delete</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody></tbody>
+				<tfoot>
 					<tr>
 						<td><input type="text" id="input-admin-id" maxlength="6"></td>
 						<td><input type="text" id="input-admin-name" style="width: 300px;" maxlength="50"></td>
-						<td><button onclick="">ADD</button></td>
+						<td><button onclick="add($e('input-admin-id').value, $e('input-admin-name').value);">ADD</button></td>
 						<td></td>
 					</tr>
-				</tbody>
+				</tfoot>
 			</table>
 		</div>
 	</div>

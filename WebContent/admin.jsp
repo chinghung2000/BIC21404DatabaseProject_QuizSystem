@@ -43,49 +43,9 @@ span.title {
 	font-size: 20px;
 }
 
-div.message {
-	margin: 10px 0px;
-	height: 20px;
- 	text-align: center;
-}
-
-span.message {
-	color: red;
-}
-
 div.content {
 	margin: 10px 0px;
 	padding: 10px;
-}
-
-table {
-	border: 1px solid #bfbfbf;
-	border-collapse: collapse;
-}
-
-table tr {
-	height: 25px;
-}
-
-table th {
-	background-color: #efefef;
-	text-align: left;
-}
-
-table th, table td {
-	border: 1px solid #bfbfbf;
-	padding: 5px 10px;
-	max-width: 400px;
-}
-
-input[type=text], [type=password] {
-	width: 150px;
-	font-family: verdana;
-	font-size: 16px;
-}
-
-input[type=text]:hover, [type=password]:hover {
-	outline: 1px solid;
 }
 
 div.button {
@@ -130,14 +90,12 @@ button:hover {
 		<div class="title">
 			<span class="title">Admin Homepage</span>
 		</div>
-		<div class="message">
-			<span class="message" id="span-message"></span>
-		</div>
+		<br><br>
 		<div class="content">
 			Admin ID: <span></span>
-			<br>
+			<br><br>
 			Name: <span></span>
-			<br>
+			<br><br>
 			Session ID: <span></span>
 		</div>
 	</div>

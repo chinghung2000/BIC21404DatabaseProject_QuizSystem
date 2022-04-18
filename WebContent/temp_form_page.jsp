@@ -11,11 +11,6 @@
 		return element;
 	}
 	
-	function $n(name) {
-		var elements = document.getElementsByName(name);
-		return elements;
-	}
-	
 	function XHRequest(method, jsonString) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.open("POST", "api/" + method + ".jsp", true);
