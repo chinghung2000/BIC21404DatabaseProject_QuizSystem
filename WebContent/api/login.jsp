@@ -8,7 +8,7 @@
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
-<%-- <%@ page import="com.project.backend.*"%> --%>
+<%@ page import="com.project.backend.*"%>
 
 
 <%
@@ -96,9 +96,6 @@ if (execute) {
 									if (session.isNew()) {
 										session.setAttribute("user_id", d.get("user_id"));
 										session.setAttribute("user_type", d.get("user_type"));
-										rc.put("first_login", true);
-									} else {
-										rc.put("first_login", false);
 									}
 									
 									if (d.get("user_type").equals("admin")) {
