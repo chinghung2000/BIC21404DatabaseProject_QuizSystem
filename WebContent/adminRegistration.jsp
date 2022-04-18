@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,9 +18,9 @@
 		return elements;
 	}
 	
-	function XHRequest(jsonString) {
+	function XHRequest(method, jsonString) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/<api-method>.jsp", true);
+		xhttp.open("POST", "api/" + method + ".jsp", true);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 	
@@ -29,7 +31,9 @@
 						var r = JSON.parse(this.responseText);
 						
 						if (r["ok"] === true) {
-							// ?
+							if ("result" in r) {
+								return r["result"];
+							}
 						} else {
 							if ("message" in r) {
 								$e("span-message").innerHTML = r["message"];
@@ -49,12 +53,28 @@
 		}
 	}
 	
-	function updatePassword() {
+	function load() {
+		var d = XHRequest("", "");
+	}
+	
+	function add() {
 		var d = {};
 		d["<key>"] = $e("<id>").value;
 		
 		if (d["<key>"] != "") {
-			XHRequest(JSON.stringify(d));
+			XHRequest("", JSON.stringify(d));
+		} else {
+			$e("span-message").innerHTML = "Please enter ???.";
+			setTimeout(clearMessage, 5000);
+		}
+	}
+	
+	function remove() {
+		var d = {};
+		d["<key>"] = $e("<id>").value;
+		
+		if (d["<key>"] != "") {
+			XHRequest("", JSON.stringify(d));
 		} else {
 			$e("span-message").innerHTML = "Please enter ???.";
 			setTimeout(clearMessage, 5000);
@@ -89,7 +109,7 @@ div.container {
 	border-radius: 10px;
 	margin: 0px 30px;
 	padding: 10px;
-	height: 500px;
+	min-height: 500px;
 }
 
 div.title {

@@ -49,7 +49,7 @@
 		}
 	}
 	
-	function updatePassword() {
+	function method() {
 		var d = {};
 		d["<key>"] = $e("<id>").value;
 		

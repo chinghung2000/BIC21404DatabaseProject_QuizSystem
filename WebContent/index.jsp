@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ include file="checkSession.jsp"%>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,7 +32,7 @@
 						var r = JSON.parse(this.responseText);
 						
 						if (r["ok"] === true) {
-							location.href = r["target"];
+							location.href = r["home"];
 						} else {
 							if ("message" in r) {
 								$e("span-login-message").innerHTML = r["message"];
@@ -189,11 +192,11 @@ button:hover {
 			<form>
 				<div class="login-field">
 					<label class="login-field" for="input-user-id">User ID:</label>
-					<input type="text" id="input-user-id" name="user_id">
+					<input type="text" id="input-user-id" name="user_id" autocomplete="off">
 				</div>
 				<div class="login-field">
 					<label class="login-field" for="input-password">Password:</label>
-					<input type="password" id="input-password" name="password">
+					<input type="password" id="input-password" name="password" autocomplete="off">
 				</div>
 				<div class="login-field-radio">
 					<input type="radio" id="input-radio-admin" name="user_type" value="admin">
