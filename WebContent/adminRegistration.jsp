@@ -35,6 +35,10 @@
 								return r["result"];
 							}
 						} else {
+							if ("kickout" in r) {
+								location.href = "index.jsp";
+							}
+							
 							if ("message" in r) {
 								$e("span-message").innerHTML = r["message"];
 							} else {
@@ -53,6 +57,11 @@
 		}
 	}
 	
+	function logout() {
+		XHRequest("logout", JSON.stringify({}));
+		location.href = "index.jsp";
+	}
+	
 	function clearTable() {
 		var tBody = $e("list").tBodies[0];
 		
@@ -62,17 +71,9 @@
 	}
 	
 	function loadTable() {
-// 		var d = XHRequest("getAllAdmins", JSON.stringify({}));
-		var d = [];
-		d[0] = {};
-		d[0]["admin_id"] = "1";
-		d[0]["admin_name"] = "Ali";
-		d[1] = {};
-		d[1]["admin_id"] = "2";
-		d[1]["admin_name"] = "Muthu"
-		
 		clearTable();
 		
+		var d = XHRequest("getAllAdmins", JSON.stringify({}));
 		var tBody = $e("list").tBodies[0];
 		var row, cell;
 		
@@ -95,6 +96,15 @@
 		}
 	}
 	
+	var t;
+	
+	function clearMessage() {
+		clearTimeout(t);
+		t = setTimeout(function () {
+			$e("span-message").innerHTML = null;
+		}, 5000);
+	}
+	
 	function add(adminId, adminName) {
 		var d = {};
 		d["admin_id"] = adminId;
@@ -103,16 +113,15 @@
 		if (d["admin_id"] != "") {
 			if (d["admin_name"] != "") {
 				XHRequest("addAdmin", JSON.stringify(d));
+				loadTable();
 			} else {
 				$e("span-message").innerHTML = "Please enter admin name.";
-				setTimeout(clearMessage, 5000);
+				clearMessage();
 			}
 		} else {
 			$e("span-message").innerHTML = "Please enter admin ID.";
-			setTimeout(clearMessage, 5000);
+			clearMessage();
 		}
-		
-		loadTable();
 	}
 	
 	function update(adminId, adminName) {
@@ -123,16 +132,15 @@
 		if (d["admin_id"] != "") {
 			if (d["admin_name"] != "") {
 				XHRequest("updateAdmin", JSON.stringify(d));
+				loadTable();
 			} else {
 				$e("span-message").innerHTML = "Missing admin name.";
-				setTimeout(clearMessage, 5000);
+				clearMessage();
 			}
 		} else {
 			$e("span-message").innerHTML = "Missing admin ID.";
-			setTimeout(clearMessage, 5000);
+			clearMessage();
 		}
-		
-		loadTable();
 	}
 	
 	function remove(adminId) {
@@ -141,16 +149,11 @@
 		
 		if (d["admin_id"] != "") {
 			XHRequest("deleteAdmin", JSON.stringify(d));
+			loadTable();
 		} else {
 			$e("span-message").innerHTML = "Missing admin ID.";
-			setTimeout(clearMessage, 5000);
+			clearMessage();
 		}
-		
-		loadTable();
-	}
-	
-	function clearMessage() {
-		$e("span-message").innerHTML = null;
 	}
 </script>
 <style type="text/css">
@@ -191,8 +194,8 @@ span.title {
 
 div.message {
 	margin: 10px 0px;
+	padding: 10px;
 	height: 20px;
- 	text-align: center;
 }
 
 span.message {
@@ -263,14 +266,14 @@ button:hover {
 	</div>
 	<hr>
 	<div class="menu">
-		<a href=""><button>Home</button></a>
-		<a href=""><button>Admin Registration</button></a>
-		<a href=""><button>Lecturer Registration</button></a>
-		<a href=""><button>Subject Registration</button></a>
-		<a href=""><button>Workload Registration</button></a>
-		<a href=""><button>Student Registration</button></a>
-		<a href=""><button>View Log</button></a>
-		<a href=""><button>Log Out</button></a>
+		<a href="admin.jsp"><button>Home</button></a>
+		<a href="adminRegistration.jsp"><button>Admin Registration</button></a>
+		<a href="lecturerRegistration.jsp"><button>Lecturer Registration</button></a>
+		<a href="subjectRegistration.jsp"><button>Subject Registration</button></a>
+		<a href="workloadRegistration.jsp"><button>Workload Registration</button></a>
+		<a href="studentRegistration.jsp"><button>Student Registration</button></a>
+		<a href="log.jsp"><button>View Log</button></a>
+		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">
 		<div class="title">
@@ -295,7 +298,6 @@ button:hover {
 						<td><input type="text" id="input-admin-id" maxlength="6"></td>
 						<td><input type="text" id="input-admin-name" style="width: 300px;" maxlength="50"></td>
 						<td><button onclick="add($e('input-admin-id').value, $e('input-admin-name').value);">ADD</button></td>
-						<td></td>
 					</tr>
 				</tfoot>
 			</table>

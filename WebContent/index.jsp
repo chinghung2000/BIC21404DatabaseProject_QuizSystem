@@ -51,6 +51,15 @@
 		}
 	}
 	
+	var t;
+	
+	function clearMessage() {
+		clearTimeout(t);
+		t = setTimeout(function () {
+			$e("span-login-message").innerHTML = null;
+		}, 5000);
+	}
+	
 	function login() {
 		var e = $n("user_type");
 		var userType = "";
@@ -73,12 +82,15 @@
 					XHRequest("login", JSON.stringify(d));
 				} else {
 					$e("span-login-message").innerHTML = "Please choose a user type.";
+					clearMessage();
 				}
 			} else {
 				$e("span-login-message").innerHTML = "Please enter password.";
+				clearMessage();
 			}
 		} else {
 			$e("span-login-message").innerHTML = "Please enter user ID.";
+			clearMessage();
 		}
 	}
 </script>
