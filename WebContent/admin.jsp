@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="checkSessionAdmin.jsp"%>
 
 
 <!DOCTYPE html>
@@ -7,6 +8,61 @@
 <head>
 <meta charset="UTF-8">
 <title>Admin Homepage</title>
+<script type="text/javascript">
+	function $e(id) {
+		var element = document.getElementById(id);
+		return element;
+	}
+	
+	function $t(tagName) {
+		var elements = document.getElementsByTagName(tagName);
+		return elements;
+	}
+	
+	function XHRequest(method, jsonString, async = true) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "api/" + method + ".jsp", async);
+		xhttp.setRequestHeader("Content-Type", "application/json");
+		xhttp.send(jsonString);
+	
+		xhttp.onreadystatechange = function() {
+			if (this.readyState === 4) {
+				switch (this.status) {
+					case 200:
+						var r = JSON.parse(this.responseText);
+						
+						if (r["ok"] === true) {
+							if ("result" in r) {
+								return r["result"];
+							}
+						} else {
+							if ("kickout" in r) {
+								location.href = "index.jsp";
+							}
+							
+							if ("message" in r) {
+								$e("span-message").innerHTML = r["message"];
+							} else {
+								$e("span-message").innerHTML = "Error " + r["error_code"] + ": " + r["description"];
+							}
+						}
+						
+						break;
+					case 404:
+						alert("Requested server file not found. Error code: " + this.status);
+						break;
+					default:
+						alert("Request failed. " + this.statusText + "Error Code: " + this.status);
+				}
+			}
+		}
+	}
+	
+	function logout() {
+		XHRequest("logout", JSON.stringify({}), false);
+		location.href = "index.jsp";
+	}
+</script>
 <style type="text/css">
 body {
 	font-family: verdana;
@@ -77,14 +133,14 @@ button:hover {
 	</div>
 	<hr>
 	<div class="menu">
-		<a href=""><button>Home</button></a>
-		<a href=""><button>Admin Registration</button></a>
-		<a href=""><button>Lecturer Registration</button></a>
-		<a href=""><button>Subject Registration</button></a>
-		<a href=""><button>Workload Registration</button></a>
-		<a href=""><button>Student Registration</button></a>
-		<a href=""><button>View Log</button></a>
-		<a href=""><button>Log Out</button></a>
+		<a href="admin.jsp"><button>Home</button></a>
+		<a href="adminRegistration.jsp"><button>Admin Registration</button></a>
+		<a href="lecturerRegistration.jsp"><button>Lecturer Registration</button></a>
+		<a href="subjectRegistration.jsp"><button>Subject Registration</button></a>
+		<a href="workloadRegistration.jsp"><button>Workload Registration</button></a>
+		<a href="studentRegistration.jsp"><button>Student Registration</button></a>
+		<a href="log.jsp"><button>View Log</button></a>
+		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">
 		<div class="title">

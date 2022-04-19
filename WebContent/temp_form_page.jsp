@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="checkSessionAdmin.jsp"%>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,9 +14,9 @@
 		return element;
 	}
 	
-	function XHRequest(method, jsonString) {
+	function XHRequest(method, jsonString, async = true) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/" + method + ".jsp", true);
+		xhttp.open("POST", "api/" + method + ".jsp", async);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 	
