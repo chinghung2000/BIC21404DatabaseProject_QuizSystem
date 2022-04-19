@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@page import="java.util.Collections"%>
+<%@ page import="java.util.Collections"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
@@ -94,17 +94,15 @@ if (execute) {
 								// execute backend logic...
 								// parent if clause for call backend result (to-be)
 								if (true) {
-									if (session.isNew()) {
-										session.setAttribute("user_id", d.get("user_id"));
-										session.setAttribute("user_type", d.get("user_type"));
-									}
+									session.setAttribute("user_id", d.get("user_id"));
+									session.setAttribute("user_type", d.get("user_type"));
 									
 									if (d.get("user_type").equals("admin")) {
-										rc.put("home", "/admin.jsp");
+										rc.put("home", "admin.jsp");
 									} else if (d.get("user_type").equals("lecturer")) {
-										rc.put("home", "/lecturer.jsp");
+										rc.put("home", "lecturer.jsp");
 									} else if (d.get("user_type").equals("student")) {
-										rc.put("home", "/student.jsp");
+										rc.put("home", "student.jsp");
 									}
 								}
 								
