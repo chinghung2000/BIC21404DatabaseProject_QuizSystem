@@ -12,11 +12,11 @@
 
 
 <%
-//create gson object (for JSON)
+// create gson object (for JSON)
 Gson gson = new Gson();
 boolean execute = false;
 
-//create a Dictionary of data ($d)
+// create a Dictionary of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
 // create a Dictionary of response content ($rc)
@@ -92,7 +92,7 @@ if (execute) {
 							if (allowedUserTypes.contains(d.get("user_type"))) {
 								
 								// execute backend logic...
-								// parent if clause for call backend result
+								// parent if clause for call backend result (to-be)
 								if (true) {
 									if (session.isNew()) {
 										session.setAttribute("user_id", d.get("user_id"));

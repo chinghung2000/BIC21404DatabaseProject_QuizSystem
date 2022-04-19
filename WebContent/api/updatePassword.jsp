@@ -8,15 +8,15 @@
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
-<%-- <%@ page import="com.project.backend.*"%> --%>
+<%@ page import="com.project.backend.*"%>
 
 
 <%
-//create gson object (for JSON)
+// create gson object (for JSON)
 Gson gson = new Gson();
 boolean execute = false;
 
-//create a Dictionary of data ($d)
+// create a Dictionary of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
 // create a Dictionary of response content ($rc)

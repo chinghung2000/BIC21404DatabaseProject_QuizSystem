@@ -16,7 +16,7 @@
 Gson gson = new Gson();
 boolean execute = false;
 
-//create a Dictionary of data ($d)
+// create a Dictionary of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
 // create a Dictionary of response content ($rc)
