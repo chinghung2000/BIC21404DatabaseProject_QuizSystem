@@ -29,6 +29,8 @@
 						if (r["ok"] === true) {
 							if ("result" in r) {
 								loadTable(r["result"]);
+							} else {
+								loadUserInfo(r);
 							}
 						} else {
 							if ("kickout" in r) {
@@ -56,6 +58,15 @@
 	function logout() {
 		XHRequest("logout", JSON.stringify({}), false);
 		location.href = "index.jsp";
+	}
+	
+	function loadUserInfo(r = null) {
+		if (r == null) {
+			XHRequest("getUserInfo", JSON.stringify({}));
+		} else {
+			$e("span-user-id").innerHTML = r["user_id"];
+			$e("span-welcome-name").innerHTML = $e("span-name").innerHTML = r["name"];
+		}
 	}
 	
 	function loadTable(r = null) {
@@ -259,7 +270,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadTable();">
+<body onload="loadUserInfo(); loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>

@@ -27,7 +27,11 @@
 						var r = JSON.parse(this.responseText);
 						
 						if (r["ok"] === true) {
-							location.href = r["landing"];
+							if ("landing" in r) {
+								location.href = r["landing"];
+							} else {
+								loadUserInfo(r);
+							}
 						} else {
 							if ("message" in r) {
 								$e("span-message").innerHTML = r["message"];
@@ -44,6 +48,15 @@
 						alert("Request failed. " + this.statusText + "Error Code: " + this.status);
 				}
 			}
+		}
+	}
+	
+	function loadUserInfo(r = null) {
+		if (r == null) {
+			XHRequest("getUserInfo", JSON.stringify({}));
+		} else {
+			$e("span-user-id").innerHTML = r["user_id"];
+			$e("span-welcome-name").innerHTML = $e("span-name").innerHTML = r["name"];
 		}
 	}
 	
@@ -181,7 +194,7 @@ button:hover {
 }
 </style>
 </head>
-<body>
+<body onload="loadUserInfo();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
