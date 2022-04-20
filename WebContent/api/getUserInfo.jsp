@@ -80,6 +80,7 @@ if (execute) {
 	if (true) {
 		rc.put("user_id", "_user_id_");
 		rc.put("name", "_name_");
+		rc.put("email", "_email_");
 		rc.put("ok", true);
 	}
 }
