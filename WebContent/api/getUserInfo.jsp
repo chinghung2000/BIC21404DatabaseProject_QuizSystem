@@ -1,14 +1,14 @@
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ page import="java.util.Collections"%>
+<%@page import="java.util.Collections"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
-<%@ page import="com.project.backend.*"%>
+<%-- <%@ page import="com.project.backend.*"%> --%>
 
 
 <%
@@ -75,66 +75,12 @@ if (request.getMethod().equals("POST")) {
 // execution
 if (execute) {
 	
-	// validate parameter 'user_id'
-	if (d.containsKey("user_id")) {
-		if (!d.get("user_id").equals("")) {
-			
-			// validate parameter 'password'
-			if (d.containsKey("password")) {
-				if (!d.get("password").equals("")) {
-					
-					// validate parameter 'user_type'
-					if (d.containsKey("user_type")) {
-						if (!d.get("user_type").equals("")) {
-							ArrayList<String> allowedUserTypes = new ArrayList<String>();
-							Collections.addAll(allowedUserTypes, "admin", "lecturer", "student");
-							
-							if (allowedUserTypes.contains(d.get("user_type"))) {
-								
-								// execute backend logic...
-								// parent if clause for call backend result (to-be)
-								if (true) {
-									// create new session
-									session.setAttribute("user_id", d.get("user_id"));
-									session.setAttribute("user_type", d.get("user_type"));
-									
-									if (d.get("user_type").equals("admin")) {
-										rc.put("landing", "admin.jsp");
-									} else if (d.get("user_type").equals("lecturer")) {
-										rc.put("landing", "lecturer.jsp");
-									} else if (d.get("user_type").equals("student")) {
-										rc.put("landing", "student.jsp");
-									}
-									
-									rc.put("ok", true);
-								}
-							} else {
-								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: Invalid value for 'user_type'");
-							}
-						} else {
-							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'user_type' can't be empty");
-						}
-					} else {
-						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'user_type' is required");
-					}
-				} else {
-					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'password' can't be empty");
-				}
-			} else {
-				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: Parameter 'password' is required");
-			}
-		} else {
-			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: 'user_id' can't be empty");
-		}
-	} else {
-		rc.put("error_code", 400);
-		rc.put("description", "Bad Request: Parameter 'user_id' is required");
+	// execute backend logic...
+	// parent if clause for call backend result (to-be)
+	if (true) {
+		rc.put("user_id", "");
+		rc.put("name", "");
+		rc.put("ok", true);
 	}
 }
 
