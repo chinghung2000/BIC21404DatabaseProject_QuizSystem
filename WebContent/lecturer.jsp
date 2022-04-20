@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="checkSessionAdmin.jsp"%>
+<%@ include file="checkSessionLecturer.jsp"%>
 
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Admin Homepage</title>
+<title>Lecturer Homepage</title>
 <script type="text/javascript">
 	function $e(id) {
 		var element = document.getElementById(id);
@@ -137,22 +137,17 @@ button:hover {
 	</div>
 	<hr>
 	<div class="menu">
-		<a href="admin.jsp"><button>Home</button></a>
-		<a href="adminRegistration.jsp"><button>Admin Registration</button></a>
-		<a href="lecturerRegistration.jsp"><button>Lecturer Registration</button></a>
-		<a href="subjectRegistration.jsp"><button>Subject Registration</button></a>
-		<a href="workloadRegistration.jsp"><button>Workload Registration</button></a>
-		<a href="studentRegistration.jsp"><button>Student Registration</button></a>
-		<a href="log.jsp"><button>View Log</button></a>
+		<a href="lecturer.jsp"><button>Home</button></a>
+		<a href="workload.jsp"><button>View Workload</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">
 		<div class="title">
-			<span class="title">Admin Homepage</span>
+			<span class="title">Lecturer Homepage</span>
 		</div>
 		<br><br>
 		<div class="content">
-			Admin ID: <span id="span-user-id"></span>
+			Lecturer ID: <span id="span-user-id"></span>
 			<br><br>
 			Name: <span id="span-name"></span>
 			<br><br>

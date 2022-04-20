@@ -32,7 +32,7 @@
 						var r = JSON.parse(this.responseText);
 						
 						if (r["ok"] === true) {
-							location.href = r["home"];
+							location.href = r["landing"];
 						} else {
 							if ("message" in r) {
 								$e("span-login-message").innerHTML = r["message"];
@@ -50,15 +50,6 @@
 				}
 			}
 		}
-	}
-	
-	var t;
-	
-	function clearMessage() {
-		clearTimeout(t);
-		t = setTimeout(function () {
-			$e("span-login-message").innerHTML = null;
-		}, 5000);
 	}
 	
 	function login() {
@@ -93,6 +84,15 @@
 			$e("span-login-message").innerHTML = "Please enter user ID.";
 			clearMessage();
 		}
+	}
+	
+	var t;
+	
+	function clearMessage() {
+		clearTimeout(t);
+		t = setTimeout(function () {
+			$e("span-login-message").innerHTML = null;
+		}, 5000);
 	}
 </script>
 <style type="text/css">

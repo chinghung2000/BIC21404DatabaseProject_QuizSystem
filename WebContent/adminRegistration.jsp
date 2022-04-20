@@ -14,11 +14,6 @@
 		return element;
 	}
 	
-	function $t(tagName) {
-		var elements = document.getElementsByTagName(tagName);
-		return elements;
-	}
-	
 	function XHRequest(method, jsonString, async = true) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.open("POST", "api/" + method + ".jsp", async);
@@ -33,7 +28,7 @@
 						
 						if (r["ok"] === true) {
 							if ("result" in r) {
-								return r["result"];
+								loadTable(r["result"]);
 							}
 						} else {
 							if ("kickout" in r) {
@@ -63,47 +58,41 @@
 		location.href = "index.jsp";
 	}
 	
+	function loadTable(r = null) {
+		if (r == null) {
+			XHRequest("getAllAdmins", JSON.stringify({}));
+		} else {
+			clearTable();
+			
+			var tBody = $e("list").tBodies[0];
+			var row, cell;
+			
+			for (var i in r) {
+				row = tBody.insertRow();
+				cell = row.insertCell();
+				cell.innerHTML = r[i]["admin_id"];
+				cell = row.insertCell();
+				cell.innerHTML = r[i]["admin_name"];
+				cell = row.insertCell();
+				var btnUpdate = document.createElement("button");
+				btnUpdate.innerHTML = "Update";
+				btnUpdate.setAttribute("onclick", "update('" + r[i]["admin_id"] + "', '" + r[i]["admin_name"] + "');");
+				cell.appendChild(btnUpdate);
+				cell = row.insertCell();
+				var btnDelete = document.createElement("button");
+				btnDelete.innerHTML = "Remove";
+				btnDelete.setAttribute("onclick", "remove('" + r[i]["admin_id"] + "');");
+				cell.appendChild(btnDelete);
+			}
+		}
+	}
+	
 	function clearTable() {
 		var tBody = $e("list").tBodies[0];
 		
 		for (var i = 0; i < tBody.rows.length; i++) {
 			tBody.deleteRow();
 		}
-	}
-	
-	function loadTable() {
-		clearTable();
-		
-		var d = XHRequest("getAllAdmins", JSON.stringify({}));
-		var tBody = $e("list").tBodies[0];
-		var row, cell;
-		
-		for (var i in d) {
-			row = tBody.insertRow();
-			cell = row.insertCell();
-			cell.innerHTML = d[i]["admin_id"];
-			cell = row.insertCell();
-			cell.innerHTML = d[i]["admin_name"];
-			cell = row.insertCell();
-			var btnUpdate = document.createElement("button");
-			btnUpdate.innerHTML = "Update";
-			btnUpdate.setAttribute("onclick", "update('" + d[i]["admin_id"] + "', '" + d[i]["admin_name"] + "');");
-			cell.appendChild(btnUpdate);
-			cell = row.insertCell();
-			var btnDelete = document.createElement("button");
-			btnDelete.innerHTML = "Remove";
-			btnDelete.setAttribute("onclick", "remove('" + d[i]["admin_id"] + "');");
-			cell.appendChild(btnDelete);
-		}
-	}
-	
-	var t;
-	
-	function clearMessage() {
-		clearTimeout(t);
-		t = setTimeout(function () {
-			$e("span-message").innerHTML = null;
-		}, 5000);
 	}
 	
 	function add(adminId, adminName) {
@@ -155,6 +144,15 @@
 			$e("span-message").innerHTML = "Missing admin ID.";
 			clearMessage();
 		}
+	}
+	
+	var t;
+	
+	function clearMessage() {
+		clearTimeout(t);
+		t = setTimeout(function () {
+			$e("span-message").innerHTML = null;
+		}, 5000);
 	}
 </script>
 <style type="text/css">

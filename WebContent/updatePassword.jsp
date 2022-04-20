@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="checkSessionAdmin.jsp"%>
+<%@ include file="checkSession.jsp"%>
 
 
 <!DOCTYPE html>
@@ -27,7 +27,7 @@
 						var r = JSON.parse(this.responseText);
 						
 						if (r["ok"] === true) {
-							// ?
+							location.href = r["landing"];
 						} else {
 							if ("message" in r) {
 								$e("span-message").innerHTML = r["message"];
@@ -57,16 +57,21 @@
 				XHRequest("updatePassword", JSON.stringify(d));
 			} else {
 				$e("span-message").innerHTML = "Please confirm password.";
-				setTimeout(clearMessage, 5000);
+				clearMessage();
 			}
 		} else {
 			$e("span-message").innerHTML = "Please enter new password.";
-			setTimeout(clearMessage, 5000);
+			clearMessage();
 		}
 	}
 	
+	var t;
+	
 	function clearMessage() {
-		$e("span-message").innerHTML = null;
+		clearTimeout(t);
+		t = setTimeout(function () {
+			$e("span-login-message").innerHTML = null;
+		}, 5000);
 	}
 </script>
 <style type="text/css">
