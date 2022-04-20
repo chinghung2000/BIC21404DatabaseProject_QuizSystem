@@ -27,7 +27,7 @@
 						var r = JSON.parse(this.responseText);
 						
 						if (r["ok"] === true) {
-							loadUserInfo(r["result"]);
+							loadUserInfo(r);
 						} else {
 							if ("kickout" in r) {
 								location.href = "index.jsp";
