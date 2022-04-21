@@ -94,6 +94,13 @@ if (execute) {
 		workload.put("modified_by", "Ahmad Syahmi");
 		workload.put("modified_on", "21/4/2022 7:53:11 PM");
 		result.add(workload);
+		workload = new HashMap<String, Object>();
+		workload.put("workload_id", "3");
+		workload.put("lecturer_name", "Munirah Binti Mohd Yusof");
+		workload.put("subject_name", "Algorithm");
+		workload.put("modified_by", "Ahmad Syahmi");
+		workload.put("modified_on", "21/4/2022 7:53:11 PM");
+		result.add(workload);
 		
 		rc.put("result", result);
 		rc.put("ok", true);
