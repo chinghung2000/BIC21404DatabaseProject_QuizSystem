@@ -14,9 +14,9 @@
 		return element;
 	}
 	
-	function XHRequest(method, jsonString, async = true) {
+	function XHRequest(APIMethod, jsonString, {async = true, callback = null} = {}) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/" + method + ".jsp", async);
+		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 	
@@ -24,19 +24,19 @@
 			if (this.readyState === 4) {
 				switch (this.status) {
 					case 200:
-						var r = JSON.parse(this.responseText);
+						var rc = JSON.parse(this.responseText);
 						
-						if (r["ok"] === true) {
-							loadUserInfo(r);
-						} else {
-							if ("kickout" in r) {
-								location.href = "index.jsp";
+						if (rc["ok"] === true) {
+							if (callback != null) {
+								window[callback](rc);
 							}
-							
-							if ("message" in r) {
-								$e("span-message").innerHTML = r["message"];
+						} else {
+							if ("kickout" in rc) {
+								location.href = "index.jsp";
+							} else if ("message" in rc) {
+								$e("span-message").innerHTML = rc["message"];
 							} else {
-								$e("span-message").innerHTML = "Error " + r["error_code"] + ": " + r["description"];
+								$e("span-message").innerHTML = "Error " + rc["error_code"] + ": " + rc["description"];
 							}
 						}
 						
@@ -52,17 +52,17 @@
 	}
 	
 	function logout() {
-		XHRequest("logout", JSON.stringify({}), false);
+		XHRequest("logout", JSON.stringify({}), {async: false});
 		location.href = "index.jsp";
 	}
 	
-	function loadUserInfo(r = null) {
-		if (r == null) {
-			XHRequest("getUserInfo", JSON.stringify({}));
+	function loadUserInfo(rc = null) {
+		if (rc == null) {
+			XHRequest("getUserInfo", JSON.stringify({}), {callback: "loadUserInfo"});
 		} else {
-			$e("span-user-id").innerHTML = r["user_id"];
-			$e("span-welcome-name").innerHTML = $e("span-name").innerHTML = r["name"];
-			$e("span-email").innerHTML = r["email"];
+			$e("span-user-id").innerHTML = rc["user_id"];
+			$e("span-welcome-name").innerHTML = $e("span-name").innerHTML = rc["name"];
+			$e("span-email").innerHTML = rc["email"];
 		}
 	}
 </script>
@@ -137,8 +137,8 @@ button:hover {
 	<hr>
 	<div class="menu">
 		<a href="student.jsp"><button>Home</button></a>
-		<a href="registerSubject.jsp"><button>Register Subjects</button></a>
-		<a href="subject.jsp"><button>View Subjects</button></a>
+		<a href="registerSubjects.jsp"><button>Register Subjects</button></a>
+		<a href="viewSubjects.jsp"><button>View Subjects</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">

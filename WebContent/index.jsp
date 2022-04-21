@@ -19,9 +19,9 @@
 		return elements;
 	}
 
-	function XHRequest(method, jsonString, async = true) {
+	function XHRequest(APIMethod, jsonString, {async = true, callback = null} = {}) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/" + method + ".jsp", async);
+		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 
@@ -29,15 +29,21 @@
 			if (this.readyState === 4) {
 				switch (this.status) {
 					case 200:
-						var r = JSON.parse(this.responseText);
+						var rc = JSON.parse(this.responseText);
 						
-						if (r["ok"] === true) {
-							location.href = r["landing"];
+						if (rc["ok"] === true) {
+							location.href = rc["landing"];
+							
+							if (callback != null) {
+								window[callback](rc);
+							}
 						} else {
-							if ("message" in r) {
-								$e("span-login-message").innerHTML = r["message"];
+							if ("kickout" in rc) {
+								location.href = "index.jsp";
+							} else if ("message" in rc) {
+								$e("span-login-message").innerHTML = rc["message"];
 							} else {
-								$e("span-login-message").innerHTML = "Error " + r["error_code"] + ": " + r["description"];
+								$e("span-login-message").innerHTML = "Error " + rc["error_code"] + ": " + rc["description"];
 							}
 						}
 						

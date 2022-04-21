@@ -14,9 +14,9 @@
 		return element;
 	}
 	
-	function XHRequest(method, jsonString, async = true) {
+	function XHRequest(APIMethod, jsonString, {async = true, callback = null} = {}) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/" + method + ".jsp", async);
+		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(jsonString);
 	
@@ -24,15 +24,21 @@
 			if (this.readyState === 4) {
 				switch (this.status) {
 					case 200:
-						var r = JSON.parse(this.responseText);
+						var rc = JSON.parse(this.responseText);
 						
-						if (r["ok"] === true) {
+						if (rc["ok"] === true) {
 							// ?
+							
+							if (callback != null) {
+								window[callback](rc);
+							}
 						} else {
-							if ("message" in r) {
-								$e("span-message").innerHTML = r["message"];
+							if ("kickout" in rc) {
+								location.href = "index.jsp";
+							} else if ("message" in rc) {
+								$e("span-message").innerHTML = rc["message"];
 							} else {
-								$e("span-message").innerHTML = "Error " + r["error_code"] + ": " + r["description"];
+								$e("span-message").innerHTML = "Error " + rc["error_code"] + ": " + rc["description"];
 							}
 						}
 						
@@ -55,12 +61,17 @@
 			XHRequest("<method>", JSON.stringify(d));
 		} else {
 			$e("span-message").innerHTML = "Please enter ???.";
-			setTimeout(clearMessage, 5000);
+			clearMessage();
 		}
 	}
 	
+	var t;
+	
 	function clearMessage() {
-		$e("span-message").innerHTML = null;
+		clearTimeout(t);
+		t = setTimeout(function () {
+			$e("span-login-message").innerHTML = null;
+		}, 5000);
 	}
 </script>
 <style type="text/css">
