@@ -56,7 +56,7 @@
 		location.href = "index.jsp";
 	}
 	
-	function loadUserInfo(r = null) {
+	function loadUserInfo(rc = null) {
 		if (rc == null) {
 			XHRequest("getUserInfo", JSON.stringify({}), {callback: "loadUserInfo"});
 		} else {

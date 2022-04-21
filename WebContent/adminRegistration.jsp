@@ -60,8 +60,7 @@
 		if (rc == null) {
 			XHRequest("getUserInfo", JSON.stringify({}), {callback: "loadUserInfo"});
 		} else {
-			$e("span-user-id").innerHTML = r["user_id"];
-			$e("span-welcome-name").innerHTML = $e("span-name").innerHTML = r["name"];
+			$e("span-welcome-name").innerHTML = rc["name"];
 		}
 	}
 	
