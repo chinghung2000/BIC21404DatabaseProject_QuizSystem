@@ -93,7 +93,7 @@
 				cell.appendChild(btnUpdate);
 				cell = row.insertCell();
 				btnDelete = document.createElement("button");
-				btnDelete.innerHTML = "Remove";
+				btnDelete.innerHTML = "Delete";
 				btnDelete.setAttribute("onclick", "remove('" + r[i]["workload_id"] + "');");
 				cell.appendChild(btnDelete);
 			}
@@ -125,7 +125,7 @@
 				select.add(option);
 			}
 			
-			selectLecturer = select.cloneNode(true);
+			selectLecturer = select;
 		}
 	}
 	
@@ -146,7 +146,7 @@
 				select.add(option);
 			}
 			
-			selectSubject = select.cloneNode(true);
+			selectSubject = select;
 		}
 	}
 	
@@ -178,13 +178,13 @@
 			cell = row.cells[1];
 			var lecturerName = cell.innerHTML;
 	 		cell.removeChild(cell.childNodes[0]);
-	 		select = cell.appendChild(selectLecturer);
+	 		select = cell.appendChild(selectLecturer.cloneNode(true));
 			select.setAttribute("id", "select-lecturer-update");
 			select.value = rc["lecturer_id"];
 			cell = row.cells[2];
 			var subjectName = cell.innerHTML;
 	 		cell.removeChild(cell.childNodes[0]);
-	 		select = cell.appendChild(selectSubject);
+	 		select = cell.appendChild(selectSubject.cloneNode(true));
 			select.setAttribute("id", "select-subject-update");
 			select.value = rc["subject_id"];
 			cell = row.cells[5];
@@ -194,19 +194,27 @@
 			cell = row.cells[6];
 			button = cell.childNodes[0];
 			button.innerHTML = "Cancel";
-			button.setAttribute("onclick", "cancelEdit(this, '" + lecturerName + "', '" + subjectName + "');");
+			button.setAttribute("onclick", "cancelEdit(this, '" + rc["workload_id"] + "', '" + lecturerName + "', '" + subjectName + "');");
 		}
 	}
 	
-	function cancelEdit(e, lecturerName, subjectName) {
+	function cancelEdit(e, workloadId, lecturerName, subjectName) {
 		var row = e.parentNode.parentNode;
 		var cell;
 		cell = row.cells[1];
-		cell.removechild(cell.childNodes[0]);
+		cell.removeChild(cell.childNodes[0]);
 		cell.innerHTML = lecturerName;
 		cell = row.cells[2];
-		cell.removechild(cell.childNodes[0]);
+		cell.removeChild(cell.childNodes[0]);
 		cell.innerHTML = subjectName;
+		cell = row.cells[5];
+		button = cell.childNodes[0];
+		button.innerHTML = "Update";
+		button.setAttribute("onclick", "edit(null, this, '" + workloadId + "');");
+		cell = row.cells[6];
+		button = cell.childNodes[0];
+		button.innerHTML = "Delete";
+		button.setAttribute("onclick", "remove('" + workloadId + "');");
 	}
 	
 	function add(lecturerId, subjectId) {
