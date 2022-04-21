@@ -77,9 +77,9 @@
 			for (var i in r) {
 				row = tBody.insertRow();
 				cell = row.insertCell();
-				cell.innerHTML = i + 1;
+				cell.innerHTML = Number(i) + 1;
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["workload_name"];
+				cell.innerHTML = r[i]["lecturer_name"];
 				cell = row.insertCell();
 				cell.innerHTML = r[i]["subject_name"];
 				cell = row.insertCell();
@@ -89,7 +89,7 @@
 				cell = row.insertCell();
 				btnUpdate = document.createElement("button");
 				btnUpdate.innerHTML = "Update";
-				btnUpdate.setAttribute("onclick", "edit(this);");
+				btnUpdate.setAttribute("onclick", "edit(null, this, '" + r[i]["workload_id"] + "');");
 				cell.appendChild(btnUpdate);
 				cell = row.insertCell();
 				btnDelete = document.createElement("button");
@@ -108,6 +108,8 @@
 		}
 	}
 	
+	var selectLecturer;
+	
 	function loadSelectionLecturer(rc = null) {
 		if (rc == null) {
 			XHRequest("getAllLecturers", JSON.stringify({}), {callback: "loadSelectionLecturer"});
@@ -122,8 +124,12 @@
 				option.value = r[i]["lecturer_id"];
 				select.add(option);
 			}
+			
+			selectLecturer = select.cloneNode(true);
 		}
 	}
+	
+	var selectSubject;
 	
 	function loadSelectionSubject(rc = null) {
 		if (rc == null) {
@@ -139,13 +145,74 @@
 				option.value = r[i]["subject_id"];
 				select.add(option);
 			}
+			
+			selectSubject = select.cloneNode(true);
 		}
+	}
+	
+	function getWorkload(workloadId) {
+		if (workloadId != null) {
+			var d = {};
+			d["workload_id"] = workloadId;
+			
+			if (d["workload_id"] != "") {
+				XHRequest("getWorkload", JSON.stringify(d), {callback: "edit"});
+			} else {
+				$e("span-message").innerHTML = "Missing workload ID.";
+				clearMessage();
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	var element;
+	
+	function edit(rc = null, e = null, workloadId = null) {
+		if (rc == null) {
+			element = e;
+			getWorkload(workloadId);
+		} else {
+			var row = element.parentNode.parentNode;
+			var cell, select, button;
+			cell = row.cells[1];
+			var lecturerName = cell.innerHTML;
+	 		cell.removeChild(cell.childNodes[0]);
+	 		select = cell.appendChild(selectLecturer);
+			select.setAttribute("id", "select-lecturer-update");
+			select.value = rc["lecturer_id"];
+			cell = row.cells[2];
+			var subjectName = cell.innerHTML;
+	 		cell.removeChild(cell.childNodes[0]);
+	 		select = cell.appendChild(selectSubject);
+			select.setAttribute("id", "select-subject-update");
+			select.value = rc["subject_id"];
+			cell = row.cells[5];
+			button = cell.childNodes[0];
+			button.innerHTML = "Done";
+			button.setAttribute("onclick", "update('" + rc["workload_id"] + "', $e('select-lecturer-update').value, $e('select-subject-update'));");
+			cell = row.cells[6];
+			button = cell.childNodes[0];
+			button.innerHTML = "Cancel";
+			button.setAttribute("onclick", "cancelEdit(this, '" + lecturerName + "', '" + subjectName + "');");
+		}
+	}
+	
+	function cancelEdit(e, lecturerName, subjectName) {
+		var row = e.parentNode.parentNode;
+		var cell;
+		cell = row.cells[1];
+		cell.removechild(cell.childNodes[0]);
+		cell.innerHTML = lecturerName;
+		cell = row.cells[2];
+		cell.removechild(cell.childNodes[0]);
+		cell.innerHTML = subjectName;
 	}
 	
 	function add(lecturerId, subjectId) {
 		var d = {};
-		d["lecturer_id"] = subjectId;
-		d["subject_id"] = subjectName;
+		d["lecturer_id"] = lecturerId;
+		d["subject_id"] = subjectId;
 		
 		if (d["lecturer_id"] != "") {
 			if (d["subject_id"] != "") {
@@ -159,10 +226,6 @@
 			$e("span-message").innerHTML = "Please choose a lecturer.";
 			clearMessage();
 		}
-	}
-	
-	function edit() {
-		
 	}
 	
 	function update(workloadId, lecturerId, subjectId) {
