@@ -14,7 +14,7 @@
 		return element;
 	}
 	
-	function XHRequest(APIMethod, jsonString, {async = true, callback = null} = {}) {
+	function XHRequest(APIMethod, jsonString, {async = true, callback = null, nextCall = null} = {}) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
 		xhttp.setRequestHeader("Content-Type", "application/json");
@@ -29,9 +29,7 @@
 						if (rc["ok"] === true) {
 							location.href = rc["landing"];
 							
-							if (callback != null) {
-								window[callback](rc);
-							}
+							if (callback != null) window[callback](rc);
 						} else {
 							if ("kickout" in rc) {
 								location.href = "index.jsp";
@@ -50,6 +48,8 @@
 						alert("Request failed. " + this.statusText + "Error Code: " + this.status);
 				}
 			}
+			
+			if (nextCall != null) window[nextCall]();
 		}
 	}
 	

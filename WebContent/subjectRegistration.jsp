@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Admin Registration</title>
+<title>Subject Registration</title>
 <script type="text/javascript">
 	function $e(id) {
 		var element = document.getElementById(id);
@@ -66,7 +66,7 @@
 	
 	function loadTable(rc = null) {
 		if (rc == null) {
-			XHRequest("getAllAdmins", JSON.stringify({}), {callback: "loadTable"});
+			XHRequest("getAllSubjects", JSON.stringify({}), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
@@ -77,18 +77,22 @@
 			for (var i in r) {
 				row = tBody.insertRow();
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["admin_id"];
+				cell.innerHTML = r[i]["subject_id"];
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["admin_name"];
+				cell.innerHTML = r[i]["subject_name"];
+				cell = row.insertCell();
+				cell.innerHTML = r[i]["modified_by"];
+				cell = row.insertCell();
+				cell.innerHTML = r[i]["modified_on"];
 				cell = row.insertCell();
 				var btnUpdate = document.createElement("button");
 				btnUpdate.innerHTML = "Update";
-				btnUpdate.setAttribute("onclick", "update('" + r[i]["admin_id"] + "', '" + r[i]["admin_name"] + "');");
+				btnUpdate.setAttribute("onclick", "update('" + r[i]["subject_id"] + "', '" + r[i]["subject_name"] + "');");
 				cell.appendChild(btnUpdate);
 				cell = row.insertCell();
 				var btnDelete = document.createElement("button");
 				btnDelete.innerHTML = "Remove";
-				btnDelete.setAttribute("onclick", "remove('" + r[i]["admin_id"] + "');");
+				btnDelete.setAttribute("onclick", "remove('" + r[i]["subject_id"] + "');");
 				cell.appendChild(btnDelete);
 			}
 		}
@@ -102,53 +106,53 @@
 		}
 	}
 	
-	function add(adminId, adminName) {
+	function add(subjectId, subjectName) {
 		var d = {};
-		d["admin_id"] = adminId;
-		d["admin_name"] = adminName;
+		d["subject_id"] = subjectId;
+		d["subject_name"] = subjectName;
 		
-		if (d["admin_id"] != "") {
-			if (d["admin_name"] != "") {
-				XHRequest("addAdmin", JSON.stringify(d));
+		if (d["subject_id"] != "") {
+			if (d["subject_name"] != "") {
+				XHRequest("addSubject", JSON.stringify(d));
 				loadTable();
 			} else {
-				$e("span-message").innerHTML = "Please enter admin name.";
+				$e("span-message").innerHTML = "Please enter subject name.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Please enter admin ID.";
+			$e("span-message").innerHTML = "Please enter subject ID.";
 			clearMessage();
 		}
 	}
 	
-	function update(adminId, adminName) {
+	function update(subjectId, subjectName) {
 		var d = {};
-		d["admin_id"] = adminId;
-		d["admin_name"] = adminName;
+		d["subject_id"] = subjectId;
+		d["subject_name"] = subjectName;
 		
-		if (d["admin_id"] != "") {
-			if (d["admin_name"] != "") {
-				XHRequest("updateAdmin", JSON.stringify(d));
+		if (d["subject_id"] != "") {
+			if (d["subject_name"] != "") {
+				XHRequest("updateSubject", JSON.stringify(d));
 				loadTable();
 			} else {
-				$e("span-message").innerHTML = "Missing admin name.";
+				$e("span-message").innerHTML = "Missing subject name.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Missing admin ID.";
+			$e("span-message").innerHTML = "Missing subject ID.";
 			clearMessage();
 		}
 	}
 	
-	function remove(adminId) {
+	function remove(subjectId) {
 		var d = {};
-		d["admin_id"] = adminId;
+		d["subject_id"] = subjectId;
 		
-		if (d["admin_id"] != "") {
-			XHRequest("deleteAdmin", JSON.stringify(d));
+		if (d["subject_id"] != "") {
+			XHRequest("deleteSubject", JSON.stringify(d));
 			loadTable();
 		} else {
-			$e("span-message").innerHTML = "Missing admin ID.";
+			$e("span-message").innerHTML = "Missing subject ID.";
 			clearMessage();
 		}
 	}
@@ -283,7 +287,7 @@ button:hover {
 	</div>
 	<div class="container">
 		<div class="title">
-			<span class="title">Admin Registration</span>
+			<span class="title">Subject Registration</span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
@@ -292,8 +296,10 @@ button:hover {
 			<table id="list" border="1">
 				<thead>
 					<tr>
-						<th>Admin ID</th>
-						<th>Admin Name</th>
+						<th>Subject ID</th>
+						<th>Subject Name</th>
+						<th>Modified By</th>
+						<th>Modified On</th>
 						<th>Update</th>
 						<th>Delete</th>
 					</tr>
@@ -301,9 +307,11 @@ button:hover {
 				<tbody></tbody>
 				<tfoot>
 					<tr>
-						<td><input type="text" id="input-admin-id" maxlength="6"></td>
-						<td><input type="text" id="input-admin-name" style="width: 300px;" maxlength="50"></td>
-						<td><button onclick="add($e('input-admin-id').value, $e('input-admin-name').value);">ADD</button></td>
+						<td><input type="text" id="input-subject-id" maxlength="6"></td>
+						<td><input type="text" id="input-subject-name" style="width: 300px;" maxlength="50"></td>
+						<td></td>
+						<td></td>
+						<td><button onclick="add($e('input-subject-id').value, $e('input-subject-name').value);">ADD</button></td>
 					</tr>
 				</tfoot>
 			</table>
