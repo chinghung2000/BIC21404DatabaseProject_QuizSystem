@@ -18,8 +18,7 @@ public class DatabaseManager {
 		this.query = query;
 
 		try {
-			this.pstmt = this.connection.prepareStatement(this.query, ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
+			this.pstmt = this.connection.prepareStatement(this.query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			System.out.println("DatabaseManager: Preparing SQL query: \"" + this.query + "\"...");
 			int i = 1;
 
