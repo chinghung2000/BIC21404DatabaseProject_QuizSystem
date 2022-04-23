@@ -86,6 +86,7 @@ if (execute) {
 		subject.put("modified_by", "Ahmad Syahmi");
 		subject.put("modified_on", "21/4/2022 7:51:23 PM");
 		result.add(subject);
+		
 		subject = new HashMap<String, Object>();
 		subject.put("subject_id", "BIC10204");
 		subject.put("subject_name", "Algorithm");

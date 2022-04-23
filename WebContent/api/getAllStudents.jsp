@@ -79,36 +79,30 @@ if (execute) {
 	// parent if clause for call backend result (to-be)
 	if (true) {
 		ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-		HashMap<String, Object> workload = new HashMap<String, Object>();
+		HashMap<String, Object> student = new HashMap<String, Object>();
 		
-		workload.put("workload_id", "1");
-		workload.put("lecturer_id", "1");
-		workload.put("lecturer_name", "Chuah Chai Wen");
-		workload.put("subject_id", "BIC10303");
-		workload.put("subject_name", "Algebra");
-		workload.put("modified_by", "Ahmad Syahmi");
-		workload.put("modified_on", "21/4/2022 7:51:23 PM");
-		result.add(workload);
+		student.put("student_id", "AI200261");
+		student.put("student_name", "Kee Xue Nie");
+		student.put("student_email", "ai200261@siswa.uthm.edu.my");
+		student.put("modified_by", "Ahmad Syahmi");
+		student.put("modified_on", "21/4/2022 7:51:23 PM");
+		result.add(student);
 		
-		workload = new HashMap<String, Object>();
-		workload.put("workload_id", "2");
-		workload.put("lecturer_id", "2");
-		workload.put("lecturer_name", "Munirah Binti Mohd Yusof");
-		workload.put("subject_id", "BIC10303");
-		workload.put("subject_name", "Algebra");
-		workload.put("modified_by", "Ahmad Syahmi");
-		workload.put("modified_on", "21/4/2022 7:53:11 PM");
-		result.add(workload);
+		student = new HashMap<String, Object>();
+		student.put("student_id", "AI200263");
+		student.put("student_name", "Tan Ching Hung");
+		student.put("student_email", "ai200263@siswa.uthm.edu.my");
+		student.put("modified_by", "Ahmad Syahmi");
+		student.put("modified_on", "21/4/2022 7:53:11 PM");
+		result.add(student);
 		
-		workload = new HashMap<String, Object>();
-		workload.put("workload_id", "3");
-		workload.put("lecturer_id", "2");
-		workload.put("lecturer_name", "Munirah Binti Mohd Yusof");
-		workload.put("subject_id", "BIC10204");
-		workload.put("subject_name", "Algorithm");
-		workload.put("modified_by", "Ahmad Syahmi");
-		workload.put("modified_on", "21/4/2022 7:59:10 PM");
-		result.add(workload);
+		student = new HashMap<String, Object>();
+		student.put("student_id", "AI200301");
+		student.put("student_name", "Chong Zhi Qi");
+		student.put("student_email", "ai200301@siswa.uthm.edu.my");
+		student.put("modified_by", "Ahmad Syahmi");
+		student.put("modified_on", "21/4/2022 7:56:79 PM");
+		result.add(student);
 		
 		rc.put("result", result);
 		rc.put("ok", true);

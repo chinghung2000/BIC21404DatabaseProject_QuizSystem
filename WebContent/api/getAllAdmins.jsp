@@ -84,6 +84,7 @@ if (execute) {
 		admin.put("admin_id", "1");
 		admin.put("admin_name", "Ahmad Syahmi");
 		result.add(admin);
+		
 		admin = new HashMap<String, Object>();
 		admin.put("admin_id", "2");
 		admin.put("admin_name", "Muhammad Arif");

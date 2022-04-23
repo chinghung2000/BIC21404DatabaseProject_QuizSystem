@@ -86,6 +86,7 @@ if (execute) {
 		lecturer.put("modified_by", "Ahmad Syahmi");
 		lecturer.put("modified_on", "21/4/2022 7:51:23 PM");
 		result.add(lecturer);
+		
 		lecturer = new HashMap<String, Object>();
 		lecturer.put("lecturer_id", "2");
 		lecturer.put("lecturer_name", "Munirah Binti Mohd Yusof");
