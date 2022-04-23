@@ -82,21 +82,27 @@ if (execute) {
 		HashMap<String, Object> workload = new HashMap<String, Object>();
 		
 		workload.put("workload_id", "1");
+		workload.put("lecturer_id", "1");
 		workload.put("lecturer_name", "Chuah Chai Wen");
+		workload.put("subject_id", "BIC10303");
 		workload.put("subject_name", "Algebra");
 		workload.put("modified_by", "Ahmad Syahmi");
 		workload.put("modified_on", "21/4/2022 7:51:23 PM");
 		result.add(workload);
 		workload = new HashMap<String, Object>();
 		workload.put("workload_id", "2");
+		workload.put("lecturer_id", "2");
 		workload.put("lecturer_name", "Munirah Binti Mohd Yusof");
+		workload.put("subject_id", "BIC10303");
 		workload.put("subject_name", "Algebra");
 		workload.put("modified_by", "Ahmad Syahmi");
 		workload.put("modified_on", "21/4/2022 7:53:11 PM");
 		result.add(workload);
 		workload = new HashMap<String, Object>();
 		workload.put("workload_id", "3");
+		workload.put("lecturer_id", "2");
 		workload.put("lecturer_name", "Munirah Binti Mohd Yusof");
+		workload.put("subject_id", "BIC10204");
 		workload.put("subject_name", "Algorithm");
 		workload.put("modified_by", "Ahmad Syahmi");
 		workload.put("modified_on", "21/4/2022 7:53:11 PM");
