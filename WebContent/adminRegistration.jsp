@@ -72,24 +72,34 @@
 			
 			var r = rc["result"]; 
 			var tBody = $e("list").tBodies[0];
-			var row, cell;
+			var row, cell, span, button;
 			
 			for (var i in r) {
 				row = tBody.insertRow();
+				
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["admin_id"];
+				span = document.createElement("span");
+				span.innerHTML = r[i]["admin_id"];
+				span.setAttribute("style", "display: block;");
+				cell.appendChild(span);
+				
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["admin_name"];
+				span = document.createElement("span");
+				span.innerHTML = r[i]["admin_name"];
+				span.setAttribute("style", "display: block;");
+				cell.appendChild(span);
+				
 				cell = row.insertCell();
-				var btnUpdate = document.createElement("button");
-				btnUpdate.innerHTML = "Update";
-				btnUpdate.setAttribute("onclick", "update('" + r[i]["admin_id"] + "', '" + r[i]["admin_name"] + "');");
-				cell.appendChild(btnUpdate);
+				button = document.createElement("button");
+				button.innerHTML = "Update";
+				button.setAttribute("onclick", "edit(this, '" + r[i]["admin_id"] + "');");
+				cell.appendChild(button);
+				
 				cell = row.insertCell();
-				var btnDelete = document.createElement("button");
-				btnDelete.innerHTML = "Remove";
-				btnDelete.setAttribute("onclick", "remove('" + r[i]["admin_id"] + "');");
-				cell.appendChild(btnDelete);
+				button = document.createElement("button");
+				button.innerHTML = "Delete";
+				button.setAttribute("onclick", "remove('" + r[i]["admin_id"] + "');");
+				cell.appendChild(button);
 			}
 		}
 	}
@@ -97,8 +107,8 @@
 	function clearTable() {
 		var tBody = $e("list").tBodies[0];
 		
-		for (var i = 0; i < tBody.rows.length; i++) {
-			tBody.deleteRow();
+		for (var i = tBody.rows.length; i > 0; i--) {
+			tBody.deleteRow(0);
 		}
 	}
 	
@@ -151,6 +161,62 @@
 			$e("span-message").innerHTML = "Missing admin ID.";
 			clearMessage();
 		}
+	}
+	
+	function edit(element, adminId) {
+		var row = element.parentNode.parentNode;
+		var cell, input, button;
+		
+		cell = row.cells[0];
+		span = cell.childNodes[0];
+		span.style.display = "none";
+		input = document.createElement("input");
+		input.type = "text";
+		input.setAttribute("id", "input-admin-id-update");
+		input.value = span.innerHTML;
+		cell.appendChild(input);
+		
+		cell = row.cells[1];
+		span = cell.childNodes[0];
+		span.style.display = "none";
+		input = document.createElement("input");
+		input.type = "text";
+		input.setAttribute("id", "input-admin-name-update");
+		input.value = span.innerHTML;
+		cell.appendChild(input);
+		
+		cell = row.cells[2];
+		button = cell.childNodes[0];
+		button.innerHTML = "Done";
+		button.setAttribute("onclick", "update($e('input-admin-id-update').value, $e('input-admin-name-update').value);");
+		
+		cell = row.cells[3];
+		button = cell.childNodes[0];
+		button.innerHTML = "Cancel";
+		button.setAttribute("onclick", "cancelEdit(this, '" + adminId + "');");
+	}
+	
+	function cancelEdit(element, adminId) {
+		var row = element.parentNode.parentNode;
+		var cell;
+		
+		cell = row.cells[0];
+		cell.childNodes[0].style.display = "block";
+		cell.removeChild(cell.childNodes[1]);
+		
+		cell = row.cells[1];
+		cell.childNodes[0].style.display = "block";
+		cell.removeChild(cell.childNodes[1]);
+		
+		cell = row.cells[2];
+		button = cell.childNodes[0];
+		button.innerHTML = "Update";
+		button.setAttribute("onclick", "edit(this, '" + adminId + "');");
+		
+		cell = row.cells[3];
+		button = cell.childNodes[0];
+		button.innerHTML = "Delete";
+		button.setAttribute("onclick", "remove('" + adminId + "');");
 	}
 	
 	var t;
