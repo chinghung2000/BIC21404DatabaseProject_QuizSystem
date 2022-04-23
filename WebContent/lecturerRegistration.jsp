@@ -147,11 +147,11 @@
 				XHRequest("updateLecturer", JSON.stringify(d));
 				loadTable();
 			} else {
-				$e("span-message").innerHTML = "Missing lecturer name.";
+				$e("span-message").innerHTML = "Please enter lecturer name.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Missing lecturer ID.";
+			$e("span-message").innerHTML = "Please enter lecturer ID.";
 			clearMessage();
 		}
 	}
@@ -161,7 +161,7 @@
 		d["lecturer_id"] = lecturerId;
 		
 		if (d["lecturer_id"] != "") {
-			XHRequest("deleteAdmin", JSON.stringify(d));
+			XHRequest("deleteLecturer", JSON.stringify(d));
 			loadTable();
 		} else {
 			$e("span-message").innerHTML = "Missing lecturer ID.";
@@ -178,7 +178,6 @@
 		span.style.display = "none";
 		input = document.createElement("input");
 		input.type = "text";
-		input.setAttribute("id", "input-lecturer-id-update");
 		input.value = span.innerHTML;
 		cell.appendChild(input);
 		
@@ -187,14 +186,14 @@
 		span.style.display = "none";
 		input = document.createElement("input");
 		input.type = "text";
-		input.setAttribute("id", "input-lecturer-name-update");
 		input.value = span.innerHTML;
 		cell.appendChild(input);
 		
 		cell = row.cells[4];
 		button = cell.childNodes[0];
 		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update($e('input-lecturer-id-update').value, $e('input-lecturer-name-update').value);");
+		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
+				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
 		
 		cell = row.cells[5];
 		button = cell.childNodes[0];

@@ -72,45 +72,30 @@
 			
 			var r = rc["result"]; 
 			var tBody = $e("list").tBodies[0];
-			var row, cell, span, button;
+			var row, cell, btnUpdate, btnDelete;
 			
 			for (var i in r) {
 				row = tBody.insertRow();
-				
 				cell = row.insertCell();
 				cell.innerHTML = Number(i) + 1;
-				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["lecturer_name"];
-				span.setAttribute("style", "display: block;");
-				span.setAttribute("data-lecturer-id", r[i]["lecturer_id"]);
-				cell.appendChild(span);
-				
+				cell.innerHTML = r[i]["lecturer_name"];
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["subject_name"];
-				span.setAttribute("style", "display: block;");
-				span.setAttribute("data-subject-id", r[i]["subject_id"]);
-				cell.appendChild(span);
-				
+				cell.innerHTML = r[i]["subject_name"];
 				cell = row.insertCell();
 				cell.innerHTML = r[i]["modified_by"];
-				
 				cell = row.insertCell();
 				cell.innerHTML = r[i]["modified_on"];
-				
 				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Update";
-				button.setAttribute("onclick", "edit(this, '" + r[i]["workload_id"] + "');");
-				cell.appendChild(button);
-				
+				btnUpdate = document.createElement("button");
+				btnUpdate.innerHTML = "Update";
+				btnUpdate.setAttribute("onclick", "edit(null, this, '" + r[i]["workload_id"] + "');");
+				cell.appendChild(btnUpdate);
 				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Delete";
-				button.setAttribute("onclick", "remove('" + r[i]["workload_id"] + "');");
-				cell.appendChild(button);
+				btnDelete = document.createElement("button");
+				btnDelete.innerHTML = "Delete";
+				btnDelete.setAttribute("onclick", "remove('" + r[i]["workload_id"] + "');");
+				cell.appendChild(btnDelete);
 			}
 		}
 	}
@@ -118,8 +103,8 @@
 	function clearTable() {
 		var tBody = $e("list").tBodies[0];
 		
-		for (var i = tBody.rows.length; i > 0; i--) {
-			tBody.deleteRow(0);
+		for (var i = 0; i < tBody.rows.length; i++) {
+			tBody.deleteRow();
 		}
 	}
 	
@@ -163,6 +148,73 @@
 			
 			selectSubject = select;
 		}
+	}
+	
+	function getWorkload(workloadId) {
+		if (workloadId != null) {
+			var d = {};
+			d["workload_id"] = workloadId;
+			
+			if (d["workload_id"] != "") {
+				XHRequest("getWorkload", JSON.stringify(d), {callback: "edit"});
+			} else {
+				$e("span-message").innerHTML = "Missing workload ID.";
+				clearMessage();
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	var element;
+	
+	function edit(rc = null, e = null, workloadId = null) {
+		if (rc == null) {
+			element = e;
+			getWorkload(workloadId);
+		} else {
+			var row = element.parentNode.parentNode;
+			var cell, select, button;
+			cell = row.cells[1];
+			var lecturerName = cell.innerHTML;
+	 		cell.removeChild(cell.childNodes[0]);
+	 		select = cell.appendChild(selectLecturer.cloneNode(true));
+			select.setAttribute("id", "select-lecturer-update");
+			select.value = rc["lecturer_id"];
+			cell = row.cells[2];
+			var subjectName = cell.innerHTML;
+	 		cell.removeChild(cell.childNodes[0]);
+	 		select = cell.appendChild(selectSubject.cloneNode(true));
+			select.setAttribute("id", "select-subject-update");
+			select.value = rc["subject_id"];
+			cell = row.cells[5];
+			button = cell.childNodes[0];
+			button.innerHTML = "Done";
+			button.setAttribute("onclick", "update('" + rc["workload_id"] + "', $e('select-lecturer-update').value, $e('select-subject-update'));");
+			cell = row.cells[6];
+			button = cell.childNodes[0];
+			button.innerHTML = "Cancel";
+			button.setAttribute("onclick", "cancelEdit(this, '" + rc["workload_id"] + "', '" + lecturerName + "', '" + subjectName + "');");
+		}
+	}
+	
+	function cancelEdit(e, workloadId, lecturerName, subjectName) {
+		var row = e.parentNode.parentNode;
+		var cell;
+		cell = row.cells[1];
+		cell.removeChild(cell.childNodes[0]);
+		cell.innerHTML = lecturerName;
+		cell = row.cells[2];
+		cell.removeChild(cell.childNodes[0]);
+		cell.innerHTML = subjectName;
+		cell = row.cells[5];
+		button = cell.childNodes[0];
+		button.innerHTML = "Update";
+		button.setAttribute("onclick", "edit(null, this, '" + workloadId + "');");
+		cell = row.cells[6];
+		button = cell.childNodes[0];
+		button.innerHTML = "Delete";
+		button.setAttribute("onclick", "remove('" + workloadId + "');");
 	}
 	
 	function add(lecturerId, subjectId) {
@@ -220,58 +272,6 @@
 			$e("span-message").innerHTML = "Missing workload ID.";
 			clearMessage();
 		}
-	}
-	
-	function edit(element, workloadId) {
-		var row = element.parentNode.parentNode;
-		var cell, select, button;
-		
-		cell = row.cells[1];
-		span = cell.childNodes[0];
-		span.style.display = "none";
- 		select = cell.appendChild(selectLecturer.cloneNode(true));
-		select.value = span.getAttribute("data-lecturer-id");
-		
-		cell = row.cells[2];
-		span = cell.childNodes[0];
-		span.style.display = "none";
- 		select = cell.appendChild(selectSubject.cloneNode(true));
-		select.value = span.getAttribute("data-subject-id");
-		
-		cell = row.cells[5];
-		button = cell.childNodes[0];
-		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update('" + workloadId + "', "
-				+ "this.parentNode.parentNode.cells[1].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[2].childNodes[1].value);");
-		
-		cell = row.cells[6];
-		button = cell.childNodes[0];
-		button.innerHTML = "Cancel";
-		button.setAttribute("onclick", "cancelEdit(this, '" + workloadId + "');");
-	}
-	
-	function cancelEdit(element, workloadId) {
-		var row = element.parentNode.parentNode;
-		var cell;
-		
-		cell = row.cells[1];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[2];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[5];
-		button = cell.childNodes[0];
-		button.innerHTML = "Update";
-		button.setAttribute("onclick", "edit(this, '" + workloadId + "');");
-		
-		cell = row.cells[6];
-		button = cell.childNodes[0];
-		button.innerHTML = "Delete";
-		button.setAttribute("onclick", "remove('" + workloadId + "');");
 	}
 	
 	var t;
@@ -365,7 +365,7 @@ input[type=text]:hover, [type=password]:hover {
 }
 
 select {
-	min-width: 200px;
+	width: 200px;
 	font-family: verdana;
 	font-size: 16px;
 }

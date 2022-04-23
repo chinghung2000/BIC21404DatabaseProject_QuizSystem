@@ -141,11 +141,11 @@
 				XHRequest("updateAdmin", JSON.stringify(d));
 				loadTable();
 			} else {
-				$e("span-message").innerHTML = "Missing admin name.";
+				$e("span-message").innerHTML = "Please enter admin name.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Missing admin ID.";
+			$e("span-message").innerHTML = "Please enter admin ID.";
 			clearMessage();
 		}
 	}
@@ -172,7 +172,6 @@
 		span.style.display = "none";
 		input = document.createElement("input");
 		input.type = "text";
-		input.setAttribute("id", "input-admin-id-update");
 		input.value = span.innerHTML;
 		cell.appendChild(input);
 		
@@ -181,14 +180,14 @@
 		span.style.display = "none";
 		input = document.createElement("input");
 		input.type = "text";
-		input.setAttribute("id", "input-admin-name-update");
 		input.value = span.innerHTML;
 		cell.appendChild(input);
 		
 		cell = row.cells[2];
 		button = cell.childNodes[0];
 		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update($e('input-admin-id-update').value, $e('input-admin-name-update').value);");
+		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
+				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
 		
 		cell = row.cells[3];
 		button = cell.childNodes[0];
