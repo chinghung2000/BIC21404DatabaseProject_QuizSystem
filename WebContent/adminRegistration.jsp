@@ -343,7 +343,7 @@ button:hover {
 		<a href="subjectRegistration.jsp"><button>Subject Registration</button></a>
 		<a href="workloadRegistration.jsp"><button>Workload Registration</button></a>
 		<a href="studentRegistration.jsp"><button>Student Registration</button></a>
-		<a href="log.jsp"><button>View Log</button></a>
+		<a href="viewLog.jsp"><button>View Log</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">

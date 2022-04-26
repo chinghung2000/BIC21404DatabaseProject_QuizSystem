@@ -136,7 +136,7 @@ button:hover {
 	<hr>
 	<div class="menu">
 		<a href="lecturer.jsp"><button>Home</button></a>
-		<a href="workloads.jsp"><button>View Workload</button></a>
+		<a href="viewWorkloads.jsp"><button>View Workloads</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">

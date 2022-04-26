@@ -367,7 +367,7 @@ button:hover {
 		<a href="subjectRegistration.jsp"><button>Subject Registration</button></a>
 		<a href="workloadRegistration.jsp"><button>Workload Registration</button></a>
 		<a href="studentRegistration.jsp"><button>Student Registration</button></a>
-		<a href="log.jsp"><button>View Log</button></a>
+		<a href="viewLog.jsp"><button>View Log</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">
@@ -393,12 +393,12 @@ button:hover {
 				<tbody></tbody>
 				<tfoot>
 					<tr>
-						<td><input type="text" id="input-subject-id" maxlength="6"></td>
-						<td><input type="text" id="input-subject-name" style="width: 300px;" maxlength="50"></td>
+						<td><input type="text" id="input-student-id" maxlength="8"></td>
+						<td><input type="text" id="input-student-name" style="width: 300px;" maxlength="50"></td>
 						<td></td>
 						<td></td>
 						<td></td>
-						<td><button onclick="add($e('input-subject-id').value, $e('input-subject-name').value);">ADD</button></td>
+						<td><button onclick="add($e('input-student-id').value, $e('input-student-name').value);">ADD</button></td>
 					</tr>
 				</tfoot>
 			</table>

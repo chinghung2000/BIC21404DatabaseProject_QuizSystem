@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Subject Registration</title>
+<title>System Log</title>
 <script type="text/javascript">
 	function $e(id) {
 		var element = document.getElementById(id);
@@ -66,7 +66,7 @@
 	
 	function loadTable(rc = null) {
 		if (rc == null) {
-			XHRequest("getAllSubjects", JSON.stringify({}), {callback: "loadTable"});
+			XHRequest("getAllLogs", JSON.stringify({}), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
@@ -78,34 +78,10 @@
 				row = tBody.insertRow();
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["subject_id"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = Number(i) + 1;
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["subject_name"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
-				
-				cell = row.insertCell();
-				cell.innerHTML = r[i]["modified_by"];
-				
-				cell = row.insertCell();
-				cell.innerHTML = r[i]["modified_on"];
-				
-				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Update";
-				button.setAttribute("onclick", "edit(this, '" + r[i]["subject_id"] + "');");
-				cell.appendChild(button);
-				
-				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Delete";
-				button.setAttribute("onclick", "remove('" + r[i]["subject_id"] + "');");
-				cell.appendChild(button);
+				cell.innerHTML = r[i]["description"];
 			}
 		}
 	}
@@ -118,110 +94,11 @@
 		}
 	}
 	
-	function add(subjectId, subjectName) {
+	function loadByType(type) {
 		var d = {};
-		d["subject_id"] = subjectId;
-		d["subject_name"] = subjectName;
+		d["type"] = type;
 		
-		if (d["subject_id"] != "") {
-			if (d["subject_name"] != "") {
-				XHRequest("addSubject", JSON.stringify(d));
-				loadTable();
-			} else {
-				$e("span-message").innerHTML = "Please enter subject name.";
-				clearMessage();
-			}
-		} else {
-			$e("span-message").innerHTML = "Please enter subject ID.";
-			clearMessage();
-		}
-	}
-	
-	function update(subjectId, subjectName) {
-		var d = {};
-		d["subject_id"] = subjectId;
-		d["subject_name"] = subjectName;
-		
-		if (d["subject_id"] != "") {
-			if (d["subject_name"] != "") {
-				XHRequest("updateSubject", JSON.stringify(d));
-				loadTable();
-			} else {
-				$e("span-message").innerHTML = "Please enter subject name.";
-				clearMessage();
-			}
-		} else {
-			$e("span-message").innerHTML = "Please enter subject ID.";
-			clearMessage();
-		}
-	}
-	
-	function remove(subjectId) {
-		var d = {};
-		d["subject_id"] = subjectId;
-		
-		if (d["subject_id"] != "") {
-			XHRequest("deleteSubject", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing subject ID.";
-			clearMessage();
-		}
-	}
-	
-	function edit(element, subjectId) {
-		var row = element.parentNode.parentNode;
-		var cell, input, button;
-		
-		cell = row.cells[0];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[1];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[4];
-		button = cell.childNodes[0];
-		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
-		
-		cell = row.cells[5];
-		button = cell.childNodes[0];
-		button.innerHTML = "Cancel";
-		button.setAttribute("onclick", "cancelEdit(this, '" + subjectId + "');");
-	}
-	
-	function cancelEdit(element, subjectId) {
-		var row = element.parentNode.parentNode;
-		var cell;
-		
-		cell = row.cells[0];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[1];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[4];
-		button = cell.childNodes[0];
-		button.innerHTML = "Update";
-		button.setAttribute("onclick", "edit(this, '" + subjectId + "');");
-		
-		cell = row.cells[5];
-		button = cell.childNodes[0];
-		button.innerHTML = "Delete";
-		button.setAttribute("onclick", "remove('" + subjectId + "');");
+		XHRequest("getAllLogs", JSON.stringify(d), {callback: "loadTable"});
 	}
 	
 	var t;
@@ -354,7 +231,7 @@ button:hover {
 	</div>
 	<div class="container">
 		<div class="title">
-			<span class="title">Subject Registration</span>
+			<span class="title">System Log</span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
@@ -363,24 +240,11 @@ button:hover {
 			<table id="list" border="1">
 				<thead>
 					<tr>
-						<th>Subject ID</th>
-						<th>Subject Name</th>
-						<th>Modified By</th>
-						<th>Modified On</th>
-						<th>Update</th>
-						<th>Delete</th>
+						<th>No</th>
+						<th>Description</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
-				<tfoot>
-					<tr>
-						<td><input type="text" id="input-subject-id" maxlength="8"></td>
-						<td><input type="text" id="input-subject-name" style="width: 300px;" maxlength="50"></td>
-						<td></td>
-						<td></td>
-						<td><button onclick="add($e('input-subject-id').value, $e('input-subject-name').value);">ADD</button></td>
-					</tr>
-				</tfoot>
 			</table>
 		</div>
 	</div>
