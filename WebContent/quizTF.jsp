@@ -73,7 +73,7 @@
 	function loadTable(rc = null) {
 		if (rc == null) {
 			var d = {};
-			d["subject_id"] = "<% out.println(request.getParameter("subject_id")); %>";
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 			
 			XHRequest("getAllQuizTF", JSON.stringify(d), {callback: "loadTable"});
 		} else {
@@ -317,6 +317,12 @@ input[type=text], [type=password] {
 
 input[type=text]:hover, [type=password]:hover {
 	outline: 1px solid;
+}
+
+input[type=checkbox] {
+	height: 20px;
+	width: 20px;
+	cursor: pointer;
 }
 
 div.button {
