@@ -18,7 +18,6 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
 		xhttp.setRequestHeader("Content-Type", "application/json");
-		xhttp.send(jsonString);
 	
 		xhttp.onreadystatechange = function() {
 			if (this.readyState === 4) {
@@ -27,8 +26,6 @@
 						var rc = JSON.parse(this.responseText);
 						
 						if (rc["ok"] === true) {
-							location.href = rc["landing"];
-							
 							if (callback != null) window[callback](rc);
 						} else {
 							if ("kickout" in rc) {
@@ -51,6 +48,8 @@
 			
 			if (nextCall != null) window[nextCall]();
 		}
+		
+		xhttp.send(jsonString);
 	}
 	
 	function loadUserInfo(rc = null) {
@@ -68,7 +67,7 @@
 		
 		if (d["npassword"] != "") {
 			if (d["cpassword"] != "") {
-				XHRequest("updatePassword", JSON.stringify(d));
+				XHRequest("updatePassword", JSON.stringify(d), {callback: "updatePasswordCallback"});
 			} else {
 				$e("span-message").innerHTML = "Please confirm password.";
 				clearMessage();
@@ -77,6 +76,10 @@
 			$e("span-message").innerHTML = "Please enter new password.";
 			clearMessage();
 		}
+	}
+	
+	function updatePasswordCallback(rc) {
+		location.href = rc["landing"];
 	}
 	
 	var t;

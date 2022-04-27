@@ -18,7 +18,6 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
 		xhttp.setRequestHeader("Content-Type", "application/json");
-		xhttp.send(jsonString);
 	
 		xhttp.onreadystatechange = function() {
 			if (this.readyState === 4) {
@@ -49,6 +48,8 @@
 			
 			if (nextCall != null) window[nextCall]();
 		}
+		
+		xhttp.send(jsonString);
 	}
 	
 	function logout() {

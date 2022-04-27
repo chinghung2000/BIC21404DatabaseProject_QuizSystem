@@ -18,7 +18,6 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
 		xhttp.setRequestHeader("Content-Type", "application/json");
-		xhttp.send(jsonString);
 	
 		xhttp.onreadystatechange = function() {
 			if (this.readyState === 4) {
@@ -49,6 +48,8 @@
 			
 			if (nextCall != null) window[nextCall]();
 		}
+		
+		xhttp.send(jsonString);
 	}
 	
 	function logout() {
@@ -367,7 +368,7 @@ button:hover {
 		<a href="subjectRegistration.jsp"><button>Subject Registration</button></a>
 		<a href="workloadRegistration.jsp"><button>Workload Registration</button></a>
 		<a href="studentRegistration.jsp"><button>Student Registration</button></a>
-		<a href="viewLog.jsp"><button>View Log</button></a>
+		<a href="systemLog.jsp"><button>View Log</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">

@@ -8,5 +8,9 @@ String userType = session.getAttribute("user_type") != null ? (String) session.g
 
 if (userId != null && userType != null) {
 	response.sendRedirect(userType + ".jsp");
+} else {
+	if (request.getServletPath().equals("/checkSession.jsp")) {
+		response.sendRedirect("index.jsp");
+	}
 }
 %>

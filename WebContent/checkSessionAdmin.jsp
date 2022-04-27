@@ -8,5 +8,9 @@ String userType = session.getAttribute("user_type") != null ? (String) session.g
 
 if (userId == null || userType == null || !userType.equals("admin")) {
 	response.sendRedirect("index.jsp");
+} else {
+	if (request.getServletPath().equals("/checkSessionAdmin.jsp")) {
+		response.sendRedirect("index.jsp");
+	}
 }
 %>
