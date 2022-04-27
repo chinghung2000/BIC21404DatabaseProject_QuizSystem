@@ -225,7 +225,7 @@
 	
 	function edit(element, workloadId) {
 		var row = element.parentNode.parentNode;
-		var cell, select, button;
+		var cell, span, select, button;
 		
 		cell = row.cells[1];
 		span = cell.childNodes[0];
@@ -254,7 +254,7 @@
 	
 	function cancelEdit(element, workloadId) {
 		var row = element.parentNode.parentNode;
-		var cell;
+		var cell button;
 		
 		cell = row.cells[1];
 		cell.childNodes[0].style.display = "block";

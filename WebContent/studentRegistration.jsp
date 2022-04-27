@@ -190,7 +190,7 @@
 	
 	function edit(element, studentId) {
 		var row = element.parentNode.parentNode;
-		var cell, input, button;
+		var cell, span, input, button;
 		
 		cell = row.cells[0];
 		span = cell.childNodes[0];
@@ -222,7 +222,7 @@
 	
 	function cancelEdit(element, studentId) {
 		var row = element.parentNode.parentNode;
-		var cell;
+		var cell, button;
 		
 		cell = row.cells[0];
 		cell.childNodes[0].style.display = "block";

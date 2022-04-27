@@ -3,6 +3,11 @@
 <%@ include file="checkSessionLecturer.jsp"%>
 
 
+<%
+
+%>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -168,7 +173,8 @@
 				formData.append("task_name", taskName);
 				formData.append("file", files[0], files[0].name);
 				
-				XHRFormData("fileUpload", formData);
+				XHRFormData("addTask", formData);
+				loadTable();
 			} else {
 				$e("span-message").innerHTML = "Please select a file.";
 				clearMessage();
