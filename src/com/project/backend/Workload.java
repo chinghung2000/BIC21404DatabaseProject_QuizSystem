@@ -1,6 +1,8 @@
 package com.project.backend;
 
 import java.util.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Workload {
 	protected int id;
@@ -8,6 +10,18 @@ public class Workload {
 	protected int subjectId;
 	protected int modifiedBy;
 	protected Date modifiedOn;
+
+	public Workload(ResultSet rs) {
+		try {
+			this.id = rs.getInt("");
+			this.lecturerId = rs.getInt("");
+			this.subjectId = rs.getInt("");
+			this.modifiedBy = rs.getInt("");
+			this.modifiedOn = rs.getDate("");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public int getId() {
 		return id;

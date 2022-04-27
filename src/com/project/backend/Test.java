@@ -6,7 +6,7 @@ public class Test {
 		xMethod(n);
 		System.out.println("n is " + n);
 	}
-	
+
 	static void xMethod(int n) {
 		n++;
 	}

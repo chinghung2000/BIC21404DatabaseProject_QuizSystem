@@ -1,7 +1,7 @@
 package com.project.backend;
 
 public class User {
-	public boolean login() {
-		
+	public int login() {
+		return 0;
 	}
 }
