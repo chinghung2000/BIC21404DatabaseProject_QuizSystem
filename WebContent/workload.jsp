@@ -258,7 +258,7 @@ button:hover {
 						<th>No</th>
 						<th>Subject Name</th>
 						<th>Assignments &amp; Tutorials</th>
-						<th>Quiz (True / False)</th>
+						<th>Quiz (True/False)</th>
 						<th>Quiz (Objective)</th>
 					</tr>
 				</thead>

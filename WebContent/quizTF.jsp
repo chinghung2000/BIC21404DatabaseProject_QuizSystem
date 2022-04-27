@@ -12,7 +12,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Quiz True/False</title>
+<title>Quiz (True/False)</title>
 <script type="text/javascript">
 	function $e(id) {
 		var element = document.getElementById(id);
@@ -360,7 +360,7 @@ button:hover {
 	</div>
 	<div class="container">
 		<div class="title">
-			<span class="title">Quiz True/False</span>
+			<span class="title">Quiz (True/False)</span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
