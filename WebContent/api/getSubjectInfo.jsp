@@ -78,9 +78,8 @@ if (execute) {
 	// execute backend logic...
 	// parent if clause for call backend result (to-be)
 	if (true) {
-		rc.put("user_id", "_user_id_");
-		rc.put("name", "_name_");
-		rc.put("email", "_email_");
+		rc.put("subject_id", "_subject_id_");
+		rc.put("subject_name", "_subject_name_");
 		rc.put("ok", true);
 	}
 }
