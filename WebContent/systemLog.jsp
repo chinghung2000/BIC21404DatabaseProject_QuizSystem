@@ -157,6 +157,11 @@ span.message {
 	color: red;
 }
 
+div.select-area {
+	margin: 10px 0px;
+	padding: 10px;
+}
+
 div.content {
 	margin: 10px 0px;
 	padding: 10px;
@@ -189,6 +194,16 @@ input[type=text], [type=password] {
 }
 
 input[type=text]:hover, [type=password]:hover {
+	outline: 1px solid;
+}
+
+select {
+	min-width: 200px;
+	font-family: verdana;
+	font-size: 16px;
+}
+
+select:hover {
 	outline: 1px solid;
 }
 
@@ -236,6 +251,12 @@ button:hover {
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
+		</div>
+		<div class="select-area">
+			<label class="select-field" for="select-type">Show logs of type:</label>
+			<select id="select-type">
+				<option value="" selected>ALL</option>
+			</select>
 		</div>
 		<div class="content">
 			<table id="list" border="1">

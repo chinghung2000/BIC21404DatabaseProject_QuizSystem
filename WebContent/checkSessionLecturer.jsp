@@ -15,6 +15,10 @@ if (userId == null || userType == null || !userType.equals("lecturer")) {
 		if (request.getParameter("subject_id") == null) {
 			response.sendRedirect("workload.jsp");
 		}
+	} else if (request.getServletPath().equals("/viewSubmission.jsp")) {
+		if (request.getParameter("subject_id") == null || request.getParameter("task_id") == null) {
+			response.sendRedirect("workload.jsp");
+		}
 	}
 }
 %>

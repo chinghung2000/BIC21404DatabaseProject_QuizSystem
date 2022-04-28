@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="checkSessionAdmin.jsp"%>
+<%@ include file="checkSessionLecturer.jsp"%>
 
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Workload Registration</title>
+<title>Quiz (True/False)</title>
 <script type="text/javascript">
 	function $e(id) {
 		var element = document.getElementById(id);
@@ -67,13 +67,16 @@
 	
 	function loadTable(rc = null) {
 		if (rc == null) {
-			XHRequest("getAllWorkloads", JSON.stringify({}), {callback: "loadTable"});
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			
+			XHRequest("getAllQuizTrueFalse", JSON.stringify(d), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
 			var r = rc["result"]; 
 			var tBody = $e("list").tBodies[0];
-			var row, cell, span, button;
+			var row, cell, span, checkbox, button;
 			
 			for (var i in r) {
 				row = tBody.insertRow();
@@ -83,17 +86,16 @@
 				
 				cell = row.insertCell();
 				span = document.createElement("span");
-				span.innerHTML = r[i]["lecturer_name"];
+				span.innerHTML = r[i]["question"];
 				span.setAttribute("style", "display: block;");
-				span.setAttribute("data-lecturer-id", r[i]["lecturer_id"]);
 				cell.appendChild(span);
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["subject_name"];
-				span.setAttribute("style", "display: block;");
-				span.setAttribute("data-subject-id", r[i]["subject_id"]);
-				cell.appendChild(span);
+				checkbox = document.createElement("input");
+				checkbox.type = "checkbox";
+				checkbox.checked = r[i]["answer"];
+				checkbox.disabled = true;
+				cell.appendChild(checkbox);
 				
 				cell = row.insertCell();
 				cell.innerHTML = r[i]["modified_by"];
@@ -104,13 +106,13 @@
 				cell = row.insertCell();
 				button = document.createElement("button");
 				button.innerHTML = "Update";
-				button.setAttribute("onclick", "edit(this, '" + r[i]["workload_id"] + "');");
+				button.setAttribute("onclick", "edit(this, '" + r[i]["quiz_tf_id"] + "');");
 				cell.appendChild(button);
 				
 				cell = row.insertCell();
 				button = document.createElement("button");
 				button.innerHTML = "Delete";
-				button.setAttribute("onclick", "remove('" + r[i]["workload_id"] + "');");
+				button.setAttribute("onclick", "remove('" + r[i]["quiz_tf_id"] + "');");
 				cell.appendChild(button);
 			}
 		}
@@ -124,155 +126,116 @@
 		}
 	}
 	
-	var selectLecturer;
-	
-	function loadSelectionLecturer(rc = null) {
-		if (rc == null) {
-			XHRequest("getAllLecturers", JSON.stringify({}), {callback: "loadSelectionLecturer"});
-		} else {
-			var r = rc["result"];
-			var select = $e("select-lecturer");
-			var option;
-			
-			for (var i in r) {
-				option = document.createElement("option");
-				option.text = r[i]["lecturer_name"];
-				option.value = r[i]["lecturer_id"];
-				select.add(option);
-			}
-			
-			selectLecturer = select;
-		}
-	}
-	
-	var selectSubject;
-	
-	function loadSelectionSubject(rc = null) {
-		if (rc == null) {
-			XHRequest("getAllSubjects", JSON.stringify({}), {callback: "loadSelectionSubject"});
-		} else {
-			var r = rc["result"];
-			var select = $e("select-subject");
-			var option;
-			
-			for (var i in r) {
-				option = document.createElement("option");
-				option.text = r[i]["subject_name"];
-				option.value = r[i]["subject_id"];
-				select.add(option);
-			}
-			
-			selectSubject = select;
-		}
-	}
-	
-	function add(lecturerId, subjectId) {
+	function add(question, answer) {
 		var d = {};
-		d["lecturer_id"] = lecturerId;
-		d["subject_id"] = subjectId;
+		d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+		d["question"] = question;
+		d["answer"] = answer;
 		
-		if (d["lecturer_id"] != "") {
-			if (d["subject_id"] != "") {
-				XHRequest("addWorkload", JSON.stringify(d));
+		if (d["question"] != "") {
+			if (d["answer"] != "") {
+				XHRequest("addQuizTrueFalse", JSON.stringify(d));
 				loadTable();
 			} else {
-				$e("span-message").innerHTML = "Please choose a subject.";
+				$e("span-message").innerHTML = "Missing answer.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Please choose a lecturer.";
+			$e("span-message").innerHTML = "Please enter question.";
 			clearMessage();
 		}
 	}
 	
-	function update(workloadId, lecturerId, subjectId) {
+	function update(quizTFId, question, answer) {
 		var d = {};
-		d["workload_id"] = workloadId;
-		d["lecturer_id"] = lecturerId;
-		d["subject_id"] = subjectId;
+		d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+		d["quiz_tf_id"] = quizTFId;
+		d["question"] = question;
+		d["answer"] = answer;
 		
-		if (d["workload_id"] != "") {
-			if (d["lecturer_id"] != "") {
-				if (d["subject_id"] != "") {
-					XHRequest("updateWorkload", JSON.stringify(d));
+		if (d["quiz_tf_id"] != "") {
+			if (d["question"] != "") {
+				if (d["answer"] != "") {
+					XHRequest("updateQuizTrueFalse", JSON.stringify(d));
 					loadTable();
 				} else {
-					$e("span-message").innerHTML = "Please choose a subject.";
+					$e("span-message").innerHTML = "Missing answer..";
 					clearMessage();
 				}
 			} else {
-				$e("span-message").innerHTML = "Please choose a lecturer.";
+				$e("span-message").innerHTML = "Please enter question.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Missing workload ID.";
+			$e("span-message").innerHTML = "Missing quiz true/false ID.";
 			clearMessage();
 		}
 	}
 	
-	function remove(workloadId) {
+	function remove(quizTFId) {
 		var d = {};
-		d["workload_id"] = workloadId;
+		d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+		d["quiz_tf_id"] = quizTFId;
 		
-		if (d["workload_id"] != "") {
-			XHRequest("deleteWorkload", JSON.stringify(d));
+		if (d["quiz_tf_id"] != "") {
+			XHRequest("deleteQuizTrueFalse", JSON.stringify(d));
 			loadTable();
 		} else {
-			$e("span-message").innerHTML = "Missing workload ID.";
+			$e("span-message").innerHTML = "Missing quiz true/false ID.";
 			clearMessage();
 		}
 	}
 	
-	function edit(element, workloadId) {
+	function edit(element, quizTFId) {
 		var row = element.parentNode.parentNode;
-		var cell, span, select, button;
+		var cell, span, input, checkbox, button;
 		
 		cell = row.cells[1];
 		span = cell.childNodes[0];
 		span.style.display = "none";
- 		select = cell.appendChild(selectLecturer.cloneNode(true));
-		select.value = span.getAttribute("data-lecturer-id");
+		input = document.createElement("input");
+		input.type = "text";
+		input.value = span.innerHTML;
+		cell.appendChild(input);
 		
 		cell = row.cells[2];
-		span = cell.childNodes[0];
-		span.style.display = "none";
- 		select = cell.appendChild(selectSubject.cloneNode(true));
-		select.value = span.getAttribute("data-subject-id");
+		checkbox = cell.childNodes[0];
+		checkbox.disabled = false;
 		
 		cell = row.cells[5];
 		button = cell.childNodes[0];
 		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update('" + workloadId + "', "
+		button.setAttribute("onclick", "update('" + quizTFId + "', "
 				+ "this.parentNode.parentNode.cells[1].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[2].childNodes[1].value);");
+				+ "this.parentNode.parentNode.cells[2].childNodes[1].checked);");
 		
 		cell = row.cells[6];
 		button = cell.childNodes[0];
 		button.innerHTML = "Cancel";
-		button.setAttribute("onclick", "cancelEdit(this, '" + workloadId + "');");
+		button.setAttribute("onclick", "cancelEdit(this, '" + quizTFId + "');");
 	}
 	
-	function cancelEdit(element, workloadId) {
+	function cancelEdit(element, quizTFId) {
 		var row = element.parentNode.parentNode;
-		var cell button;
+		var cell, checkbox, button;
 		
 		cell = row.cells[1];
 		cell.childNodes[0].style.display = "block";
 		cell.removeChild(cell.childNodes[1]);
 		
 		cell = row.cells[2];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
+		checkbox = cell.childNodes[0];
+		checkbox.disabled = true;
 		
 		cell = row.cells[5];
 		button = cell.childNodes[0];
 		button.innerHTML = "Update";
-		button.setAttribute("onclick", "edit(this, '" + workloadId + "');");
+		button.setAttribute("onclick", "edit(this, '" + quizTFId + "');");
 		
 		cell = row.cells[6];
 		button = cell.childNodes[0];
 		button.innerHTML = "Delete";
-		button.setAttribute("onclick", "remove('" + workloadId + "');");
+		button.setAttribute("onclick", "remove('" + quizTFId + "');");
 	}
 	
 	var t;
@@ -320,6 +283,11 @@ span.title {
 	font-size: 20px;
 }
 
+div.info {
+	margin: 10px 0px;
+	padding: 10px;
+}
+
 div.message {
 	margin: 10px 0px;
 	padding: 10px;
@@ -365,13 +333,13 @@ input[type=text]:hover, [type=password]:hover {
 	outline: 1px solid;
 }
 
-select {
-	min-width: 200px;
-	font-family: verdana;
-	font-size: 16px;
+input[type=checkbox] {
+	height: 20px;
+	width: 20px;
+	cursor: pointer;
 }
 
-select:hover {
+input[type=checkbox]:hover {
 	outline: 1px solid;
 }
 
@@ -398,24 +366,24 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); loadTable(); loadSelectionLecturer(); loadSelectionSubject();">
+<body onload="loadUserInfo(); loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
 	<hr>
 	<div class="menu">
-		<a href="admin.jsp"><button>Home</button></a>
-		<a href="adminRegistration.jsp"><button>Admin Registration</button></a>
-		<a href="lecturerRegistration.jsp"><button>Lecturer Registration</button></a>
-		<a href="subjectRegistration.jsp"><button>Subject Registration</button></a>
-		<a href="workloadRegistration.jsp"><button>Workload Registration</button></a>
-		<a href="studentRegistration.jsp"><button>Student Registration</button></a>
-		<a href="systemLog.jsp"><button>View Log</button></a>
+		<a href="lecturer.jsp"><button>Home</button></a>
+		<a href="workload.jsp"><button>View Workloads</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">
 		<div class="title">
-			<span class="title">Workload Registration</span>
+			<span class="title">Quiz (True/False)</span>
+		</div>
+		<div class="info">
+			Subject ID: <span id="span-subject-id"></span>
+			<br>
+			Subject Name: <span id="span-subject-name"></span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
@@ -425,8 +393,8 @@ button:hover {
 				<thead>
 					<tr>
 						<th>No</th>
-						<th>Lecturer</th>
-						<th>Subject</th>
+						<th>Question</th>
+						<th>True?</th>
 						<th>Modified By</th>
 						<th>Modified On</th>
 						<th>Update</th>
@@ -437,19 +405,11 @@ button:hover {
 				<tfoot>
 					<tr>
 						<td></td>
-						<td>
-							<select id="select-lecturer">
-								<option value="" selected>Select a lecturer</option>
-							</select>
-						</td>
-						<td>
-							<select id="select-subject">
-								<option value="" selected>Select a subject</option>
-							</select>
-						</td>
+						<td><input type="text" id="input-question"></td>
+						<td><input type="checkbox" id="input-answer"></td>
 						<td></td>
 						<td></td>
-						<td><button onclick="add($e('select-lecturer').value, $e('select-subject').value);">ADD</button></td>
+						<td><button onclick="add($e('input-question').value, $e('input-answer').value);">ADD</button></td>
 					</tr>
 				</tfoot>
 			</table>

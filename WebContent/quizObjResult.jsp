@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Workloads</title>
+<title>Quiz (Objective) Results</title>
 <script type="text/javascript">
 	function $e(id) {
 		var element = document.getElementById(id);
@@ -67,13 +67,16 @@
 	
 	function loadTable(rc = null) {
 		if (rc == null) {
-			XHRequest("getAllWorkloads", JSON.stringify({}), {callback: "loadTable"});
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			
+			XHRequest("getQuizObjectiveResults", JSON.stringify(d), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
 			var r = rc["result"]; 
 			var tBody = $e("list").tBodies[0];
-			var row, cell, button;
+			var row, cell;
 			
 			for (var i in r) {
 				row = tBody.insertRow();
@@ -82,33 +85,13 @@
 				cell.innerHTML = Number(i) + 1;
 				
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["subject_name"];
+				cell.innerHTML = r[i]["student_name"];
 				
 				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "View & Edit";
-				button.setAttribute("onclick", "location.href = 'editTask.jsp?subject_id=" + r[i]["subject_id"] + "';");
-				cell.appendChild(button);
+				cell.innerHTML = r[i]["student_id"];
 				
 				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "View & Edit";
-				button.setAttribute("onclick", "location.href = 'editQuizTF.jsp?subject_id=" + r[i]["subject_id"] + "';");
-				cell.appendChild(button);
-				button = document.createElement("button");
-				button.innerHTML = "Result";
-				button.setAttribute("onclick", "location.href = 'quizTFResult.jsp?subject_id=" + r[i]["subject_id"] + "';");
-				cell.appendChild(button);
-				
-				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "View & Edit";
-				button.setAttribute("onclick", "location.href = 'editQuizObj.jsp?subject_id=" + r[i]["subject_id"] + "';");
-				cell.appendChild(button);
-				button = document.createElement("button");
-				button.innerHTML = "Result";
-				button.setAttribute("onclick", "location.href = 'quizObjResult.jsp?subject_id=" + r[i]["subject_id"] + "';");
-				cell.appendChild(button);
+				cell.innerHTML = r[i]["result"];
 			}
 		}
 	}
@@ -164,6 +147,11 @@ div.title {
 
 span.title {
 	font-size: 20px;
+}
+
+div.info {
+	margin: 10px 0px;
+	padding: 10px;
 }
 
 div.message {
@@ -246,7 +234,12 @@ button:hover {
 	</div>
 	<div class="container">
 		<div class="title">
-			<span class="title">Workloads</span>
+			<span class="title">Quiz (Objective) Results</span>
+		</div>
+		<div class="info">
+			Subject ID: <span id="span-subject-id"></span>
+			<br>
+			Subject Name: <span id="span-subject-name"></span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
@@ -256,10 +249,9 @@ button:hover {
 				<thead>
 					<tr>
 						<th>No</th>
-						<th>Subject Name</th>
-						<th>Assignments / Tutorials / Labs</th>
-						<th>Quiz (True/False)</th>
-						<th>Quiz (Objective)</th>
+						<th>Student Name</th>
+						<th>Student ID</th>
+						<th>Result</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
