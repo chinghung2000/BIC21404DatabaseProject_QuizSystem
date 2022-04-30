@@ -28,8 +28,8 @@
 						if (rc["ok"] === true) {
 							if (callback != null) window[callback](rc);
 						} else {
-							if ("kickout" in rc) {
-								location.href = "index.jsp";
+							if ("redirect" in rc) {
+								location.href = rc["redirect"];
 							} else if ("message" in rc) {
 								$e("span-message").innerHTML = rc["message"];
 							} else {
@@ -70,7 +70,7 @@
 			var d = {};
 			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 			
-			XHRequest("getAllQuizObjective", JSON.stringify(d), {callback: "loadTable"});
+			XHRequest("getAllQuizObj", JSON.stringify(d), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
@@ -163,7 +163,7 @@
 			if (d["choice_a"] != "") {
 				if (d["choice_b"] != "") {
 					if (d["answer"] != "") {
-						XHRequest("addQuizObjective", JSON.stringify(d));
+						XHRequest("addQuizObj", JSON.stringify(d));
 						loadTable();
 					} else {
 						$e("span-message").innerHTML = "Please enter answer.";
@@ -199,7 +199,7 @@
 				if (d["choice_a"] != "") {
 					if (d["choice_b"] != "") {
 						if (d["answer"] != "") {
-							XHRequest("updateQuizObjective", JSON.stringify(d));
+							XHRequest("updateQuizObj", JSON.stringify(d));
 							loadTable();
 						} else {
 							$e("span-message").innerHTML = "Please enter answer.";
@@ -229,7 +229,7 @@
 		d["quiz_obj_id"] = quizObjId;
 		
 		if (d["quiz_obj_id"] != "") {
-			XHRequest("deleteQuizObjective", JSON.stringify(d));
+			XHRequest("deleteQuizObj", JSON.stringify(d));
 			loadTable();
 		} else {
 			$e("span-message").innerHTML = "Missing quiz objective ID.";

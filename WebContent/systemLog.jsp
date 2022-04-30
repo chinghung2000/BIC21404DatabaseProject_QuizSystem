@@ -28,8 +28,8 @@
 						if (rc["ok"] === true) {
 							if (callback != null) window[callback](rc);
 						} else {
-							if ("kickout" in rc) {
-								location.href = "index.jsp";
+							if ("redirect" in rc) {
+								location.href = rc["redirect"];
 							} else if ("message" in rc) {
 								$e("span-message").innerHTML = rc["message"];
 							} else {
@@ -67,7 +67,7 @@
 	
 	function loadTable(rc = null) {
 		if (rc == null) {
-			XHRequest("getAllLogs", JSON.stringify({}), {callback: "loadTable"});
+			XHRequest("getSystemLogs", JSON.stringify({}), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
@@ -99,7 +99,7 @@
 		var d = {};
 		d["type"] = type;
 		
-		XHRequest("getAllLogs", JSON.stringify(d), {callback: "loadTable"});
+		XHRequest("getSystemLogs", JSON.stringify(d), {callback: "loadTable"});
 	}
 	
 	var t;

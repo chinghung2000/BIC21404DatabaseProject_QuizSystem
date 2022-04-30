@@ -1,13 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="checkSessionLecturer.jsp"%>
+<%@ include file="checkSessionStudent.jsp"%>
 
 
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Quiz (Objective) Results</title>
+<title>Subject Registration</title>
 <script type="text/javascript">
 	function $e(id) {
 		var element = document.getElementById(id);
@@ -67,31 +67,40 @@
 	
 	function loadTable(rc = null) {
 		if (rc == null) {
-			var d = {};
-			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
-			
-			XHRequest("getQuizObjResults", JSON.stringify(d), {callback: "loadTable"});
+			XHRequest("getAllWorkloads", JSON.stringify({}), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
 			var r = rc["result"]; 
 			var tBody = $e("list").tBodies[0];
-			var row, cell;
+			var row, cell, span, button;
 			
 			for (var i in r) {
 				row = tBody.insertRow();
 				
 				cell = row.insertCell();
-				cell.innerHTML = Number(i) + 1;
+				span = document.createElement("span");
+				span.innerHTML = r[i]["admin_id"];
+				span.setAttribute("style", "display: block;");
+				cell.appendChild(span);
 				
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["student_name"];
+				span = document.createElement("span");
+				span.innerHTML = r[i]["admin_name"];
+				span.setAttribute("style", "display: block;");
+				cell.appendChild(span);
 				
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["student_id"];
+				button = document.createElement("button");
+				button.innerHTML = "Update";
+				button.setAttribute("onclick", "edit(this, '" + r[i]["admin_id"] + "');");
+				cell.appendChild(button);
 				
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["result"];
+				button = document.createElement("button");
+				button.innerHTML = "Delete";
+				button.setAttribute("onclick", "remove('" + r[i]["admin_id"] + "');");
+				cell.appendChild(button);
 			}
 		}
 	}
@@ -102,6 +111,93 @@
 		for (var i = tBody.rows.length; i > 0; i--) {
 			tBody.deleteRow(0);
 		}
+	}
+	
+	function add(adminId, adminName) {
+		var d = {};
+		d["admin_id"] = adminId;
+		d["admin_name"] = adminName;
+		
+		if (d["admin_id"] != "") {
+			if (d["admin_name"] != "") {
+				XHRequest("addAdmin", JSON.stringify(d));
+				loadTable();
+			} else {
+				$e("span-message").innerHTML = "Please enter admin name.";
+				clearMessage();
+			}
+		} else {
+			$e("span-message").innerHTML = "Please enter admin ID.";
+			clearMessage();
+		}
+	}
+	
+	function remove(adminId) {
+		var d = {};
+		d["admin_id"] = adminId;
+		
+		if (d["admin_id"] != "") {
+			XHRequest("deleteAdmin", JSON.stringify(d));
+			loadTable();
+		} else {
+			$e("span-message").innerHTML = "Missing admin ID.";
+			clearMessage();
+		}
+	}
+	
+	function edit(element, adminId) {
+		var row = element.parentNode.parentNode;
+		var cell, span, input, button;
+		
+		cell = row.cells[0];
+		span = cell.childNodes[0];
+		span.style.display = "none";
+		input = document.createElement("input");
+		input.type = "text";
+		input.value = span.innerHTML;
+		cell.appendChild(input);
+		
+		cell = row.cells[1];
+		span = cell.childNodes[0];
+		span.style.display = "none";
+		input = document.createElement("input");
+		input.type = "text";
+		input.value = span.innerHTML;
+		cell.appendChild(input);
+		
+		cell = row.cells[2];
+		button = cell.childNodes[0];
+		button.innerHTML = "Done";
+		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
+				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
+		
+		cell = row.cells[3];
+		button = cell.childNodes[0];
+		button.innerHTML = "Cancel";
+		button.setAttribute("onclick", "cancelEdit(this, '" + adminId + "');");
+	}
+	
+	function cancelEdit(element, adminId) {
+		var row = element.parentNode.parentNode;
+		var cell, button;
+		
+		cell = row.cells[0];
+		cell.childNodes[0].style.display = "block";
+		cell.removeChild(cell.childNodes[1]);
+		
+		cell = row.cells[1];
+		cell.childNodes[0].style.display = "block";
+		cell.removeChild(cell.childNodes[1]);
+		
+		cell = row.cells[2];
+		button = cell.childNodes[0];
+		button.innerHTML = "Update";
+		button.setAttribute("onclick", "edit(this, '" + adminId + "');");
+		
+		cell = row.cells[3];
+		button = cell.childNodes[0];
+		button.innerHTML = "Delete";
+		button.setAttribute("onclick", "remove('" + adminId + "');");
 	}
 	
 	var t;
@@ -147,11 +243,6 @@ div.title {
 
 span.title {
 	font-size: 20px;
-}
-
-div.info {
-	margin: 10px 0px;
-	padding: 10px;
 }
 
 div.message {
@@ -228,18 +319,14 @@ button:hover {
 	</div>
 	<hr>
 	<div class="menu">
-		<a href="lecturer.jsp"><button>Home</button></a>
-		<a href="workload.jsp"><button>View Workloads</button></a>
+		<a href="student.jsp"><button>Home</button></a>
+		<a href="registerSubject.jsp"><button>Register Subjects</button></a>
+		<a href="subject.jsp"><button>View Subjects</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">
 		<div class="title">
-			<span class="title">Quiz (Objective) Results</span>
-		</div>
-		<div class="info">
-			Subject ID: <span id="span-subject-id"></span>
-			<br>
-			Subject Name: <span id="span-subject-name"></span>
+			<span class="title">Subject Registration</span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
@@ -249,9 +336,9 @@ button:hover {
 				<thead>
 					<tr>
 						<th>No</th>
-						<th>Student Name</th>
-						<th>Student ID</th>
-						<th>Result</th>
+						<th>Lecturer</th>
+						<th>Subject</th>
+						<th>Register</th>
 					</tr>
 				</thead>
 				<tbody></tbody>

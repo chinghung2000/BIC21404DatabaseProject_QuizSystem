@@ -28,8 +28,8 @@
 						if (rc["ok"] === true) {
 							if (callback != null) window[callback](rc);
 						} else {
-							if ("kickout" in rc) {
-								location.href = "index.jsp";
+							if ("redirect" in rc) {
+								location.href = rc["redirect"];
 							} else if ("message" in rc) {
 								$e("span-message").innerHTML = rc["message"];
 							} else {
@@ -105,7 +105,7 @@
 			var d = {};
 			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 			
-			XHRequest("getAllTasks", JSON.stringify(d), {callback: "loadTable"});
+			XHRequest("getWorkloadTasks", JSON.stringify(d), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
