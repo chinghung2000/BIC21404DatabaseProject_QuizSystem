@@ -8,6 +8,7 @@
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
+<%-- <%@ page import="com.project.backend.*"%> --%>
 
 
 <%
@@ -73,9 +74,18 @@ if (request.getMethod().equals("POST")) {
 
 // execution
 if (execute) {
-	// remove / invalidate session
-	session.invalidate();
-	rc.put("ok", true);
+	
+	// execute backend logic...
+	// parent if clause for call backend result (to-be)
+	if (true) {
+		rc.put("workload_id", "1");
+		rc.put("lecturer_id", "1");
+		rc.put("subject_id", "BIC10303");
+		rc.put("modified_by", "Ahmad Syahmi");
+		rc.put("modified_on", "21/4/2022 7:51:23 PM");
+		
+		rc.put("ok", true);
+	}
 }
 
 // check unknown error
