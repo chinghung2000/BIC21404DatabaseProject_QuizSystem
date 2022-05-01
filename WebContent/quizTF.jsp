@@ -104,6 +104,7 @@
 				cell.appendChild(radio);
 				label = document.createElement("label");
 				label.innerHTML = "False";
+				cell.appendChild(label);
 			}
 		}
 	}

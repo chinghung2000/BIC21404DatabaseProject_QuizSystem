@@ -1,11 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="checkSessionLecturer.jsp"%>
-
-
-<%
-
-%>
+<%@ include file="checkSessionStudent.jsp"%>
 
 
 <!DOCTYPE html>
@@ -33,8 +28,8 @@
 						if (rc["ok"] === true) {
 							if (callback != null) window[callback](rc);
 						} else {
-							if ("kickout" in rc) {
-								location.href = "index.jsp";
+							if ("redirect" in rc) {
+								location.href = rc["redirect"];
 							} else if ("message" in rc) {
 								$e("span-message").innerHTML = rc["message"];
 							} else {
@@ -70,18 +65,29 @@
 		}
 	}
 	
+	var selectAnswer = document.createElement("select");
+	var option = document.createElement("option");
+	var options = ["--", "A", "B", "C", "D"];
+	var values = ["", "A", "B", "C", "D"];
+	
+	for (var i = 0; i < options.length; i++) {
+		option.text = options[i];
+		option.value =  options[i];
+		selectAnswer.add(option);
+	}
+	
 	function loadTable(rc = null) {
 		if (rc == null) {
 			var d = {};
 			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 			
-			XHRequest("getAllQuizObjective", JSON.stringify(d), {callback: "loadTable"});
+			XHRequest("getAllQuizObj", JSON.stringify(d), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
 			var r = rc["result"]; 
 			var tBody = $e("list").tBodies[0];
-			var row, cell, span, button;
+			var row, cell, select, button;
 			
 			for (var i in r) {
 				row = tBody.insertRow();
@@ -90,58 +96,23 @@
 				cell.innerHTML = Number(i) + 1;
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["question"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = r[i]["question"];
+				cell.setAttribute("data-quiz-obj-id", r[i]["quiz_obj_id"]);
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["choice_a"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = r[i]["choice_a"];
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["choice_b"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = r[i]["choice_b"];
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["choice_c"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = r[i]["choice_c"];
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["choice_d"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = r[i]["choice_d"];
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["answer"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
-				
-				cell = row.insertCell();
-				cell.innerHTML = r[i]["modified_by"];
-				
-				cell = row.insertCell();
-				cell.innerHTML = r[i]["modified_on"];
-				
-				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Update";
-				button.setAttribute("onclick", "edit(this, '" + r[i]["quiz_obj_id"] + "');");
-				cell.appendChild(button);
-				
-				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Delete";
-				button.setAttribute("onclick", "remove('" + r[i]["quiz_obj_id"] + "');");
-				cell.appendChild(button);
+				cell.appendChild(selectAnswer.cloneNode(true))
 			}
 		}
 	}
@@ -154,197 +125,37 @@
 		}
 	}
 	
-	function add(question, choiceA, choiceB, choiceC, choiceD, answer) {
-		var d = {};
-		d["question"] = question;
-		d["choice_a"] = choiceA;
-		d["choice_b"] = choiceB;
-		d["choice_c"] = choiceC;
-		d["choice_d"] = choiceD;
-		d["answer"] = answer;
+	function submitQuiz() {
+		var answers = checkAnswer();
 		
-		if (d["question"] != "") {
-			if (d["choice_a"] != "") {
-				if (d["choice_b"] != "") {
-					if (d["answer"] != "") {
-						XHRequest("addQuizObjective", JSON.stringify(d));
-						loadTable();
-					} else {
-						$e("span-message").innerHTML = "Please enter answer.";
-						clearMessage();
-					}
-				} else {
-					$e("span-message").innerHTML = "Please enter choice B.";
-					clearMessage();
-				}
-			} else {
-				$e("span-message").innerHTML = "Please enter choice A.";
-				clearMessage();
-			}
+		if (answers !== false) {
+			var d= {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			d["answers"] = answers;
+			
+			XHRequest("submitQuizObj", JSON.stringify(d), {async: false});
+			location.href = "subject.jsp";
 		} else {
-			$e("span-message").innerHTML = "Please enter question.";
+			$e("span-message").innerHTML = "Please answer all questions.";
 			clearMessage();
 		}
 	}
 	
-	function update(quizObjId, question, choiceA, choiceB, choiceC, choiceD, answer) {
-		var d = {};
-		d["quiz_obj_id"] = quizObjId;
-		d["question"] = question;
-		d["choice_a"] = choiceA;
-		d["choice_b"] = choiceB;
-		d["choice_c"] = choiceC;
-		d["choice_d"] = choiceD;
-		d["answer"] = answer;
+	function checkAnswer() {
+		var tBody = $e("list").tBodies[0];
+		var row, cell, select;
+		var answers = [];
 		
-		if (d["quiz_obj_id"] != "") {
-			if (d["question"] != "") {
-				if (d["choice_a"] != "") {
-					if (d["choice_b"] != "") {
-						if (d["answer"] != "") {
-							XHRequest("updateQuizObjective", JSON.stringify(d));
-							loadTable();
-						} else {
-							$e("span-message").innerHTML = "Please enter answer.";
-							clearMessage();
-						}
-					} else {
-						$e("span-message").innerHTML = "Please enter choice B.";
-						clearMessage();
-					}
-				} else {
-					$e("span-message").innerHTML = "Please enter choice A.";
-					clearMessage();
-				}
-			} else {
-				$e("span-message").innerHTML = "Please enter question.";
-				clearMessage();
-			}
-		} else {
-			$e("span-message").innerHTML = "Missing quiz objective ID.";
-			clearMessage();
+		for (var i = 0; i < tBody.rows.length; i++) {
+			row = tBody.rows[i];
+			cell = row.cells[2];
+			select = cell.childNodes[0];
+			
+			if (select.value == "") return false;
+			answers.push({quiz_obj_id: row.cells[1].getAttribute("data-quiz-obj-id"), answer: select.value});
 		}
-	}
-	
-	function remove(quizObjId) {
-		var d = {};
-		d["quiz_obj_id"] = quizObjId;
 		
-		if (d["quiz_obj_id"] != "") {
-			XHRequest("deleteQuizObjective", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing quiz objective ID.";
-			clearMessage();
-		}
-	}
-	
-	function edit(element, quizObjId) {
-		var row = element.parentNode.parentNode;
-		var cell, span, input, button;
-		
-		cell = row.cells[1];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[2];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[3];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[4];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[5];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[6];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[9];
-		button = cell.childNodes[0];
-		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update('" + quizObjId + "', "
-				+ "this.parentNode.parentNode.cells[1].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[2].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[3].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[4].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[5].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[6].childNodes[1].value);");
-		
-		cell = row.cells[10];
-		button = cell.childNodes[0];
-		button.innerHTML = "Cancel";
-		button.setAttribute("onclick", "cancelEdit(this, '" + quizObjId + "');");
-	}
-	
-	function cancelEdit(element, quizObjId) {
-		var row = element.parentNode.parentNode;
-		var cell, button;
-		
-		cell = row.cells[1];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[2];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[3];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[4];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[5];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[6];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[9];
-		button = cell.childNodes[0];
-		button.innerHTML = "Update";
-		button.setAttribute("onclick", "edit(this, '" + quizObjId + "');");
-		
-		cell = row.cells[10];
-		button = cell.childNodes[0];
-		button.innerHTML = "Delete";
-		button.setAttribute("onclick", "remove('" + quizObjId + "');");
+		return answers;
 	}
 	
 	var t;
@@ -392,6 +203,11 @@ span.title {
 	font-size: 20px;
 }
 
+div.info {
+	margin: 10px 0px;
+	padding: 10px;
+}
+
 div.message {
 	margin: 10px 0px;
 	padding: 10px;
@@ -424,11 +240,11 @@ table th {
 table th, table td {
 	border: 1px solid #bfbfbf;
 	padding: 5px 10px;
-	max-width: 100px;
+	max-width: 400px;
 }
 
 input[type=text], [type=password] {
-	width: 100px;
+	width: 150px;
 	font-family: verdana;
 	font-size: 16px;
 }
@@ -441,6 +257,10 @@ input[type=checkbox] {
 	height: 20px;
 	width: 20px;
 	cursor: pointer;
+}
+
+input[type=checkbox]:hover {
+	outline: 1px solid;
 }
 
 div.button {
@@ -472,13 +292,19 @@ button:hover {
 	</div>
 	<hr>
 	<div class="menu">
-		<a href="lecturer.jsp"><button>Home</button></a>
-		<a href="workload.jsp"><button>View Workloads</button></a>
+		<a href="student.jsp"><button>Home</button></a>
+		<a href="registerSubject.jsp"><button>Register Subjects</button></a>
+		<a href="subject.jsp"><button>View Subjects</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">
 		<div class="title">
 			<span class="title">Quiz (Objective)</span>
+		</div>
+		<div class="info">
+			Subject ID: <span id="span-subject-id"></span>
+			<br>
+			Subject Name: <span id="span-subject-name"></span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
@@ -494,25 +320,12 @@ button:hover {
 						<th>Choice C</th>
 						<th>Choice D</th>
 						<th>Answer</th>
-						<th>Modified By</th>
-						<th>Modified On</th>
-						<th>Update</th>
-						<th>Delete</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
 				<tfoot>
 					<tr>
-						<td></td>
-						<td><input type="text" id="input-question"></td>
-						<td><input type="text" id="input-choice-a"></td>
-						<td><input type="text" id="input-choice-b"></td>
-						<td><input type="text" id="input-choice-c"></td>
-						<td><input type="text" id="input-choice-d"></td>
-						<td><input type="text" id="input-answer"></td>
-						<td></td>
-						<td></td>
-						<td><button onclick="add($e('input-question').value, $e('input-is-true').value);">ADD</button></td>
+						<td><button onclick="submitQuiz();">Submit</button></td>
 					</tr>
 				</tfoot>
 			</table>
