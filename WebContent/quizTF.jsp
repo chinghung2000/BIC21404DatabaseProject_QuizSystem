@@ -1,11 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="checkSessionLecturer.jsp"%>
-
-
-<%
-
-%>
+<%@ include file="checkSessionStudent.jsp"%>
 
 
 <!DOCTYPE html>
@@ -33,8 +28,8 @@
 						if (rc["ok"] === true) {
 							if (callback != null) window[callback](rc);
 						} else {
-							if ("kickout" in rc) {
-								location.href = "index.jsp";
+							if ("redirect" in rc) {
+								location.href = rc["redirect"];
 							} else if ("message" in rc) {
 								$e("span-message").innerHTML = rc["message"];
 							} else {
@@ -75,13 +70,13 @@
 			var d = {};
 			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 			
-			XHRequest("getAllQuizTrueFalse", JSON.stringify(d), {callback: "loadTable"});
+			XHRequest("getAllQuizTF", JSON.stringify(d), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
 			var r = rc["result"]; 
 			var tBody = $e("list").tBodies[0];
-			var row, cell, span, checkbox, button;
+			var row, cell, radio, label, br, button;
 			
 			for (var i in r) {
 				row = tBody.insertRow();
@@ -90,35 +85,25 @@
 				cell.innerHTML = Number(i) + 1;
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["question"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = r[i]["question"];
+				cell.setAttribute("data-quiz-tf-id", r[i]["quiz_tf_id"]);
 				
 				cell = row.insertCell();
-				checkbox = document.createElement("input");
-				checkbox.type = "checkbox";
-				checkbox.checked = r[i]["answer"];
-				checkbox.disabled = true;
-				cell.appendChild(checkbox);
-				
-				cell = row.insertCell();
-				cell.innerHTML = r[i]["modified_by"];
-				
-				cell = row.insertCell();
-				cell.innerHTML = r[i]["modified_on"];
-				
-				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Update";
-				button.setAttribute("onclick", "edit(this, '" + r[i]["quiz_tf_id"] + "');");
-				cell.appendChild(button);
-				
-				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Delete";
-				button.setAttribute("onclick", "remove('" + r[i]["quiz_tf_id"] + "');");
-				cell.appendChild(button);
+				radio = document.createElement("input");
+				radio.type = "checkbox";
+				radio.value = "true";
+				cell.appendChild(radio);
+				label = document.createElement("label");
+				label.innerHTML = "True";
+				cell.appendChild(label);
+				br = document.createElement("br");
+				cell.appendChild(br);
+				radio = document.createElement("input");
+				radio.type = "checkbox";
+				radio.value = "false";
+				cell.appendChild(radio);
+				label = document.createElement("label");
+				label.innerHTML = "False";
 			}
 		}
 	}
@@ -131,113 +116,41 @@
 		}
 	}
 	
-	function add(question, answer) {
-		var d = {};
-		d["question"] = question;
-		d["answer"] = answer;
+	function submitQuiz() {
+		var answers = checkAnswer();
 		
-		if (d["question"] != "") {
-			if (d["answer"] != "") {
-				XHRequest("addQuizTrueFalse", JSON.stringify(d));
-				loadTable();
-			} else {
-				$e("span-message").innerHTML = "Missing answer.";
-				clearMessage();
+		if (answers !== false) {
+			var d= {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			d["answers"] = answers;
+			
+			XHRequest("submitQuizTF", JSON.stringify(d), {async: false});
+			location.href = "subject.jsp";
+		} else {
+			$e("span-message").innerHTML = "Please answer all questions.";
+			clearMessage();
+		}
+	}
+	
+	function checkAnswer() {
+		var tBody = $e("list").tBodies[0];
+		var row, cell, radio, choice;
+		var answers = [];
+		
+		for (var i = 0; i < tBody.rows.length; i++) {
+			row = tBody.rows[i];
+			cell = row.cells[2];
+			
+			for (var j = 0; j < cell.childNodes.length; j++) {
+				radio = cell.childNodes[j];
+				if (radio.checked) choice = radio.value;
 			}
-		} else {
-			$e("span-message").innerHTML = "Please enter question.";
-			clearMessage();
+			
+			if (answer == null) return false;
+			answers.push({quiz_tf_id: row.cells[1].getAttribute("data-quiz-tf-id"), answer: choice});
 		}
-	}
-	
-	function update(quizTFId, question, answer) {
-		var d = {};
-		d["quiz_tf_id"] = quizTFId;
-		d["question"] = question;
-		d["answer"] = answer;
 		
-		if (d["quiz_tf_id"] != "") {
-			if (d["question"] != "") {
-				if (d["answer"] != "") {
-					XHRequest("updateQuizTrueFalse", JSON.stringify(d));
-					loadTable();
-				} else {
-					$e("span-message").innerHTML = "Missing answer..";
-					clearMessage();
-				}
-			} else {
-				$e("span-message").innerHTML = "Please enter question.";
-				clearMessage();
-			}
-		} else {
-			$e("span-message").innerHTML = "Missing quiz true/false ID.";
-			clearMessage();
-		}
-	}
-	
-	function remove(quizTFId) {
-		var d = {};
-		d["quiz_tf_id"] = quizTFId;
-		
-		if (d["quiz_tf_id"] != "") {
-			XHRequest("deleteQuizTrueFalse", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing quiz true/false ID.";
-			clearMessage();
-		}
-	}
-	
-	function edit(element, quizTFId) {
-		var row = element.parentNode.parentNode;
-		var cell, span, input, checkbox, button;
-		
-		cell = row.cells[1];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[2];
-		checkbox = cell.childNodes[0];
-		checkbox.disabled = false;
-		
-		cell = row.cells[5];
-		button = cell.childNodes[0];
-		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update('" + quizTFId + "', "
-				+ "this.parentNode.parentNode.cells[1].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[2].childNodes[1].checked);");
-		
-		cell = row.cells[6];
-		button = cell.childNodes[0];
-		button.innerHTML = "Cancel";
-		button.setAttribute("onclick", "cancelEdit(this, '" + quizTFId + "');");
-	}
-	
-	function cancelEdit(element, quizTFId) {
-		var row = element.parentNode.parentNode;
-		var cell, checkbox, button;
-		
-		cell = row.cells[1];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[2];
-		checkbox = cell.childNodes[0];
-		checkbox.disabled = true;
-		
-		cell = row.cells[5];
-		button = cell.childNodes[0];
-		button.innerHTML = "Update";
-		button.setAttribute("onclick", "edit(this, '" + quizTFId + "');");
-		
-		cell = row.cells[6];
-		button = cell.childNodes[0];
-		button.innerHTML = "Delete";
-		button.setAttribute("onclick", "remove('" + quizTFId + "');");
+		return answers;
 	}
 	
 	var t;
@@ -283,6 +196,11 @@ div.title {
 
 span.title {
 	font-size: 20px;
+}
+
+div.info {
+	margin: 10px 0px;
+	padding: 10px;
 }
 
 div.message {
@@ -336,6 +254,10 @@ input[type=checkbox] {
 	cursor: pointer;
 }
 
+input[type=checkbox]:hover {
+	outline: 1px solid;
+}
+
 div.button {
 	margin: 10px 0px;
 	text-align: center;
@@ -365,13 +287,19 @@ button:hover {
 	</div>
 	<hr>
 	<div class="menu">
-		<a href="lecturer.jsp"><button>Home</button></a>
-		<a href="workload.jsp"><button>View Workloads</button></a>
+		<a href="student.jsp"><button>Home</button></a>
+		<a href="registerSubject.jsp"><button>Register Subjects</button></a>
+		<a href="subject.jsp"><button>View Subjects</button></a>
 		<button onclick="logout();">Log Out</button>
 	</div>
 	<div class="container">
 		<div class="title">
 			<span class="title">Quiz (True/False)</span>
+		</div>
+		<div class="info">
+			Subject ID: <span id="span-subject-id"></span>
+			<br>
+			Subject Name: <span id="span-subject-name"></span>
 		</div>
 		<div class="message">
 			<span class="message" id="span-message"></span>
@@ -382,22 +310,13 @@ button:hover {
 					<tr>
 						<th>No</th>
 						<th>Question</th>
-						<th>True?</th>
-						<th>Modified By</th>
-						<th>Modified On</th>
-						<th>Update</th>
-						<th>Delete</th>
+						<th>True/False</th>
 					</tr>
 				</thead>
 				<tbody></tbody>
 				<tfoot>
 					<tr>
-						<td></td>
-						<td><input type="text" id="input-question"></td>
-						<td><input type="checkbox" id="input-answer"></td>
-						<td></td>
-						<td></td>
-						<td><button onclick="add($e('input-question').value, $e('input-answer').value);">ADD</button></td>
+						<td><button onclick="submitQuiz();">Submit</button></td>
 					</tr>
 				</tfoot>
 			</table>

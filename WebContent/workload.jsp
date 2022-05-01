@@ -67,7 +67,7 @@
 	
 	function loadTable(rc = null) {
 		if (rc == null) {
-			XHRequest("getLecturerWorkloads", JSON.stringify({}), {callback: "loadTable"});
+			XHRequest("getAllWorkloads", JSON.stringify({}), {callback: "loadTable"});
 		} else {
 			clearTable();
 			

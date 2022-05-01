@@ -63,7 +63,7 @@
 		var e = $n("user_type");
 		var userType = "";
 		
-		for (i = 0; i < e.length; i++) {
+		for (var i = 0; i < e.length; i++) {
 			if (e[i].checked) {
 				userType = e[i].value;
 				break;

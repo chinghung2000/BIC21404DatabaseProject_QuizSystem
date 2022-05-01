@@ -440,12 +440,6 @@ input[type=text]:hover, [type=password]:hover {
 	outline: 1px solid;
 }
 
-input[type=checkbox] {
-	height: 20px;
-	width: 20px;
-	cursor: pointer;
-}
-
 div.button {
 	margin: 10px 0px;
 	text-align: center;

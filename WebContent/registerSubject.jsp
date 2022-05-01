@@ -79,27 +79,18 @@
 				row = tBody.insertRow();
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["admin_id"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = Number(i) + 1;
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["admin_name"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				cell.innerHTML = r[i]["lecturer_name"];
+				
+				cell = row.insertCell();
+				cell.innerHTML = r[i]["subject_name"];
 				
 				cell = row.insertCell();
 				button = document.createElement("button");
-				button.innerHTML = "Update";
-				button.setAttribute("onclick", "edit(this, '" + r[i]["admin_id"] + "');");
-				cell.appendChild(button);
-				
-				cell = row.insertCell();
-				button = document.createElement("button");
-				button.innerHTML = "Delete";
-				button.setAttribute("onclick", "remove('" + r[i]["admin_id"] + "');");
+				button.innerHTML = "Register";
+				button.setAttribute("onclick", "register('" + r[i]["workload_id"] + "');");
 				cell.appendChild(button);
 			}
 		}
@@ -113,91 +104,17 @@
 		}
 	}
 	
-	function add(adminId, adminName) {
+	function register(workloadId) {
 		var d = {};
-		d["admin_id"] = adminId;
-		d["admin_name"] = adminName;
+		d["workload_id"] = workloadId;
 		
-		if (d["admin_id"] != "") {
-			if (d["admin_name"] != "") {
-				XHRequest("addAdmin", JSON.stringify(d));
-				loadTable();
-			} else {
-				$e("span-message").innerHTML = "Please enter admin name.";
-				clearMessage();
-			}
-		} else {
-			$e("span-message").innerHTML = "Please enter admin ID.";
-			clearMessage();
-		}
-	}
-	
-	function remove(adminId) {
-		var d = {};
-		d["admin_id"] = adminId;
-		
-		if (d["admin_id"] != "") {
-			XHRequest("deleteAdmin", JSON.stringify(d));
+		if (d["workload_id"] != "") {
+			XHRequest("addRegisteredSubject.jsp", JSON.stringify(d));
 			loadTable();
 		} else {
-			$e("span-message").innerHTML = "Missing admin ID.";
+			$e("span-message").innerHTML = "Missing workload ID.";
 			clearMessage();
 		}
-	}
-	
-	function edit(element, adminId) {
-		var row = element.parentNode.parentNode;
-		var cell, span, input, button;
-		
-		cell = row.cells[0];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[1];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
-		
-		cell = row.cells[2];
-		button = cell.childNodes[0];
-		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
-		
-		cell = row.cells[3];
-		button = cell.childNodes[0];
-		button.innerHTML = "Cancel";
-		button.setAttribute("onclick", "cancelEdit(this, '" + adminId + "');");
-	}
-	
-	function cancelEdit(element, adminId) {
-		var row = element.parentNode.parentNode;
-		var cell, button;
-		
-		cell = row.cells[0];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[1];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
-		
-		cell = row.cells[2];
-		button = cell.childNodes[0];
-		button.innerHTML = "Update";
-		button.setAttribute("onclick", "edit(this, '" + adminId + "');");
-		
-		cell = row.cells[3];
-		button = cell.childNodes[0];
-		button.innerHTML = "Delete";
-		button.setAttribute("onclick", "remove('" + adminId + "');");
 	}
 	
 	var t;
