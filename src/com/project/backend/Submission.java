@@ -5,6 +5,7 @@ public class Submission {
 	protected int taskId;
 	protected String studentId;
 	protected String fileName;
+	protected String filePath;
 	protected String fileHash;
 
 	public int getId() {
@@ -37,6 +38,14 @@ public class Submission {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 	public String getFileHash() {

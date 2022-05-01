@@ -6,10 +6,10 @@ public class QuizObjective {
 	protected int id;
 	protected int workloadId;
 	protected String question;
-	protected String answerA;
-	protected String answerB;
-	protected String answerC;
-	protected String answerD;
+	protected String choiceA;
+	protected String choiceB;
+	protected String choiceC;
+	protected String choiceD;
 	protected char answer;
 	protected int modifiedBy;
 	protected Date modifiedOn;
@@ -38,36 +38,36 @@ public class QuizObjective {
 		this.question = question;
 	}
 
-	public String getAnswerA() {
-		return answerA;
+	public String getChoiceA() {
+		return choiceA;
 	}
 
-	public void setAnswerA(String answerA) {
-		this.answerA = answerA;
+	public void setChoiceA(String choiceA) {
+		this.choiceA = choiceA;
 	}
 
-	public String getAnswerB() {
-		return answerB;
+	public String getChoiceB() {
+		return choiceB;
 	}
 
-	public void setAnswerB(String answerB) {
-		this.answerB = answerB;
+	public void setChoiceB(String choiceB) {
+		this.choiceB = choiceB;
 	}
 
-	public String getAnswerC() {
-		return answerC;
+	public String getChoiceC() {
+		return choiceC;
 	}
 
-	public void setAnswerC(String answerC) {
-		this.answerC = answerC;
+	public void setChoiceC(String choiceC) {
+		this.choiceC = choiceC;
 	}
 
-	public String getAnswerD() {
-		return answerD;
+	public String getChoiceD() {
+		return choiceD;
 	}
 
-	public void setAnswerD(String answerD) {
-		this.answerD = answerD;
+	public void setChoiceD(String choiceD) {
+		this.choiceD = choiceD;
 	}
 
 	public char getAnswer() {
