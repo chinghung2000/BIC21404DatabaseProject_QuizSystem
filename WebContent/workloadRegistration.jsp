@@ -254,7 +254,7 @@
 	
 	function cancelEdit(element, workloadId) {
 		var row = element.parentNode.parentNode;
-		var cell button;
+		var cell, button;
 		
 		cell = row.cells[1];
 		cell.childNodes[0].style.display = "block";
