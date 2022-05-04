@@ -1,6 +1,7 @@
 package com.project.backend;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,6 +35,8 @@ public class DatabaseManager {
 					this.pstmt.setDouble(i, (double) parameter);
 				} else if (parameter instanceof Character || parameter instanceof String) {
 					this.pstmt.setString(i, (String) parameter);
+				} else if (parameter instanceof Date) {
+					this.pstmt.setDate(i, (Date) parameter);
 				} else {
 					this.pstmt.setNull(i, java.sql.Types.NULL);
 				}

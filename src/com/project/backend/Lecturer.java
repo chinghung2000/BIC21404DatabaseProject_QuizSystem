@@ -185,3 +185,35 @@ public class Lecturer extends User implements LecturerInterface {
 		return null;
 	}
 }
+/*
++-------------------------------------------------------+
+|						TEMPLATES						|
++-------------------------------------------------------+
+
+========== Query execution with result ========== 
+
+	DatabaseManager db = new DatabaseManager(new MySQL().connect());
+	
+	db.prepare("");
+	ResultSet rs = db.executeQuery();
+	
+	try {
+		if (rs.next()) {
+			
+		}
+	} catch (SQLException e) {
+		System.out.println("Admin: There are some errors: " + e.toString());
+	}
+	
+	return ;
+
+
+========== Query execution without result ==========
+
+	DatabaseManager db = new DatabaseManager(new MySQL().connect());
+	
+	db.prepare("");
+	return db.executeUpdate();
+
+
+*/
