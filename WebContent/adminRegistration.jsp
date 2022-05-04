@@ -132,21 +132,27 @@
 		}
 	}
 	
-	function update(adminId, adminName) {
+	function update(oldAdminId, adminId, adminName) {
 		var d = {};
+		d["old_admin_id"] = oldAdminId;
 		d["admin_id"] = adminId;
 		d["admin_name"] = adminName;
 		
-		if (d["admin_id"] != "") {
-			if (d["admin_name"] != "") {
-				XHRequest("updateAdmin", JSON.stringify(d));
-				loadTable();
+		if (d["old_admin_id"] != "") {
+			if (d["admin_id"] != "") {
+				if (d["admin_name"] != "") {
+					XHRequest("updateAdmin", JSON.stringify(d));
+					loadTable();
+				} else {
+					$e("span-message").innerHTML = "Please enter admin name.";
+					clearMessage();
+				}
 			} else {
-				$e("span-message").innerHTML = "Please enter admin name.";
+				$e("span-message").innerHTML = "Please enter admin ID.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Please enter admin ID.";
+			$e("span-message").innerHTML = "Missing current admin ID.";
 			clearMessage();
 		}
 	}
@@ -187,7 +193,7 @@
 		cell = row.cells[2];
 		button = cell.childNodes[0];
 		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
+		button.setAttribute("onclick", "update('" + adminId + "', this.parentNode.parentNode.cells[0].childNodes[1].value, "
 				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
 		
 		cell = row.cells[3];
