@@ -1,14 +1,32 @@
 package com.project.backend;
 
 import java.util.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class QuizTrueFalse {
 	protected int id;
-	protected int workloadId;
+	protected Workload workload;
 	protected String question;
 	protected boolean answer;
-	protected int modifiedBy;
+	protected Lecturer modifiedBy;
 	protected Date modifiedOn;
+
+	public QuizTrueFalse(ResultSet rs) {
+		try {
+			this.id = rs.getInt("quiz_tf_id");
+			this.workload = new Workload();
+			this.workload.id = rs.getInt("workload_id");
+			this.question = rs.getString("question");
+			this.answer = rs.getBoolean("answer");
+			this.modifiedBy = new Lecturer();
+			this.modifiedBy.id = rs.getInt("lecturer_id");
+			this.modifiedBy.name = rs.getString("lecturer_name");
+			this.modifiedOn = rs.getDate("modified_on");
+		} catch (SQLException e) {
+			System.out.println("QuizTrueFalse: There are some errors: " + e.toString());
+		}
+	}
 
 	public int getId() {
 		return id;
@@ -18,12 +36,12 @@ public class QuizTrueFalse {
 		this.id = id;
 	}
 
-	public int getWorkloadId() {
-		return workloadId;
+	public Workload getWorkload() {
+		return workload;
 	}
 
-	public void setWorkloadId(int workloadId) {
-		this.workloadId = workloadId;
+	public void setWorkload(Workload workload) {
+		this.workload = workload;
 	}
 
 	public String getQuestion() {
@@ -42,11 +60,11 @@ public class QuizTrueFalse {
 		this.answer = answer;
 	}
 
-	public int getModifiedBy() {
+	public Lecturer getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(int modifiedBy) {
+	public void setModifiedBy(Lecturer modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

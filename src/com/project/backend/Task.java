@@ -1,15 +1,36 @@
 package com.project.backend;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Task {
 	protected int id;
-	protected int workloadId;
+	protected Workload workload;
 	protected String name;
 	protected String fileName;
-	protected String filePath;
-	protected int modifiedBy;
+	protected Lecturer modifiedBy;
 	protected Date modifiedOn;
+
+	public Task() {
+
+	}
+
+	public Task(ResultSet rs) {
+		try {
+			this.id = rs.getInt("task_id");
+			this.workload = new Workload();
+			this.workload.id = rs.getInt("workload_id");
+			this.name = rs.getString("task_name");
+			this.fileName = rs.getString("task_file_name");
+			this.modifiedBy = new Lecturer();
+			this.modifiedBy.id = rs.getInt("lecturer_id");
+			this.modifiedBy.name = rs.getString("lecturer_name");
+			this.modifiedOn = rs.getDate("modified_on");
+		} catch (SQLException e) {
+			System.out.println("Task: There are some errors: " + e.toString());
+		}
+	}
 
 	public int getId() {
 		return id;
@@ -19,12 +40,12 @@ public class Task {
 		this.id = id;
 	}
 
-	public int getWorkloadId() {
-		return workloadId;
+	public Workload getWorkload() {
+		return workload;
 	}
 
-	public void setWorkloadId(int workloadId) {
-		this.workloadId = workloadId;
+	public void setWorkload(Workload workload) {
+		this.workload = workload;
 	}
 
 	public String getName() {
@@ -43,19 +64,11 @@ public class Task {
 		this.fileName = fileName;
 	}
 
-	public String getFilePath() {
-		return filePath;
-	}
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
-
-	public int getModifiedBy() {
+	public Lecturer getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(int modifiedBy) {
+	public void setModifiedBy(Lecturer modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

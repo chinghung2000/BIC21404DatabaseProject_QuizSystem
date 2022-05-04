@@ -1,18 +1,40 @@
 package com.project.backend;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class QuizObjective {
 	protected int id;
-	protected int workloadId;
+	protected Workload workload;
 	protected String question;
 	protected String choiceA;
 	protected String choiceB;
 	protected String choiceC;
 	protected String choiceD;
 	protected char answer;
-	protected int modifiedBy;
+	protected Lecturer modifiedBy;
 	protected Date modifiedOn;
+
+	public QuizObjective(ResultSet rs) {
+		try {
+			this.id = rs.getInt("quiz_obj_id");
+			this.workload = new Workload();
+			this.workload.id = rs.getInt("workload_id");
+			this.question = rs.getString("question");
+			this.choiceA = rs.getString("choice_a");
+			this.choiceB = rs.getString("choice_b");
+			this.choiceC = rs.getString("choice_c");
+			this.choiceD = rs.getString("choice_d");
+			this.answer = rs.getString("answer").charAt(0);
+			this.modifiedBy = new Lecturer();
+			this.modifiedBy.id = rs.getInt("lecturer_id");
+			this.modifiedBy.name = rs.getString("lecturer_name");
+			this.modifiedOn = rs.getDate("modified_on");
+		} catch (SQLException e) {
+			System.out.println("QuizObjective: There are some errors: " + e.toString());
+		}
+	}
 
 	public int getId() {
 		return id;
@@ -22,12 +44,12 @@ public class QuizObjective {
 		this.id = id;
 	}
 
-	public int getWorkloadId() {
-		return workloadId;
+	public Workload getWorkload() {
+		return workload;
 	}
 
-	public void setWorkloadId(int workloadId) {
-		this.workloadId = workloadId;
+	public void setWorkload(Workload workload) {
+		this.workload = workload;
 	}
 
 	public String getQuestion() {
@@ -78,11 +100,11 @@ public class QuizObjective {
 		this.answer = answer;
 	}
 
-	public int getModifiedBy() {
+	public Lecturer getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(int modifiedBy) {
+	public void setModifiedBy(Lecturer modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

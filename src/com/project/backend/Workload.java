@@ -6,20 +6,30 @@ import java.sql.SQLException;
 
 public class Workload {
 	protected int id;
-	protected int lecturerId;
-	protected int subjectId;
-	protected int modifiedBy;
+	protected Lecturer lecturer;
+	protected Subject subject;
+	protected Admin modifiedBy;
 	protected Date modifiedOn;
+
+	public Workload() {
+		super();
+	}
 
 	public Workload(ResultSet rs) {
 		try {
-			this.id = rs.getInt("");
-			this.lecturerId = rs.getInt("");
-			this.subjectId = rs.getInt("");
-			this.modifiedBy = rs.getInt("");
-			this.modifiedOn = rs.getDate("");
+			this.id = rs.getInt("workload_id");
+			this.lecturer = new Lecturer();
+			this.lecturer.id = rs.getInt("lecturer_id");
+			this.lecturer.name = rs.getString("lecturer_name");
+			this.subject = new Subject();
+			this.subject.id = rs.getString("subject_id");
+			this.subject.name = rs.getString("subject_name");
+			this.modifiedBy = new Admin();
+			this.modifiedBy.id = rs.getInt("admin_id");
+			this.modifiedBy.name = rs.getString("admin_name");
+			this.modifiedOn = rs.getDate("modified_on");
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("Workload: There are some errors: " + e.toString());
 		}
 	}
 
@@ -31,27 +41,27 @@ public class Workload {
 		this.id = id;
 	}
 
-	public int getLecturerId() {
-		return lecturerId;
+	public Lecturer getLecturer() {
+		return lecturer;
 	}
 
-	public void setLecturerId(int lecturerId) {
-		this.lecturerId = lecturerId;
+	public void setLecturer(Lecturer lecturer) {
+		this.lecturer = lecturer;
 	}
 
-	public int getSubjectId() {
-		return subjectId;
+	public Subject getSubject() {
+		return subject;
 	}
 
-	public void setSubjectId(int subjectId) {
-		this.subjectId = subjectId;
+	public void setSubject(Subject subject) {
+		this.subject = subject;
 	}
 
-	public int getModifiedBy() {
+	public Admin getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(int modifiedBy) {
+	public void setModifiedBy(Admin modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 

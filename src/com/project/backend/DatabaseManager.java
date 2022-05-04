@@ -14,11 +14,10 @@ public class DatabaseManager {
 		this.connection = connection;
 	}
 
-	// to prepare a SQL statement and binds respective parameters
-	public void prepare(String statement, Object... parameters) {
+	// to prepare a SQL statement and bind respective parameters
+	public boolean prepare(String statement, Object... parameters) {
 		try {
-			this.pstmt = this.connection.prepareStatement(statement, ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
+			this.pstmt = this.connection.prepareStatement(statement, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			System.out.println("DatabaseManager: Preparing SQL statement: \"" + statement + "\"...");
 			int i = 1;
 
@@ -42,9 +41,10 @@ public class DatabaseManager {
 				i++;
 			}
 
+			return true;
 		} catch (SQLException e) {
-			System.out.println("DatabaseManager: There are some errors:");
-			e.printStackTrace();
+			System.out.println("DatabaseManager: There are some errors: " + e.toString());
+			return false;
 		}
 	}
 
@@ -58,32 +58,33 @@ public class DatabaseManager {
 			System.out.println("DatabaseManager: " + rowCount + " row(s) found.");
 			return rs;
 		} catch (SQLException e) {
-			System.out.println("DatabaseManager: There are some errors:");
-			e.printStackTrace();
+			System.out.println("DatabaseManager: There are some errors: " + e.toString());
 			return null;
 		}
 	}
 
 	// to execute SQL statement without return result
-	public void executeUpdate() {
+	public boolean executeUpdate() {
 		try {
 			System.out.println("DatabaseManager: Executing prepared SQL statement...");
 			int affectedRowCount = this.pstmt.executeUpdate();
 			System.out.println("DatabaseManager: " + affectedRowCount + " row(s) affected.");
+			return true;
 		} catch (SQLException e) {
-			System.out.println("DatabaseManager: There are some errors:");
-			e.printStackTrace();
+			System.out.println("DatabaseManager: There are some errors: " + e.toString());
+			return false;
 		}
 	}
 
 	// to close the database connection
-	public void close() {
+	public boolean close() {
 		try {
 			this.connection.close();
 			System.out.println("DatabaseManager: Database connection closed.");
+			return true;
 		} catch (SQLException e) {
-			System.out.println("DatabaseManager: There are some errors:");
-			e.printStackTrace();
+			System.out.println("DatabaseManager: There are some errors: " + e.toString());
+			return false;
 		}
 	}
 }

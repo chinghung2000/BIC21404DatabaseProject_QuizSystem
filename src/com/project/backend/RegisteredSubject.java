@@ -1,15 +1,36 @@
 package com.project.backend;
 
-import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class RegisteredSubject {
 	protected int id;
-	protected String studentId;
-	protected int workloadId;
+	protected Student student;
+	protected Workload workload;
 	protected int quizTFMark;
 	protected int quizObjMark;
-	protected int modifiedBy;
-	protected Date modifiedOn;
+
+	public RegisteredSubject(ResultSet rs) {
+		try {
+			this.id = rs.getInt("reg_subject_id");
+			this.student = new Student();
+			this.student.id = rs.getString("student_id");
+			this.student.name = rs.getString("student_name");
+			this.student.email = rs.getString("student_email");
+			this.workload = new Workload();
+			this.workload.id = rs.getInt("workload_id");
+			this.workload.lecturer = new Lecturer();
+			this.workload.lecturer.id = rs.getInt("lecturer_id");
+			this.workload.lecturer.name = rs.getString("lecturer_name");
+			this.workload.subject = new Subject();
+			this.workload.subject.id = rs.getString("subject_id");
+			this.workload.subject.name = rs.getString("subject_name");
+			this.quizTFMark = rs.getInt("quiz_tf_mark");
+			this.quizObjMark = rs.getInt("quiz_obj_mark");
+		} catch (SQLException e) {
+			System.out.println("RegisteredSubject: There are some errors: " + e.toString());
+		}
+	}
 
 	public int getId() {
 		return id;
@@ -19,20 +40,20 @@ public class RegisteredSubject {
 		this.id = id;
 	}
 
-	public String getStudentId() {
-		return studentId;
+	public Student getStudent() {
+		return student;
 	}
 
-	public void setStudentId(String studentId) {
-		this.studentId = studentId;
+	public void setStudent(Student student) {
+		this.student = student;
 	}
 
-	public int getWorkloadId() {
-		return workloadId;
+	public Workload getWorkload() {
+		return workload;
 	}
 
-	public void setWorkloadId(int workloadId) {
-		this.workloadId = workloadId;
+	public void setWorkload(Workload workload) {
+		this.workload = workload;
 	}
 
 	public int getQuizTFMark() {
@@ -49,21 +70,5 @@ public class RegisteredSubject {
 
 	public void setQuizObjMark(int quizObjMark) {
 		this.quizObjMark = quizObjMark;
-	}
-
-	public int getModifiedBy() {
-		return modifiedBy;
-	}
-
-	public void setModifiedBy(int modifiedBy) {
-		this.modifiedBy = modifiedBy;
-	}
-
-	public Date getModifiedOn() {
-		return modifiedOn;
-	}
-
-	public void setModifiedOn(Date modifiedOn) {
-		this.modifiedOn = modifiedOn;
 	}
 }

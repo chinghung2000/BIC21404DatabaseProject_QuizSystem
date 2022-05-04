@@ -18,8 +18,7 @@ public class MySQL {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
-			System.out.println("MySQL: Error occured when adding JDBC:");
-			e.printStackTrace();
+			System.out.println("MySQL: Error occured when adding JDBC: " + e.toString());
 			return null;
 		}
 
@@ -29,8 +28,7 @@ public class MySQL {
 			System.out.println("MySQL: Connection successful.");
 			return connection;
 		} catch (SQLException e) {
-			System.out.println("MySQL: Connection failed! There are some errors:");
-			e.printStackTrace();
+			System.out.println("MySQL: Connection failed! There are some errors: " + e.toString());
 			return null;
 		}
 	}

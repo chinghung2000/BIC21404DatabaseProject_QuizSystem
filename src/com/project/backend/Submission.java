@@ -1,12 +1,29 @@
 package com.project.backend;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Submission {
 	protected int id;
-	protected int taskId;
-	protected String studentId;
+	protected Task task;
+	protected Student student;
 	protected String fileName;
-	protected String filePath;
 	protected String fileHash;
+
+	public Submission(ResultSet rs) {
+		try {
+			this.id = rs.getInt("submission_id");
+			this.task = new Task();
+			this.task.id = rs.getInt("task_id");
+			this.student = new Student();
+			this.student.id = rs.getString("student_id");
+			this.student.name = rs.getString("student_name");
+			this.fileName = rs.getString("submission_file_name");
+			this.fileHash = rs.getString("submission_file_hash");
+		} catch (SQLException e) {
+			System.out.println("Submission: There are some errors: " + e.toString());
+		}
+	}
 
 	public int getId() {
 		return id;
@@ -16,20 +33,20 @@ public class Submission {
 		this.id = id;
 	}
 
-	public int getTaskId() {
-		return taskId;
+	public Task getTask() {
+		return task;
 	}
 
-	public void setTaskId(int taskId) {
-		this.taskId = taskId;
+	public void setTask(Task task) {
+		this.task = task;
 	}
 
-	public String getStudentId() {
-		return studentId;
+	public Student getStudent() {
+		return student;
 	}
 
-	public void setStudentId(String studentId) {
-		this.studentId = studentId;
+	public void setStudent(Student student) {
+		this.student = student;
 	}
 
 	public String getFileName() {
@@ -38,14 +55,6 @@ public class Submission {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
-	}
-
-	public String getFilePath() {
-		return filePath;
-	}
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
 	}
 
 	public String getFileHash() {

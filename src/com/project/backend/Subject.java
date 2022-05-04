@@ -1,12 +1,31 @@
 package com.project.backend;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
 public class Subject {
 	protected String id;
 	protected String name;
-	protected int modifiedBy;
+	protected Admin modifiedBy;
 	protected Date modifiedOn;
+
+	public Subject() {
+
+	}
+
+	public Subject(ResultSet rs) {
+		try {
+			this.id = rs.getString("subject_id");
+			this.name = rs.getString("subject_name");
+			this.modifiedBy = new Admin();
+			this.modifiedBy.id = rs.getInt("admin_id");
+			this.modifiedBy.name = rs.getString("admin_name");
+			this.modifiedOn = rs.getDate("modified_on");
+		} catch (SQLException e) {
+			System.out.println("Subject: There are some errors: " + e.toString());
+		}
+	}
 
 	public String getId() {
 		return id;
@@ -24,11 +43,11 @@ public class Subject {
 		this.name = name;
 	}
 
-	public int getModifiedBy() {
+	public Admin getModifiedBy() {
 		return modifiedBy;
 	}
 
-	public void setModifiedBy(int modifiedBy) {
+	public void setModifiedBy(Admin modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
 
