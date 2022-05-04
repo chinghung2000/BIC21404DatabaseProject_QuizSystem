@@ -71,149 +71,271 @@ public class Lecturer extends User implements LecturerInterface {
 
 	@Override
 	public ArrayList<Workload> getAllWorkloads(int lecturerId) {
-		// TODO Auto-generated method stub
-		return null;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT w.workload_id, l.lecturer_id, l.lecturer_name, s.subject_id, s.subject_name, a.admin_id, a.admin_name, w.modified_on FROM workload w INNER JOIN lecturer l ON w.lecturer_id = l.lecturer_id INNER JOIN subject s ON w.subject_id = s.subject_id INNER JOIN admin a ON w.modified_by = a.admin_id WHERE w.lecturer_id = ?;",
+				lecturerId);
+		ResultSet rs = db.executeQuery();
+		ArrayList<Workload> workloads = new ArrayList<Workload>();
+		
+		try {
+			while (rs.next()) {
+				workloads.add(new Workload(rs));
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
+		return workloads;
 	}
 
 	@Override
 	public Workload getWorkload(int lecturerId, String subjectId) {
-		// TODO Auto-generated method stub
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT w.workload_id, l.lecturer_id, l.lecturer_name, s.subject_id, s.subject_name, a.admin_id, a.admin_name, w.modified_on FROM workload w INNER JOIN lecturer l ON w.lecturer_id = l.lecturer_id INNER JOIN subject s ON w.subject_id = s.subject_id INNER JOIN admin a ON w.modified_by = a.admin_id WHERE w.lecturer_id = ? AND w.subject_id = ?;",
+				lecturerId, subjectId);
+		ResultSet rs = db.executeQuery();
+		
+		try {
+			if (rs.next()) {
+				return new Workload(rs);
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
 		return null;
 	}
 
 	@Override
 	public ArrayList<Task> getAllTasks(int workloadId) {
-		// TODO Auto-generated method stub
-		return null;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT t.task_id, t.workload_id, t.task_name, t.task_file_name, l.lecturer_id, l.lecturer_name, t.modified_on FROM task t INNER JOIN lecturer l ON t.modified_by = l.lecturer_id WHERE t.workload_id = ?;",
+				workloadId);
+		ResultSet rs = db.executeQuery();
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		
+		try {
+			while (rs.next()) {
+				tasks.add(new Task(rs));
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
+		return tasks;
 	}
 
 	@Override
 	public Task getTask(int taskId, int workloadId) {
-		// TODO Auto-generated method stub
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT t.task_id, t.workload_id, t.task_name, t.task_file_name, l.lecturer_id, l.lecturer_name, t.modified_on FROM task t INNER JOIN lecturer l ON t.modified_by = l.lecturer_id WHERE t.task_id = ? AND t.workload_id = ?;",
+				taskId, workloadId);
+		ResultSet rs = db.executeQuery();
+		
+		try {
+			if (rs.next()) {
+				return new Task(rs);
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
 		return null;
 	}
 
 	@Override
 	public boolean addTask(int workloadId, String taskName, String fileName, int modifiedBy) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean updateTask(int taskId, int workloadId, String taskName, String fileName, int modifiedBy) {
-		// TODO Auto-generated method stub
-		return false;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("INSERT INTO task (workload_id, task_name, task_file_name, modified_by, modified_on) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());",
+				workloadId, taskName, fileName, modifiedBy);
+		return db.executeUpdate();
 	}
 
 	@Override
 	public boolean deleteTask(int taskId) {
-		// TODO Auto-generated method stub
-		return false;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("DELETE FROM task WHERE task_id = ?;",
+				taskId);
+		return db.executeUpdate();
 	}
 
 	@Override
-	public void getAllSubmissions(int taskId) {
-		// TODO Auto-generated method stub
-
+	public ArrayList<Submission> getAllSubmissions(int taskId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT sn.submission_id, sn.task_id, s.student_id, s.student_name, sn.submission_file_name, sn.submission_file_hash FROM submission sn INNER JOIN student s ON sn.student_id = s.student_id WHERE sn.task_id = ?;",
+				taskId);
+		ResultSet rs = db.executeQuery();
+		ArrayList<Submission> submissions = new ArrayList<Submission>();
+		
+		try {
+			while (rs.next()) {
+				submissions.add(new Submission(rs));
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
+		return submissions;
 	}
 
 	@Override
 	public ArrayList<QuizTrueFalse> getAllQuizTF(int workloadId) {
-		// TODO Auto-generated method stub
-		return null;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT q.quiz_tf_id, q.workload_id, q.question, q.answer, l.lecturer_id, l.lecturer_name, q.modified_on FROM quiz_tf q INNER JOIN lecturer l ON q.modified_by = l.lecturer_id WHERE q.workload_id = ?;",
+				workloadId);
+		ResultSet rs = db.executeQuery();
+		ArrayList<QuizTrueFalse> quizTrueFalse = new ArrayList<QuizTrueFalse>();
+		
+		try {
+			while (rs.next()) {
+				quizTrueFalse.add(new QuizTrueFalse(rs));
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
+		return quizTrueFalse;
 	}
 
 	@Override
 	public QuizTrueFalse getQuizTF(int quizTFId) {
-		// TODO Auto-generated method stub
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT q.quiz_tf_id, q.workload_id, q.question, q.answer, l.lecturer_id, l.lecturer_name, q.modified_on FROM quiz_tf q INNER JOIN lecturer l ON q.modified_by = l.lecturer_id WHERE q.quiz_tf_id = ?;",
+				quizTFId);
+		ResultSet rs = db.executeQuery();
+		
+		try {
+			if (rs.next()) {
+				return new QuizTrueFalse(rs);
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
 		return null;
 	}
 
 	@Override
 	public boolean addQuizTF(int workloadId, String question, boolean answer, int modifiedBy) {
-		// TODO Auto-generated method stub
-		return false;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("INSERT INTO quiz_tf (workload_id, question, answer, modified_by, modified_on) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());",
+				workloadId, question, answer, modifiedBy);
+		return db.executeUpdate();
 	}
 
 	@Override
 	public boolean updateQuizTF(int quizTFId, String question, boolean answer, int modifiedBy) {
-		// TODO Auto-generated method stub
-		return false;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("UPDATE quiz_tf SET question = ?, answer = ?, modified_by = ?, modified_on = CURRENT_TIMESTAMP() WHERE quiz_tf_id = ?;",
+				question, answer, modifiedBy, quizTFId);
+		return db.executeUpdate();
 	}
 
 	@Override
 	public boolean deleteQuizTF(int quizTFId) {
-		// TODO Auto-generated method stub
-		return false;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("DELETE FROM quiz_tf WHERE quiz_tf_id = ?;",
+				quizTFId);
+		return db.executeUpdate();
 	}
 
 	@Override
 	public ArrayList<QuizObjective> getAllQuizObj(int workloadId) {
-		// TODO Auto-generated method stub
-		return null;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT q.quiz_obj_id, q.workload_id, q.question, q.choice_a, q.choice_b, q.choice_c, q.choice_d, q.answer, l.lecturer_id, l.lecturer_name, q.modified_on FROM quiz_obj q INNER JOIN lecturer l ON q.modified_by = l.lecturer_id WHERE q.workload_id = ?;",
+				workloadId);
+		ResultSet rs = db.executeQuery();
+		ArrayList<QuizObjective> quizObjective = new ArrayList<QuizObjective>();
+		
+		try {
+			while (rs.next()) {
+				quizObjective.add(new QuizObjective(rs));
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
+		return quizObjective;
 	}
 
 	@Override
 	public QuizObjective getQuizObj(int quizObjId) {
-		// TODO Auto-generated method stub
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT q.quiz_obj_id, q.workload_id, q.question, q.choice_a, q.choice_b, q.choice_c, q.choice_d, q.answer, l.lecturer_id, l.lecturer_name, q.modified_on FROM quiz_obj q INNER JOIN lecturer l ON q.modified_by = l.lecturer_id WHERE q.quiz_obj_id = ?;",
+				quizObjId);
+		ResultSet rs = db.executeQuery();
+		
+		try {
+			if (rs.next()) {
+				return new QuizObjective(rs);
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
 		return null;
 	}
 
 	@Override
 	public boolean addQuizObj(int workloadId, String question, String choiceA, String choiceB, String choiceC,
 			String choiceD, char answer, int modifiedBy) {
-		// TODO Auto-generated method stub
-		return false;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("INSERT INTO quiz_obj (workload_id, question, choice_a, choice_b, choice_c, choice_d, answer, modified_by, modified_on) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP());",
+				workloadId, question, choiceA, choiceB, choiceC, choiceD, answer, modifiedBy);
+		return db.executeUpdate();
 	}
 
 	@Override
 	public boolean updateQuizObj(int quizObjId, String question, String choiceA, String choiceB, String choiceC,
 			String choiceD, char answer, int modifiedBy) {
-		// TODO Auto-generated method stub
-		return false;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("UPDATE quiz_obj SET question = ?, choice_a = ?, choice_b = ?, choice_c = ?, choice_d = ?, answer = ?, modified_by = ?, modified_on = CURRENT_TIMESTAMP() WHERE quiz_obj_id = ?;",
+				question, choiceA, choiceB, choiceC, choiceD, answer, modifiedBy, quizObjId);
+		return db.executeUpdate();
 	}
 
 	@Override
 	public boolean deleteQuizObj(int quizObjId) {
-		// TODO Auto-generated method stub
-		return false;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("DELETE FROM quiz_obj WHERE quiz_obj_id = ?;",
+				quizObjId);
+		return db.executeUpdate();
 	}
 
 	@Override
 	public ArrayList<RegisteredSubject> getAllRegisteredSubject(int workloadId) {
-		// TODO Auto-generated method stub
-		return null;
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT r.reg_subject_id, st.student_id, st.student_name, w.workload_id, l.lecturer_id, l.lecturer_name, s.subject_id, s.subject_name, r.quiz_tf_mark, r.quiz_obj_mark FROM reg_subject r INNER JOIN student st ON r.student_id = st.student_id INNER JOIN workload w ON r.workload_id = w.workload_id INNER JOIN lecturer l ON w.lecturer_id = l.lecturer_id INNER JOIN subject s ON w.subject_id = s.subject_id WHERE r.workload_id = ?;",
+				workloadId);
+		ResultSet rs = db.executeQuery();
+		ArrayList<RegisteredSubject> registeredSubjects = new ArrayList<RegisteredSubject>();
+		
+		try {
+			while (rs.next()) {
+				registeredSubjects.add(new RegisteredSubject(rs));
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
+		return registeredSubjects;
 	}
 }
-/*
-+-------------------------------------------------------+
-|						TEMPLATES						|
-+-------------------------------------------------------+
-
-========== Query execution with result ========== 
-
-	DatabaseManager db = new DatabaseManager(new MySQL().connect());
-	
-	db.prepare("");
-	ResultSet rs = db.executeQuery();
-	
-	try {
-		if (rs.next()) {
-			
-		}
-	} catch (SQLException e) {
-		System.out.println("Admin: There are some errors: " + e.toString());
-	}
-	
-	return ;
-
-
-========== Query execution without result ==========
-
-	DatabaseManager db = new DatabaseManager(new MySQL().connect());
-	
-	db.prepare("");
-	return db.executeUpdate();
-
-
-*/

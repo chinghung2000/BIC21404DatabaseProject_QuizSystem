@@ -16,7 +16,6 @@ public class RegisteredSubject {
 			this.student = new Student();
 			this.student.id = rs.getString("student_id");
 			this.student.name = rs.getString("student_name");
-			this.student.email = rs.getString("student_email");
 			this.workload = new Workload();
 			this.workload.id = rs.getInt("workload_id");
 			this.workload.lecturer = new Lecturer();
