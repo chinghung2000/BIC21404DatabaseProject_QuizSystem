@@ -122,6 +122,8 @@
 			if (d["admin_name"] != "") {
 				XHRequest("addAdmin", JSON.stringify(d));
 				loadTable();
+				$e("input-admin-id").value = null;
+				$e("input-admin-name").value = null;
 			} else {
 				$e("span-message").innerHTML = "Please enter admin name.";
 				clearMessage();

@@ -12,7 +12,7 @@
 File file;
 int maxFileSize = 5000 * 1024;
 int maxMemSize = 5000 * 1024;
-String filePath = "C:\\JavaWeb\\uploads\\";
+String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
 
 String contentType = request.getContentType();
 
@@ -20,7 +20,7 @@ if ((contentType.indexOf("multipart/form-data") >= 0)) {
 
 	DiskFileItemFactory factory = new DiskFileItemFactory();
 	factory.setSizeThreshold(maxMemSize);
-	factory.setRepository(new File("C:\\JavaWeb\\temp\\"));
+	factory.setRepository(new File("C:\\JavaWebUploads\\QuizSystem\\temp\\"));
 	ServletFileUpload upload = new ServletFileUpload(factory);
 	upload.setSizeMax(maxFileSize);
 

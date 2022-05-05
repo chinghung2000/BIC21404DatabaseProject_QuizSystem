@@ -52,9 +52,9 @@
 		xhttp.send(jsonString);
 	}
 	
-	function XHRFormData(APIHandler, formData) {
+	function XHRFormData(APIHandler, formData, {async = true, callback = null, nextCall = null} = {}) {
 		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/" + APIHandler + ".jsp");
+		xhttp.open("POST", "api/" + APIHandler + ".jsp", async);
 		
 		xhttp.onreadystatechange = function() {
 			if (this.readyState === 4) {
@@ -82,6 +82,8 @@
 						alert("Request failed. " + this.statusText + "Error Code: " + this.status);
 				}
 			}
+			
+			if (nextCall != null) window[nextCall]();
 		}
 		
 		xhttp.send(formData);
@@ -166,10 +168,16 @@
 				var formData = new FormData();
 				formData.append("subject_id", "<% out.print(request.getParameter("subject_id")); %>");
 				formData.append("task_name", taskName);
-				formData.append("file", files[0], files[0].name);
+				formData.append("task_file", files[0], files[0].name);
 				
-				XHRFormData("addTask", formData);
-				loadTable();
+				$e("button-upload").innerHTML = "Uploading...";
+				$e("button-upload").disabled = true;
+				XHRFormData("addTask", formData, {async: false});
+				$e("button-upload").innerHTML = "Upload";
+				$e("button-upload").disabled = false;
+// 				loadTable();
+				$e("input-task-name").value = null;
+				$e("input-upload-file").value = null;
 			} else {
 				$e("span-message").innerHTML = "Please select a file.";
 				clearMessage();
@@ -368,7 +376,7 @@ button:hover {
 			<br>
 			<label class="upload-field" for="input-upload-file">Document:</label>
 			<input type="file" id="input-upload-file">
-			<button onclick="add($e('input-task-name').value, $e('input-upload-file').files);">Upload</button>
+			<button id="button-upload" onclick="add($e('input-task-name').value, $e('input-upload-file').files);">Upload</button>
 		</div>
 		<div class="content">
 			<table id="list" border="1">
