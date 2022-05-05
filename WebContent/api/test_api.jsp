@@ -14,7 +14,6 @@
 <%
 // create gson object (for JSON)
 Gson gson = new Gson();
-boolean execute = false;
 
 // create a Dictionary of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
@@ -23,18 +22,25 @@ HashMap<String, Object> d = new HashMap<String, Object>();
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
+// define logic control variables
+boolean execute = false;
+
+
 execute = true;
+
 
 // execution
 if (execute) {
 	
 }
 
+
 // check unknown error
 if ((boolean) rc.get("ok") == false && rc.get("description") == null) {
 	rc.put("error_code", 500);
 	rc.put("description", "Internal Server Error: Unknown error found");
 }
+
 
 // echo JSON string of response content ($rc) 
 out.println(gson.toJson(rc));

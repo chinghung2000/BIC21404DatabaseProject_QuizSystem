@@ -14,7 +14,6 @@
 <%
 // create gson object (for JSON)
 Gson gson = new Gson();
-boolean execute = false;
 
 // create a Dictionary of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
@@ -22,6 +21,10 @@ HashMap<String, Object> d = new HashMap<String, Object>();
 // create a Dictionary of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
+
+// define logic control variables
+boolean execute = false;
+
 
 // check whether request method is 'POST'
 if (request.getMethod().equals("POST")) {
@@ -39,13 +42,15 @@ if (request.getMethod().equals("POST")) {
 			
 			// check whether request body is not null 
 			if (reqBody != null) {
-				boolean JSONError = true;
+				boolean JSONError;
 				
 				// try JSON parsing request body and convert into Dictionary $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
-				} catch (JsonSyntaxException e) {}
+				} catch (JsonSyntaxException e) {
+					JSONError = true;
+				}
 				
 				// check whether it's no error in JSON parsing
 				if (!JSONError) {
@@ -71,6 +76,7 @@ if (request.getMethod().equals("POST")) {
 	rc.put("error_code", 405);
 	rc.put("description", "Method Not Allowed: No POST request was received");
 }
+
 
 // execution
 if (execute) {
@@ -99,11 +105,13 @@ if (execute) {
 	}
 }
 
+
 // check unknown error
 if ((boolean) rc.get("ok") == false && rc.get("description") == null) {
 	rc.put("error_code", 500);
 	rc.put("description", "Internal Server Error: Unknown error found");
 }
+
 
 // echo JSON string of response content ($rc) 
 out.println(gson.toJson(rc));
