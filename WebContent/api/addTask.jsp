@@ -58,42 +58,22 @@ if (request.getMethod().equals("POST")) {
 if (execute) {
 	
 	// definitions of DiskFileItemFactory, ServletFileUpload objects and variables
-	int maxMemorySize = 5 * 1024 * 1024 ;	// 5 MB
-	int maxFileSize = 5 * 1024 * 1024;		// 5 MB
+	int maxMemorySize = 100 * 1024 * 1024 ;	// 100 MB
+	int maxFileSize = 100 * 1024 * 1024;	// 100 MB
 	
 	DiskFileItemFactory dfif = new DiskFileItemFactory();
 	dfif.setSizeThreshold(maxMemorySize);
 	dfif.setRepository(new File("C:\\JavaWebUploads\\QuizSystem\\temp\\"));
 	ServletFileUpload upload = new ServletFileUpload(dfif);
 	upload.setFileSizeMax(maxFileSize);
-	
 	String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
 	
 	HashMap<String, Object> parameters = new HashMap<String, Object>();
-	ArrayList<String> files = new ArrayList<String>();
+	List<FileItem> fileItems = null;
 	
+	// try parsing form-data into FileItems
 	try {
-		List<FileItem> fileItems = upload.parseRequest(request);
-		Iterator<FileItem> i = fileItems.iterator();
-		
-		while (i.hasNext()) {
-			FileItem fileItem = i.next();
-			
-			if (fileItem.isFormField()) {
-				parameters.put(fileItem.getFieldName(), fileItem.getString());
-			} else {
-				if (!fileItem.getName().equals("")) {
-					parameters.put(fileItem.getFieldName(), fileItem.getName());
-					files.add(fileItem.getName());
-					File file = new File(filePath + fileItem.getName());
-					fileItem.write(file);					 
-				}
-			}
-		}
-		
-		rc.put("parameters", parameters);
-		rc.put("files", files);
-		rc.put("ok", true);
+		fileItems = upload.parseRequest(request);
 	} catch (FileSizeLimitExceededException e) {
 		System.out.println(e);
 		rc.put("error_code", 400);
@@ -103,6 +83,44 @@ if (execute) {
 		System.out.println(e);
 		rc.put("error_code", 400);
 		rc.put("description", "Bad Request: Bad POST Request: Unknown error");
+	}
+	
+	if (fileItems != null) {
+		// first iteration to collect parameters
+		Iterator<FileItem> i = fileItems.iterator();
+		
+		while (i.hasNext()) {
+			FileItem fileItem = i.next();
+			
+			if (fileItem.isFormField()) {
+				parameters.put(fileItem.getFieldName(), fileItem.getString());
+			}
+		}
+		
+		// get workloadId by lecturerId and subjectId
+		int lecturerId = Integer.parseInt((String) session.getAttribute("user_id"));
+		String subjectId = (String) parameters.get("subject_id");
+		
+		Lecturer lecturer = new Lecturer();
+// 		Workload workload = lecturer.getWorkload(lecturerId, subjectId);
+// 		int workloadId = workload.getId();
+		
+		// second iteration to get files
+		i = fileItems.iterator();
+		
+		while (i.hasNext()) {
+			FileItem fileItem = i.next();
+			
+			if (!fileItem.isFormField()) {
+				// skips file with empty file name
+				if (!fileItem.getName().equals("")) {
+					File file = new File(filePath + fileItem.getName());
+					fileItem.write(file);
+				}
+			}
+		}
+		
+		rc.put("ok", true);
 	}
 }
 
