@@ -106,7 +106,7 @@ public class Student extends User implements StudentInterface {
 		ResultSet rs = db.executeQuery();
 		
 		try {
-			while (rs.next()) {
+			if (rs.next()) {
 				return new Workload(rs);
 			}
 		} catch (SQLException e) {
