@@ -175,7 +175,7 @@
 				XHRFormData("addTask", formData, {async: false});
 				$e("button-upload").innerHTML = "Upload";
 				$e("button-upload").disabled = false;
-// 				loadTable();
+				loadTable();
 				$e("input-task-name").value = null;
 				$e("input-upload-file").value = null;
 			} else {

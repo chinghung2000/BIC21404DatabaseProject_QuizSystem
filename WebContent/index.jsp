@@ -31,8 +31,6 @@
 						var rc = JSON.parse(this.responseText);
 						
 						if (rc["ok"] === true) {
-							location.href = rc["landing"];
-							
 							if (callback != null) window[callback](rc);
 						} else {
 							if ("redirect" in rc) {
@@ -78,7 +76,7 @@
 		if (d["user_id"] != "") {
 			if (d["password"] != "") {
 				if (d["user_type"] != "") {
-					XHRequest("login", JSON.stringify(d));
+					XHRequest("login", JSON.stringify(d), {callback: "loginCallback"});
 				} else {
 					$e("span-login-message").innerHTML = "Please choose a user type.";
 					clearMessage();
@@ -91,6 +89,10 @@
 			$e("span-login-message").innerHTML = "Please enter user ID.";
 			clearMessage();
 		}
+	}
+	
+	function loginCallback(rc) {
+		location.href = rc["landing"];
 	}
 	
 	var t;
@@ -211,11 +213,11 @@ button:hover {
 			<form>
 				<div class="login-field">
 					<label class="login-field" for="input-user-id">User ID:</label>
-					<input type="text" id="input-user-id" name="user_id" autocomplete="off">
+					<input type="text" id="input-user-id" name="user_id" autocomplete="off" maxlength="8">
 				</div>
 				<div class="login-field">
 					<label class="login-field" for="input-password">Password:</label>
-					<input type="password" id="input-password" name="password" autocomplete="off">
+					<input type="password" id="input-password" name="password" autocomplete="off" maxlength="16">
 				</div>
 				<div class="login-field-radio">
 					<input type="radio" id="input-radio-admin" name="user_type" value="admin">
