@@ -120,7 +120,7 @@
 		
 		if (d["admin_id"] != "") {
 			if (d["admin_name"] != "") {
-				XHRequest("addAdmin", JSON.stringify(d));
+				XHRequest("addAdmin", JSON.stringify(d), {async: false});
 				loadTable();
 				$e("input-admin-id").value = null;
 				$e("input-admin-name").value = null;
@@ -143,7 +143,7 @@
 		if (d["old_admin_id"] != "") {
 			if (d["admin_id"] != "") {
 				if (d["admin_name"] != "") {
-					XHRequest("updateAdmin", JSON.stringify(d));
+					XHRequest("updateAdmin", JSON.stringify(d), {async: false});
 					loadTable();
 				} else {
 					$e("span-message").innerHTML = "Please enter admin name.";
@@ -163,12 +163,14 @@
 		var d = {};
 		d["admin_id"] = adminId;
 		
-		if (d["admin_id"] != "") {
-			XHRequest("deleteAdmin", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing admin ID.";
-			clearMessage();
+		if (confirm("Are you sure to delete admin with ID '" + adminId + "''?") == true) {
+			if (d["admin_id"] != "") {
+				XHRequest("deleteAdmin", JSON.stringify(d), {async: false});
+				loadTable();
+			} else {
+				$e("span-message").innerHTML = "Missing admin ID.";
+				clearMessage();
+			}
 		}
 	}
 	
