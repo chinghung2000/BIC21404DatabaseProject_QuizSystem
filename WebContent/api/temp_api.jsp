@@ -52,7 +52,7 @@ if (request.getMethod().equals("POST")) {
 					JSONError = true;
 				}
 				
-				// check whether it's no error in JSON parsing
+				// check whether there are no error in JSON parsing
 				if (!JSONError) {
 					// perform parameter validation
 					validate = true;

@@ -1,4 +1,3 @@
-<%@page import="com.project.backend.Admin"%>
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
@@ -8,7 +7,7 @@
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
-<%-- <%@ page import="com.project.backend.*"%> --%>
+<%@ page import="com.project.backend.*"%>
 
 
 <%
@@ -53,7 +52,7 @@ if (request.getMethod().equals("POST")) {
 					JSONError = true;
 				}
 				
-				// check whether it's no error in JSON parsing
+				// check whether there are no error in JSON parsing
 				if (!JSONError) {
 					// perform parameter validation
 					validate = true;
@@ -83,7 +82,7 @@ if (request.getMethod().equals("POST")) {
 if (validate) {
 	
 	// check session for all user types
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type") != null) {
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
 		// permit execution
 		execute = true;
 	} else {

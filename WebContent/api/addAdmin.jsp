@@ -55,7 +55,7 @@ if (request.getMethod().equals("POST")) {
 				// check whether there are no error in JSON parsing
 				if (!JSONError) {
 					// perform parameter validation
-					validate= true;
+					validate = true;
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: Bad POST Request: Can't parse JSON object");
@@ -78,75 +78,90 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-// parameter validation
+//parameter validation
 if (validate) {
 	
 	// check session for all user types
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type") != null) {
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
 		
-		// validate parameter 'npassword'
-		if (d.containsKey("npassword")) {
-			if (!d.get("npassword").equals("")) {
-				if (((String) d.get("npassword")).length() <= 16) {
+		// validate parameter 'admin_id'
+		if (d.containsKey("admin_id")) {
+			if (!d.get("admin_id").equals("")) {
+				if (((String) d.get("admin_id")).length() <= 6) {
+					boolean parseUnsignedIntError;
 					
-					// validate parameter 'cpassword'
-					if (d.containsKey("cpassword")) {
-						if (!d.get("cpassword").equals("")) {
-							if (((String) d.get("cpassword")).length() <= 16) {
-								
-								// check if 'npassword' == 'cpassword'
-								if (d.get("npassword").equals(d.get("cpassword"))) {
+					// try to parse 'admin_id' into unsigned integer
+					try {
+						Integer.parseUnsignedInt((String) d.get("admin_id"));
+						parseUnsignedIntError = false;
+					} catch (NumberFormatException e) {
+						parseUnsignedIntError = true;
+					}
+					
+					// check whether there are no error in parsing process
+					if (!parseUnsignedIntError) {
+						
+						// validate parameter 'admin_name'
+						if (d.containsKey("admin_name")) {
+							if (!d.get("admin_name").equals("")) {
+								if (((String) d.get("admin_name")).length() <= 50) {
 									// permit execution
 									execute = true;
 								} else {
 									rc.put("error_code", 400);
-									rc.put("message", "Password didn't match.");
-									rc.put("description", "Bad Request: 'npassword' and 'cpassword' didn't match");
+									rc.put("description", "Bad Request: 'admin_name' length can't be more than 50");
 								}
 							} else {
 								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: 'cpassword' length can't be more than 16");
+								rc.put("description", "Bad Request: 'admin_name' can't be empty");
 							}
 						} else {
 							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'cpassword' can't be empty");
+							rc.put("description", "Bad Request: Parameter 'admin_name' is required");
 						}
 					} else {
 						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'cpassword' is required");
+						rc.put("message", "Admin ID must be an unsigned integer.");
+						rc.put("description", "Bad Request: 'admin_id' must be an unsigned integer");
 					}
 				} else {
 					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'npassword' length can't be more than 16");
+					rc.put("description", "Bad Request: 'admin_id' length can't be more than 6");
 				}
 			} else {
 				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: 'npassword' can't be empty");
+				rc.put("description", "Bad Request: 'admin_id' can't be empty");
 			}
 		} else {
 			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: Parameter 'npassword' is required");
+			rc.put("description", "Bad Request: Parameter 'admin_id' is required");
 		}
 	} else {
 		rc.put("redirect", "index.jsp");
 		rc.put("error_code", 401);
-		rc.put("description", "Unauthorized: Session not found");
+		rc.put("description", "Unauthorized: Session not found or invalid session");
 	}
 }
 
 
 // execution
 if (execute) {
-	User user = new User();
-	boolean ok = user.updatePassword((String) session.getAttribute("user_type"), (String) session.getAttribute("user_id"),
-			(String) d.get("npassword"));
+	Admin adminUser = new Admin();
+	Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")));
 	
-	if (ok) {
-		rc.put("landing", "index.jsp");
-		rc.put("ok", true);
+	if (admin == null) {
+		boolean ok = adminUser.addAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")), (String) d.get("admin_name"));
+		
+		if (ok) {
+			rc.put("ok", true);
+		} else {
+			rc.put("error_code", 500);
+			rc.put("description", "Internal Server Error: Database Error");
+		}
 	} else {
-		rc.put("error_code", 500);
-		rc.put("description", "Internal Server Error: Database Error");
+		rc.put("error_code", 400);
+		rc.put("message", "The admin already exist.");
+		rc.put("description", "Bad Request: The admin already exist");
 	}
 }
 

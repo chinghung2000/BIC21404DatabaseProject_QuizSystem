@@ -53,7 +53,7 @@ if (request.getMethod().equals("POST")) {
 					JSONError = true;
 				}
 				
-				// check whether it's no error in JSON parsing
+				// check whether there are no error in JSON parsing
 				if (!JSONError) {
 					// perform parameter validation
 					validate = true;
@@ -150,19 +150,18 @@ if (execute) {
 		if (user instanceof Admin) {
 			Admin admin = (Admin) user;
 			session.setAttribute("user_id", Integer.toString(admin.getId()));
-			rc.put("landing", "admin.jsp");
 		} else if (user instanceof Lecturer) {
 			Lecturer lecturer = (Lecturer) user;
 			session.setAttribute("user_id", Integer.toString(lecturer.getId()));
-			rc.put("landing", "lecturer.jsp");
 		} else if (user instanceof Student) {
 			Student student = (Student) user;
 			session.setAttribute("user_id", student.getId());
-			rc.put("landing", "student.jsp");
 		}
 		
 		if (d.get("user_id").equals(d.get("password"))) {
 			rc.put("landing", "updatePassword.jsp");
+		} else {
+			rc.put("landing", d.get("user_type") + ".jsp");
 		}
 		
 		rc.put("ok", true);
