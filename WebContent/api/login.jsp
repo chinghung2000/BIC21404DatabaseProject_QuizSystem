@@ -23,6 +23,7 @@ HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
 // define logic control variables
+boolean validate = false;
 boolean execute = false;
 
 
@@ -54,8 +55,8 @@ if (request.getMethod().equals("POST")) {
 				
 				// check whether it's no error in JSON parsing
 				if (!JSONError) {
-					// permit execution
-					execute = true;
+					// perform parameter validation
+					validate = true;
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: Bad POST Request: Can't parse JSON object");
@@ -78,61 +79,55 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-// execution
-if (execute) {
+// parameter validation
+if (validate) {
 	
 	// validate parameter 'user_id'
 	if (d.containsKey("user_id")) {
 		if (!d.get("user_id").equals("")) {
-			
-			// validate parameter 'password'
-			if (d.containsKey("password")) {
-				if (!d.get("password").equals("")) {
-					
-					// validate parameter 'user_type'
-					if (d.containsKey("user_type")) {
-						if (!d.get("user_type").equals("")) {
-							ArrayList<String> allowedUserTypes = new ArrayList<String>();
-							Collections.addAll(allowedUserTypes, "admin", "lecturer", "student");
+			if (((String) d.get("user_id")).length() <= 8) {
+				
+				// validate parameter 'password'
+				if (d.containsKey("password")) {
+					if (!d.get("password").equals("")) {
+						if (((String) d.get("password")).length() <= 16) {
 							
-							if (allowedUserTypes.contains(d.get("user_type"))) {
-								
-								// execute backend logic...
-								// parent if clause for call backend result (to-be)
-								if (true) {
-									// create new session
-									session.setAttribute("user_id", d.get("user_id"));
-									session.setAttribute("user_type", d.get("user_type"));
+							// validate parameter 'user_type'
+							if (d.containsKey("user_type")) {
+								if (!d.get("user_type").equals("")) {
+									ArrayList<String> allowedUserTypes = new ArrayList<String>();
+									Collections.addAll(allowedUserTypes, "admin", "lecturer", "student");
 									
-									if (d.get("user_type").equals("admin")) {
-										rc.put("landing", "admin.jsp");
-									} else if (d.get("user_type").equals("lecturer")) {
-										rc.put("landing", "lecturer.jsp");
-									} else if (d.get("user_type").equals("student")) {
-										rc.put("landing", "student.jsp");
+									if (allowedUserTypes.contains(d.get("user_type"))) {
+										// permit execution
+										execute = true;
+									} else {
+										rc.put("error_code", 400);
+										rc.put("description", "Bad Request: Invalid value for 'user_type'");
 									}
-									
-									rc.put("ok", true);
+								} else {
+									rc.put("error_code", 400);
+									rc.put("description", "Bad Request: 'user_type' can't be empty");
 								}
 							} else {
 								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: Invalid value for 'user_type'");
+								rc.put("description", "Bad Request: Parameter 'user_type' is required");
 							}
 						} else {
 							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'user_type' can't be empty");
+							rc.put("description", "Bad Request: 'password' length can't be more than 16");
 						}
 					} else {
 						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'user_type' is required");
+						rc.put("description", "Bad Request: 'password' can't be empty");
 					}
 				} else {
 					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'password' can't be empty");
+					rc.put("description", "Bad Request: Parameter 'password' is required");
 				}
 			} else {
 				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: Parameter 'password' is required");
+				rc.put("description", "Bad Request: 'user_id' length can't be more than 8");
 			}
 		} else {
 			rc.put("error_code", 400);
@@ -141,6 +136,40 @@ if (execute) {
 	} else {
 		rc.put("error_code", 400);
 		rc.put("description", "Bad Request: Parameter 'user_id' is required");
+	}
+}
+
+
+// execution
+if (execute) {
+	User user = new User().login((String) d.get("user_type"), (String) d.get("user_id"), (String) d.get("password"));
+	
+	if (user != null) {
+		session.setAttribute("user_type", d.get("user_type"));
+		
+		if (user instanceof Admin) {
+			Admin admin = (Admin) user;
+			session.setAttribute("user_id", Integer.toString(admin.getId()));
+			rc.put("landing", "admin.jsp");
+		} else if (user instanceof Lecturer) {
+			Lecturer lecturer = (Lecturer) user;
+			session.setAttribute("user_id", Integer.toString(lecturer.getId()));
+			rc.put("landing", "lecturer.jsp");
+		} else if (user instanceof Student) {
+			Student student = (Student) user;
+			session.setAttribute("user_id", student.getId());
+			rc.put("landing", "student.jsp");
+		}
+		
+		if (d.get("user_id").equals(d.get("password"))) {
+			rc.put("landing", "updatePassword.jsp");
+		}
+		
+		rc.put("ok", true);
+	} else {
+		rc.put("error_code", 401);
+		rc.put("message", "Incorrect user ID or password.");
+		rc.put("description", "Unauthorized: Incorrect user ID or password");
 	}
 }
 

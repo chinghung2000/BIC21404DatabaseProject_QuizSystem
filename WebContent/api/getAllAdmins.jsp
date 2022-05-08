@@ -1,7 +1,7 @@
+<%@page import="com.project.backend.Admin"%>
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ page import="java.util.Collections"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
@@ -23,6 +23,7 @@ HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
 // define logic control variables
+boolean validate = false;
 boolean execute = false;
 
 
@@ -54,8 +55,8 @@ if (request.getMethod().equals("POST")) {
 				
 				// check whether it's no error in JSON parsing
 				if (!JSONError) {
-					// permit execution
-					execute = true;
+					// perform parameter validation
+					validate = true;
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: Bad POST Request: Can't parse JSON object");
@@ -78,27 +79,38 @@ if (request.getMethod().equals("POST")) {
 }
 
 
+//parameter validation
+if (validate) {
+	
+	// check session for all user types
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type") != null) {
+		// permit execution
+		execute = true;
+	} else {
+		rc.put("redirect", "index.jsp");
+		rc.put("error_code", 401);
+		rc.put("description", "Unauthorized: Session not found");
+	}
+}
+
+
 // execution
 if (execute) {
+	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
+	HashMap<String, Object> adminDict;
 	
-	// execute backend logic...
-	// parent if clause for call backend result (to-be)
-	if (true) {
-		ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-		HashMap<String, Object> admin = new HashMap<String, Object>();
-		
-		admin.put("admin_id", "1");
-		admin.put("admin_name", "Ahmad Syahmi");
-		result.add(admin);
-		
-		admin = new HashMap<String, Object>();
-		admin.put("admin_id", "2");
-		admin.put("admin_name", "Muhammad Arif");
-		result.add(admin);
-		
-		rc.put("result", result);
-		rc.put("ok", true);
+	Admin adminUser = new Admin();
+	ArrayList<Admin> admins = adminUser.getAllAdmins();
+	
+	for (Admin admin : admins) {
+		adminDict = new HashMap<String, Object>();
+		adminDict.put("admin_id", admin.getId());
+		adminDict.put("admin_name", admin.getName());
+		result.add(adminDict);
 	}
+	
+	rc.put("result", result);
+	rc.put("ok", true);
 }
 
 

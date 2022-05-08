@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ page import="java.util.Collections"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
@@ -23,6 +22,7 @@ HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
 // define logic control variables
+boolean validate = false;
 boolean execute = false;
 
 
@@ -54,8 +54,8 @@ if (request.getMethod().equals("POST")) {
 				
 				// check whether it's no error in JSON parsing
 				if (!JSONError) {
-					// permit execution
-					execute = true;
+					// perform parameter validation
+					validate= true;
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: Bad POST Request: Can't parse JSON object");
@@ -78,9 +78,76 @@ if (request.getMethod().equals("POST")) {
 }
 
 
+// parameter validation
+if (validate) {
+	
+	// check session for all user types
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type") != null) {
+		
+		// validate parameter 'npassword'
+		if (d.containsKey("npassword")) {
+			if (!d.get("npassword").equals("")) {
+				if (((String) d.get("npassword")).length() <= 16) {
+					
+					// validate parameter 'cpassword'
+					if (d.containsKey("cpassword")) {
+						if (!d.get("cpassword").equals("")) {
+							if (((String) d.get("cpassword")).length() <= 16) {
+								
+								// check if 'npassword' == 'cpassword'
+								if (d.get("npassword").equals(d.get("cpassword"))) {
+									// permit execution
+									execute = true;
+								} else {
+									rc.put("error_code", 400);
+									rc.put("message", "Password didn't match.");
+									rc.put("description", "Bad Request: 'npassword' and 'cpassword' didn't match");
+								}
+							} else {
+								rc.put("error_code", 400);
+								rc.put("description", "Bad Request: 'cpassword' length can't be more than 16");
+							}
+						} else {
+							rc.put("error_code", 400);
+							rc.put("description", "Bad Request: 'cpassword' can't be empty");
+						}
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: Parameter 'cpassword' is required");
+					}
+				} else {
+					rc.put("error_code", 400);
+					rc.put("description", "Bad Request: 'npassword' length can't be more than 16");
+				}
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'npassword' can't be empty");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: Parameter 'npassword' is required");
+		}
+	} else {
+		rc.put("redirect", "index.jsp");
+		rc.put("error_code", 401);
+		rc.put("description", "Unauthorized: Session not found");
+	}
+}
+
+
 // execution
 if (execute) {
+	User user = new User();
+	boolean ok = user.updatePassword((String) session.getAttribute("user_type"), (String) session.getAttribute("user_id"),
+			(String) d.get("npassword"));
 	
+	if (ok) {
+		rc.put("landing", "index.jsp");
+		rc.put("ok", true);
+	} else {
+		rc.put("error_code", 500);
+		rc.put("description", "Internal Server Error: Database Error");
+	}
 }
 
 

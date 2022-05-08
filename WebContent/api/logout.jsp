@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ page import="java.util.Collections"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
@@ -22,6 +21,7 @@ HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
 // define logic control variables
+boolean validate = false;
 boolean execute = false;
 
 
@@ -53,8 +53,8 @@ if (request.getMethod().equals("POST")) {
 				
 				// check whether it's no error in JSON parsing
 				if (!JSONError) {
-					// permit execution
-					execute = true;
+					// perform parameter validation
+					validate = true;
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: Bad POST Request: Can't parse JSON object");
@@ -77,9 +77,16 @@ if (request.getMethod().equals("POST")) {
 }
 
 
+// parameter validation
+if (validate) {
+	// permit execution
+	execute = true;
+}
+
+
 // execution
 if (execute) {
-	// remove / invalidate session
+	// remove/invalidate session
 	session.invalidate();
 	rc.put("ok", true);
 }
