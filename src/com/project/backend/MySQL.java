@@ -9,7 +9,8 @@ public class MySQL {
 	private String portNumber = "3306";
 	private String username = "appuser";
 	private String password = "1234";
-	private String url = "jdbc:mysql://" + serverName + ":" + portNumber;
+	private String database = "app";
+	private String url = "jdbc:mysql://" + serverName + ":" + portNumber + "/" + database;
 
 	// to create MySQL database connection
 	public Connection connect() {

@@ -4,11 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class User {
-	public User login(String userType, String id, String password) {
+	public User login(String userType, String userId, String password) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
 		if (userType.equals("admin")) {
-			db.prepare("SELECT id, name FROM admin WHERE id = ? AND password = ?;", id, AES.encrypt(password));
+			db.prepare("SELECT admin_id, admin_name FROM admin WHERE admin_id = ? AND password = ?;",
+					userId, AES.encrypt(password));
 			ResultSet rs = db.executeQuery();
 			
 			try {
@@ -19,7 +20,8 @@ public class User {
 				System.out.println("User: There are some errors: " + e.toString());
 			}
 		} else if (userType.equals("lecturer")) {
-			db.prepare("SELECT id, name FROM lecturer WHERE id = ? AND password = ?;", id, AES.encrypt(password));
+			db.prepare("SELECT l.lecturer_id, l.lecturer_name, a.admin_id, a.admin_name, l.modified_on FROM lecturer l INNER JOIN admin a ON l.modified_by = a.admin_id WHERE l.lecturer_id = ? AND l.password = ?;",
+					userId, AES.encrypt(password));
 			ResultSet rs = db.executeQuery();
 			
 			try {
@@ -30,7 +32,8 @@ public class User {
 				System.out.println("User: There are some errors: " + e.toString());
 			}
 		} else if (userType.equals("student")) {
-			db.prepare("SELECT id, name FROM student WHERE id = ? AND password = ?;", id, AES.encrypt(password));
+			db.prepare("SELECT s.student_id, s.student_name, s.student_email, a.admin_id, a.admin_name FROM student s INNER JOIN admin a ON s.modified_by = a.admin_id WHERE s.student_id = ? AND s.password = ?;",
+					userId, AES.encrypt(password));
 			ResultSet rs = db.executeQuery();
 			
 			try {
@@ -43,5 +46,25 @@ public class User {
 		}
 		
 		return null;
+	}
+	
+	public boolean updatePassword(String userType, String userId, String newPassword) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		if (userType.equals("admin")) {
+			db.prepare("UPDATE admin SET password = ? WHERE admin_id = ?;",
+					AES.encrypt(newPassword), userId);
+			return db.executeUpdate();
+		} else if (userType.equals("lecturer")) {
+			db.prepare("UPDATE lecturer SET password = ? WHERE lecturer_id = ?;",
+					AES.encrypt(newPassword), userId);
+			return db.executeUpdate();
+		} else if (userType.equals("student")) {
+			db.prepare("UPDATE student SET password = ? WHERE student_id = ?;",
+					AES.encrypt(newPassword), userId);
+			return db.executeUpdate();
+		}
+		
+		return false;
 	}
 }
