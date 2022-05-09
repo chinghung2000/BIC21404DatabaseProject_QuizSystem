@@ -22,7 +22,7 @@ public class QuizTrueFalse {
 			this.modifiedBy = new Lecturer();
 			this.modifiedBy.id = rs.getInt("lecturer_id");
 			this.modifiedBy.name = rs.getString("lecturer_name");
-			this.modifiedOn = rs.getDate("modified_on");
+			this.modifiedOn = new Date(rs.getTimestamp("modified_on").getTime());
 		} catch (SQLException e) {
 			System.out.println("QuizTrueFalse: There are some errors: " + e.toString());
 		}

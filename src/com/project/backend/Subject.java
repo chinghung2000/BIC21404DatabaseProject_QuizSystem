@@ -21,7 +21,7 @@ public class Subject {
 			this.modifiedBy = new Admin();
 			this.modifiedBy.id = rs.getInt("admin_id");
 			this.modifiedBy.name = rs.getString("admin_name");
-			this.modifiedOn = rs.getDate("modified_on");
+			this.modifiedOn = new Date(rs.getTimestamp("modified_on").getTime());
 		} catch (SQLException e) {
 			System.out.println("Subject: There are some errors: " + e.toString());
 		}
