@@ -126,8 +126,10 @@
 		
 		if (d["lecturer_id"] != "") {
 			if (d["lecturer_name"] != "") {
-				XHRequest("addLecturer", JSON.stringify(d));
+				XHRequest("addLecturer", JSON.stringify(d), {async: false});
 				loadTable();
+				$e("input-lecturer-id").value = null;
+				$e("input-lecturer-name").value = null;
 			} else {
 				$e("span-message").innerHTML = "Please enter lecturer name.";
 				clearMessage();
@@ -138,21 +140,27 @@
 		}
 	}
 	
-	function update(lecturerId, lecturerName) {
+	function update(oldLecturerId, lecturerId, lecturerName) {
 		var d = {};
+		d["old_lecturer_id"] = oldLecturerId;
 		d["lecturer_id"] = lecturerId;
 		d["lecturer_name"] = lecturerName;
 		
-		if (d["lecturer_id"] != "") {
-			if (d["lecturer_name"] != "") {
-				XHRequest("updateLecturer", JSON.stringify(d));
-				loadTable();
+		if (d["old_lecturer_id"] != "") {
+			if (d["lecturer_id"] != "") {
+				if (d["lecturer_name"] != "") {
+					XHRequest("updateLecturer", JSON.stringify(d), {async: false});
+					loadTable();
+				} else {
+					$e("span-message").innerHTML = "Please enter lecturer name.";
+					clearMessage();
+				}
 			} else {
-				$e("span-message").innerHTML = "Please enter lecturer name.";
+				$e("span-message").innerHTML = "Please enter lecturer ID.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Please enter lecturer ID.";
+			$e("span-message").innerHTML = "Missing current lecturer ID.";
 			clearMessage();
 		}
 	}
@@ -161,12 +169,14 @@
 		var d = {};
 		d["lecturer_id"] = lecturerId;
 		
-		if (d["lecturer_id"] != "") {
-			XHRequest("deleteLecturer", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing lecturer ID.";
-			clearMessage();
+		if (confirm("Are you sure to delete lecturer with ID '" + lecturerId + "'?") == true) {
+			if (d["lecturer_id"] != "") {
+				XHRequest("deleteLecturer", JSON.stringify(d), {async: false});
+				loadTable();
+			} else {
+				$e("span-message").innerHTML = "Missing lecturer ID.";
+				clearMessage();
+			}
 		}
 	}
 	
@@ -193,7 +203,7 @@
 		cell = row.cells[4];
 		button = cell.childNodes[0];
 		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
+		button.setAttribute("onclick", "update('" + lecturerId + "', this.parentNode.parentNode.cells[0].childNodes[1].value, "
 				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
 		
 		cell = row.cells[5];

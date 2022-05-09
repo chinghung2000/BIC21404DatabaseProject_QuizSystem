@@ -126,8 +126,10 @@
 		
 		if (d["subject_id"] != "") {
 			if (d["subject_name"] != "") {
-				XHRequest("addSubject", JSON.stringify(d));
+				XHRequest("addSubject", JSON.stringify(d), {async: false});
 				loadTable();
+				$e("input-subject-id").value = null;
+				$e("input-subject-name").value = null;
 			} else {
 				$e("span-message").innerHTML = "Please enter subject name.";
 				clearMessage();
@@ -138,21 +140,27 @@
 		}
 	}
 	
-	function update(subjectId, subjectName) {
+	function update(oldSubjectId, subjectId, subjectName) {
 		var d = {};
+		d["old_subject_id"] = oldSubjectId;
 		d["subject_id"] = subjectId;
 		d["subject_name"] = subjectName;
 		
-		if (d["subject_id"] != "") {
-			if (d["subject_name"] != "") {
-				XHRequest("updateSubject", JSON.stringify(d));
-				loadTable();
+		if (d["old_subject_id"] != "") { 
+			if (d["subject_id"] != "") {
+				if (d["subject_name"] != "") {
+					XHRequest("updateSubject", JSON.stringify(d), {async: false});
+					loadTable();
+				} else {
+					$e("span-message").innerHTML = "Please enter subject name.";
+					clearMessage();
+				}
 			} else {
-				$e("span-message").innerHTML = "Please enter subject name.";
+				$e("span-message").innerHTML = "Please enter subject ID.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Please enter subject ID.";
+			$e("span-message").innerHTML = "Missing current subject ID.";
 			clearMessage();
 		}
 	}
@@ -161,12 +169,14 @@
 		var d = {};
 		d["subject_id"] = subjectId;
 		
-		if (d["subject_id"] != "") {
-			XHRequest("deleteSubject", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing subject ID.";
-			clearMessage();
+		if (confirm("Are you sure to delete subject with ID '" + subjectId + "''?") == true) {
+			if (d["subject_id"] != "") {
+				XHRequest("deleteSubject", JSON.stringify(d), {async: false});
+				loadTable();
+			} else {
+				$e("span-message").innerHTML = "Missing subject ID.";
+				clearMessage();
+			}
 		}
 	}
 	
@@ -376,7 +386,7 @@ button:hover {
 				<tfoot>
 					<tr>
 						<td><input type="text" id="input-subject-id" maxlength="8"></td>
-						<td><input type="text" id="input-subject-name" style="width: 300px;" maxlength="50"></td>
+						<td><input type="text" id="input-subject-name" style="width: 300px;" maxlength="30"></td>
 						<td></td>
 						<td></td>
 						<td><button onclick="add($e('input-subject-id').value, $e('input-subject-name').value);">ADD</button></td>

@@ -163,7 +163,7 @@
 		var d = {};
 		d["admin_id"] = adminId;
 		
-		if (confirm("Are you sure to delete admin with ID '" + adminId + "''?") == true) {
+		if (confirm("Are you sure to delete admin with ID '" + adminId + "'?") == true) {
 			if (d["admin_id"] != "") {
 				XHRequest("deleteAdmin", JSON.stringify(d), {async: false});
 				loadTable();
