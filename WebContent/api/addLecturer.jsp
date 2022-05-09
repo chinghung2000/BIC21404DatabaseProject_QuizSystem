@@ -121,7 +121,7 @@ if (validate) {
 						}
 					} else {
 						rc.put("error_code", 400);
-						rc.put("message", "Admin ID must be an unsigned integer.");
+						rc.put("message", "Lecturer ID must be an unsigned integer.");
 						rc.put("description", "Bad Request: 'lecturer_id' must be an unsigned integer");
 					}
 				} else {

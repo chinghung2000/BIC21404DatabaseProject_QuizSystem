@@ -84,75 +84,89 @@ if (validate) {
 	// check session for admin
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
 		
-		// validate parameter 'old_admin_id'
-		if (d.containsKey("old_admin_id")) {
-			if (!d.get("old_admin_id").equals("")) {
-				if (((String) d.get("old_admin_id")).length() <= 6) {
-					
-					// validate parameter 'admin_id'
-					if (d.containsKey("admin_id")) {
-						if (!d.get("admin_id").equals("")) {
-							if (((String) d.get("admin_id")).length() <= 6) {
-								boolean parseUnsignedIntError;
-								
-								// try to parse 'old_admin_id' and 'admin_id' into unsigned integer
-								try {
-									Integer.parseUnsignedInt((String) d.get("old_admin_id"));
-									Integer.parseUnsignedInt((String) d.get("admin_id"));
-									parseUnsignedIntError = false;
-								} catch (NumberFormatException e) {
-									parseUnsignedIntError = true;
-								}
-								
-								// check whether there are no error in parsing process
-								if (!parseUnsignedIntError) {
+		// validate parameter 'workload_id'
+		if (d.containsKey("workload_id")) {
+			if (!d.get("workload_id").equals("")) {
+				boolean parseUnsignedIntError;
+				
+				// try to parse 'workload_id' into unsigned integer
+				try {
+					Integer.parseUnsignedInt((String) d.get("workload_id"));
+					parseUnsignedIntError = false;
+				} catch (NumberFormatException e) {
+					parseUnsignedIntError = true;
+				}
+				
+				// check whether there are no error in parsing process
+				if (!parseUnsignedIntError) {
+					if (Integer.parseUnsignedInt((String) d.get("workload_id")) <= 2147483647) {
+						
+						// validate parameter 'lecturer_id'
+						if (d.containsKey("lecturer_id")) {
+							if (!d.get("lecturer_id").equals("")) {
+								if (((String) d.get("lecturer_id")).length() <= 6) {
 									
-									// validate parameter 'admin_name'
-									if (d.containsKey("admin_name")) {
-										if (!d.get("admin_name").equals("")) {
-											if (((String) d.get("admin_name")).length() <= 50) {
-												// permit execution
-												execute = true;
+									// try to parse 'lecturer_id' into unsigned integer
+									try {
+										Integer.parseUnsignedInt((String) d.get("lecturer_id"));
+										parseUnsignedIntError = false;
+									} catch (NumberFormatException e) {
+										parseUnsignedIntError = true;
+									}
+									
+									// check whether there are no error in parsing process
+									if (!parseUnsignedIntError) {
+										
+										// validate parameter 'subject_id'
+										if (d.containsKey("subject_id")) {
+											if (!d.get("subject_id").equals("")) {
+												if (((String) d.get("subject_id")).length() <= 8) {
+													// permit execution
+													execute = true;
+												} else {
+													rc.put("error_code", 400);
+													rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
+												}
 											} else {
 												rc.put("error_code", 400);
-												rc.put("description", "Bad Request: 'admin_name' length can't be more than 50");
+												rc.put("description", "Bad Request: 'subject_id' can't be empty");
 											}
 										} else {
 											rc.put("error_code", 400);
-											rc.put("description", "Bad Request: 'admin_name' can't be empty");
+											rc.put("description", "Bad Request: Parameter 'subject_id' is required");
 										}
 									} else {
 										rc.put("error_code", 400);
-										rc.put("description", "Bad Request: Parameter 'admin_name' is required");
+										rc.put("message", "Lecturer ID must be an unsigned integer.");
+										rc.put("description", "Bad Request: 'lecturer_id' must be an unsigned integer");
 									}
 								} else {
 									rc.put("error_code", 400);
-									rc.put("message", "Current admin ID and admin ID must be an unsigned integer.");
-									rc.put("description", "Bad Request: 'old_admin_id' and 'admin_id' must be an unsigned integer");
+									rc.put("description", "Bad Request: 'lecturer_id' length can't be more than 6");
 								}
 							} else {
 								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: 'admin_id' length can't be more than 6");
+								rc.put("description", "Bad Request: 'lecturer_id' can't be empty");
 							}
 						} else {
 							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'admin_id' can't be empty");
+							rc.put("description", "Bad Request: Parameter 'lecturer_id' is required");
 						}
 					} else {
 						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'admin_id' is required");
+						rc.put("description", "Bad Request: 'workload_id' is out of range");
 					}
 				} else {
 					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'old_admin_id' length can't be more than 6");
+					rc.put("description", "Bad Request: 'workload_id' must be an unsigned integer");
 				}
 			} else {
 				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: 'old_admin_id' can't be empty");
+				rc.put("description", "Bad Request: 'workload_id' can't be empty");
 			}
 		} else {
 			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: Parameter 'old_admin_id' is required");
+			rc.put("description", "Bad Request: Parameter 'workload_id' is required");
 		}
 	} else {
 		rc.put("redirect", "index.jsp");
@@ -165,22 +179,31 @@ if (validate) {
 // execution
 if (execute) {
 	Admin adminUser = new Admin();
-	Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) d.get("old_admin_id")));
+	Workload workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")));
 	
-	if (admin != null) {
-		boolean ok = adminUser.updateAdmin(Integer.parseUnsignedInt((String) d.get("old_admin_id")),
-				Integer.parseUnsignedInt((String) d.get("admin_id")), (String) d.get("admin_name"));
+	if (workload != null) {
+		workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"));
 		
-		if (ok) {
-			rc.put("ok", true);
+		if (workload == null) {
+			boolean ok = adminUser.updateWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")),
+					Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"),
+					Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+			
+			if (ok) {
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "The workload conflicts with another existing record.");
+			rc.put("description", "Bad Request: The workload conflicts with another existing record");
 		}
 	} else {
 		rc.put("error_code", 400);
-		rc.put("message", "The admin doesn't exist.");
-		rc.put("description", "Bad Request: The admin doesn't exist");
+		rc.put("message", "The workload doesn't exist.");
+		rc.put("description", "Bad Request: The workload doesn't exist");
 	}
 }
 

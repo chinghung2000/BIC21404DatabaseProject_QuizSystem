@@ -4,10 +4,11 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
+<%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
-<%-- <%@ page import="com.project.backend.*"%> --%>
+<%@ page import="com.project.backend.*"%>
 
 
 <%
@@ -22,6 +23,7 @@ HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
 // define logic control variables
+boolean validate = false;
 boolean execute = false;
 
 
@@ -53,8 +55,8 @@ if (request.getMethod().equals("POST")) {
 				
 				// check whether there are no error in JSON parsing
 				if (!JSONError) {
-					// permit execution
-					execute = true;
+					// perform parameter validation
+					validate = true;
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: Bad POST Request: Can't parse JSON object");
@@ -77,47 +79,44 @@ if (request.getMethod().equals("POST")) {
 }
 
 
+//parameter validation
+if (validate) {
+	
+	// check session for admin
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
+		// permit execution
+		execute = true;
+	} else {
+		rc.put("redirect", "index.jsp");
+		rc.put("error_code", 401);
+		rc.put("description", "Unauthorized: Session not found or invalid session");
+	}
+}
+
+
 // execution
 if (execute) {
+	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
+	HashMap<String, Object> workloadDict;
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
 	
-	// execute backend logic...
-	// parent if clause for call backend result (to-be)
-	if (true) {
-		ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-		HashMap<String, Object> workload = new HashMap<String, Object>();
-		
-		workload.put("workload_id", "1");
-		workload.put("lecturer_id", "1");
-		workload.put("lecturer_name", "Chuah Chai Wen");
-		workload.put("subject_id", "BIC10303");
-		workload.put("subject_name", "Algebra");
-		workload.put("modified_by", "Ahmad Syahmi");
-		workload.put("modified_on", "21/4/2022 7:51:23 PM");
-		result.add(workload);
-		
-		workload = new HashMap<String, Object>();
-		workload.put("workload_id", "2");
-		workload.put("lecturer_id", "2");
-		workload.put("lecturer_name", "Munirah Binti Mohd Yusof");
-		workload.put("subject_id", "BIC10303");
-		workload.put("subject_name", "Algebra");
-		workload.put("modified_by", "Ahmad Syahmi");
-		workload.put("modified_on", "21/4/2022 7:53:11 PM");
-		result.add(workload);
-		
-		workload = new HashMap<String, Object>();
-		workload.put("workload_id", "3");
-		workload.put("lecturer_id", "2");
-		workload.put("lecturer_name", "Munirah Binti Mohd Yusof");
-		workload.put("subject_id", "BIC10204");
-		workload.put("subject_name", "Algorithm");
-		workload.put("modified_by", "Ahmad Syahmi");
-		workload.put("modified_on", "21/4/2022 7:59:10 PM");
-		result.add(workload);
-		
-		rc.put("result", result);
-		rc.put("ok", true);
+	Admin adminUser = new Admin();
+	ArrayList<Workload> workloads = adminUser.getAllWorkloads();
+	
+	for (Workload workload : workloads) {
+		workloadDict = new HashMap<String, Object>();
+		workloadDict.put("workload_id", workload.getId());
+		workloadDict.put("lecturer_id", workload.getLecturer().getId());
+		workloadDict.put("lecturer_name", workload.getLecturer().getName());
+		workloadDict.put("subject_id", workload.getSubject().getId());
+		workloadDict.put("subject_name", workload.getSubject().getName());
+		workloadDict.put("modified_by", workload.getModifiedBy().getName());
+		workloadDict.put("modified_on", sdf.format(workload.getModifiedOn()));
+		result.add(workloadDict);
 	}
+	
+	rc.put("result", result);
+	rc.put("ok", true);
 }
 
 
