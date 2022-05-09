@@ -169,7 +169,7 @@
 		var d = {};
 		d["subject_id"] = subjectId;
 		
-		if (confirm("Are you sure to delete subject with ID '" + subjectId + "''?") == true) {
+		if (confirm("Are you sure to delete subject with ID '" + subjectId + "'?") == true) {
 			if (d["subject_id"] != "") {
 				XHRequest("deleteSubject", JSON.stringify(d), {async: false});
 				loadTable();
@@ -190,6 +190,7 @@
 		input = document.createElement("input");
 		input.type = "text";
 		input.value = span.innerHTML;
+		input.maxLength = 8;
 		cell.appendChild(input);
 		
 		cell = row.cells[1];
@@ -198,12 +199,13 @@
 		input = document.createElement("input");
 		input.type = "text";
 		input.value = span.innerHTML;
+		input.maxLength = 30;
 		cell.appendChild(input);
 		
 		cell = row.cells[4];
 		button = cell.childNodes[0];
 		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
+		button.setAttribute("onclick", "update('" + subjectId + "', this.parentNode.parentNode.cells[0].childNodes[1].value, "
 				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
 		
 		cell = row.cells[5];

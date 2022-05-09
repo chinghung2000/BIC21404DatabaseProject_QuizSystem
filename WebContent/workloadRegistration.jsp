@@ -173,8 +173,10 @@
 		
 		if (d["lecturer_id"] != "") {
 			if (d["subject_id"] != "") {
-				XHRequest("addWorkload", JSON.stringify(d));
+				XHRequest("addWorkload", JSON.stringify(d), {async: false});
 				loadTable();
+				$e("select-lecturer").value = null;
+				$e("select-subject").value = null;
 			} else {
 				$e("span-message").innerHTML = "Please choose a subject.";
 				clearMessage();
@@ -194,7 +196,7 @@
 		if (d["workload_id"] != "") {
 			if (d["lecturer_id"] != "") {
 				if (d["subject_id"] != "") {
-					XHRequest("updateWorkload", JSON.stringify(d));
+					XHRequest("updateWorkload", JSON.stringify(d), {async: false});
 					loadTable();
 				} else {
 					$e("span-message").innerHTML = "Please choose a subject.";
@@ -214,12 +216,14 @@
 		var d = {};
 		d["workload_id"] = workloadId;
 		
-		if (d["workload_id"] != "") {
-			XHRequest("deleteWorkload", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing workload ID.";
-			clearMessage();
+		if (confirm("Are you sure to delete the workload?") == true) {
+			if (d["workload_id"] != "") {
+				XHRequest("deleteWorkload", JSON.stringify(d), {async: false});
+				loadTable();
+			} else {
+				$e("span-message").innerHTML = "Missing workload ID.";
+				clearMessage();
+			}
 		}
 	}
 	

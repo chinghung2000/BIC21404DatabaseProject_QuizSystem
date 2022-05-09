@@ -190,6 +190,7 @@
 		input = document.createElement("input");
 		input.type = "text";
 		input.value = span.innerHTML;
+		input.maxLength = 6;
 		cell.appendChild(input);
 		
 		cell = row.cells[1];
@@ -198,6 +199,7 @@
 		input = document.createElement("input");
 		input.type = "text";
 		input.value = span.innerHTML;
+		input.maxLength = 50;
 		cell.appendChild(input);
 		
 		cell = row.cells[4];
