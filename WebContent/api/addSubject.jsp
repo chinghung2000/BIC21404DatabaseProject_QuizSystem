@@ -4,7 +4,6 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
-<%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -84,36 +83,70 @@ if (validate) {
 	
 	// check session for all user types
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
-		// permit execution
-		execute = true;
+		
+		// validate parameter 'subject_id'
+		if (d.containsKey("subject_id")) {
+			if (!d.get("subject_id").equals("")) {
+				if (((String) d.get("subject_id")).length() <= 8) {
+					
+					// validate parameter 'subject_name'
+					if (d.containsKey("subject_name")) {
+						if (!d.get("subject_name").equals("")) {
+							if (((String) d.get("subject_name")).length() <= 30) {
+								// permit execution
+								execute = true;
+							} else {
+								rc.put("error_code", 400);
+								rc.put("description", "Bad Request: 'subject_name' length can't be more than 30");
+							}
+						} else {
+							rc.put("error_code", 400);
+							rc.put("description", "Bad Request: 'subject_name' can't be empty");
+						}
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: Parameter 'subject_name' is required");
+					}
+				} else {
+					rc.put("error_code", 400);
+					rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
+				}
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'subject_id' can't be empty");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: Parameter 'subject_id' is required");
+		}
 	} else {
 		rc.put("redirect", "index.jsp");
 		rc.put("error_code", 401);
-		rc.put("description", "Unauthorized: Session not found");
+		rc.put("description", "Unauthorized: Session not found or invalid session");
 	}
 }
 
 
 // execution
 if (execute) {
-	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> lecturerDict;
-	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
-	
 	Admin adminUser = new Admin();
-	ArrayList<Lecturer> lecturers = adminUser.getAllLecturers();
+	Subject subject = adminUser.getSubject((String) d.get("subject_id"));
 	
-	for (Lecturer lecturer : lecturers) {
-		lecturerDict = new HashMap<String, Object>();
-		lecturerDict.put("lecturer_id", lecturer.getId());
-		lecturerDict.put("lecturer_name", lecturer.getName());
-		lecturerDict.put("modified_by", lecturer.getModifiedBy().getName());
-		lecturerDict.put("modified_on", sdf.format(lecturer.getModifiedOn()));
-		result.add(lecturerDict);
+	if (subject == null) {
+		boolean ok = adminUser.addSubject((String) d.get("subject_id"), (String) d.get("subject_name"),
+				Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		
+		if (ok) {
+			rc.put("ok", true);
+		} else {
+			rc.put("error_code", 500);
+			rc.put("description", "Internal Server Error: Database Error");
+		}
+	} else {
+		rc.put("error_code", 400);
+		rc.put("message", "The subject already exist.");
+		rc.put("description", "Bad Request: The subject already exist");
 	}
-	
-	rc.put("result", result);
-	rc.put("ok", true);
 }
 
 

@@ -84,21 +84,21 @@ if (validate) {
 	// check session for all user types
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
 		
-		// validate parameter 'old_admin_id'
-		if (d.containsKey("old_admin_id")) {
-			if (!d.get("old_admin_id").equals("")) {
-				if (((String) d.get("old_admin_id")).length() <= 6) {
+		// validate parameter 'old_lecturer_id'
+		if (d.containsKey("old_lecturer_id")) {
+			if (!d.get("old_lecturer_id").equals("")) {
+				if (((String) d.get("old_lecturer_id")).length() <= 6) {
 					
-					// validate parameter 'admin_id'
-					if (d.containsKey("admin_id")) {
-						if (!d.get("admin_id").equals("")) {
-							if (((String) d.get("admin_id")).length() <= 6) {
+					// validate parameter 'lecturer_id'
+					if (d.containsKey("lecturer_id")) {
+						if (!d.get("lecturer_id").equals("")) {
+							if (((String) d.get("lecturer_id")).length() <= 6) {
 								boolean parseUnsignedIntError;
 								
-								// try to parse 'old_admin_id' and 'admin_id' into unsigned integer
+								// try to parse 'old_lecturer_id' and 'lecturer_id' into unsigned integer
 								try {
-									Integer.parseUnsignedInt((String) d.get("old_admin_id"));
-									Integer.parseUnsignedInt((String) d.get("admin_id"));
+									Integer.parseUnsignedInt((String) d.get("old_lecturer_id"));
+									Integer.parseUnsignedInt((String) d.get("lecturer_id"));
 									parseUnsignedIntError = false;
 								} catch (NumberFormatException e) {
 									parseUnsignedIntError = true;
@@ -107,52 +107,52 @@ if (validate) {
 								// check whether there are no error in parsing process
 								if (!parseUnsignedIntError) {
 									
-									// validate parameter 'admin_name'
-									if (d.containsKey("admin_name")) {
-										if (!d.get("admin_name").equals("")) {
-											if (((String) d.get("admin_name")).length() <= 50) {
+									// validate parameter 'lecturer_name'
+									if (d.containsKey("lecturer_name")) {
+										if (!d.get("lecturer_name").equals("")) {
+											if (((String) d.get("lecturer_name")).length() <= 50) {
 												// permit execution
 												execute = true;
 											} else {
 												rc.put("error_code", 400);
-												rc.put("description", "Bad Request: 'admin_name' length can't be more than 50");
+												rc.put("description", "Bad Request: 'lecturer_name' length can't be more than 50");
 											}
 										} else {
 											rc.put("error_code", 400);
-											rc.put("description", "Bad Request: 'admin_name' can't be empty");
+											rc.put("description", "Bad Request: 'lecturer_name' can't be empty");
 										}
 									} else {
 										rc.put("error_code", 400);
-										rc.put("description", "Bad Request: Parameter 'admin_name' is required");
+										rc.put("description", "Bad Request: Parameter 'lecturer_name' is required");
 									}
 								} else {
 									rc.put("error_code", 400);
 									rc.put("message", "Admin ID must be an unsigned integer.");
-									rc.put("description", "Bad Request: 'old_admin_id' and 'admin_id' must be an unsigned integer");
+									rc.put("description", "Bad Request: 'old_lecturer_id' and 'lecturer_id' must be an unsigned integer");
 								}
 							} else {
 								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: 'admin_id' length can't be more than 6");
+								rc.put("description", "Bad Request: 'lecturer_id' length can't be more than 6");
 							}
 						} else {
 							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'admin_id' can't be empty");
+							rc.put("description", "Bad Request: 'lecturer_id' can't be empty");
 						}
 					} else {
 						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'admin_id' is required");
+						rc.put("description", "Bad Request: Parameter 'lecturer_id' is required");
 					}
 				} else {
 					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'old_admin_id' length can't be more than 6");
+					rc.put("description", "Bad Request: 'old_lecturer_id' length can't be more than 6");
 				}
 			} else {
 				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: 'old_admin_id' can't be empty");
+				rc.put("description", "Bad Request: 'old_lecturer_id' can't be empty");
 			}
 		} else {
 			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: Parameter 'old_admin_id' is required");
+			rc.put("description", "Bad Request: Parameter 'old_lecturer_id' is required");
 		}
 	} else {
 		rc.put("redirect", "index.jsp");
@@ -165,11 +165,12 @@ if (validate) {
 // execution
 if (execute) {
 	Admin adminUser = new Admin();
-	Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) d.get("old_admin_id")));
+	Lecturer lecturer = adminUser.getLecturer(Integer.parseUnsignedInt((String) d.get("old_lecturer_id")));
 	
-	if (admin != null) {
-		boolean ok = adminUser.updateAdmin(Integer.parseUnsignedInt((String) d.get("old_admin_id")),
-				Integer.parseUnsignedInt((String) d.get("admin_id")), (String) d.get("admin_name"));
+	if (lecturer != null) {
+		boolean ok = adminUser.updateLecturer(Integer.parseUnsignedInt((String) d.get("old_lecturer_id")),
+				Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("lecturer_name"),
+				Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 		
 		if (ok) {
 			rc.put("ok", true);
@@ -179,8 +180,8 @@ if (execute) {
 		}
 	} else {
 		rc.put("error_code", 400);
-		rc.put("message", "The admin doesn't exist.");
-		rc.put("description", "Bad Request: The admin doesn't exist");
+		rc.put("message", "The lecturer doesn't exist.");
+		rc.put("description", "Bad Request: The lecturer doesn't exist");
 	}
 }
 

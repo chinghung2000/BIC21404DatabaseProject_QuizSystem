@@ -4,7 +4,6 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
-<%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -84,36 +83,69 @@ if (validate) {
 	
 	// check session for all user types
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
-		// permit execution
-		execute = true;
+		
+		// validate parameter 'lecturer_id'
+		if (d.containsKey("lecturer_id")) {
+			if (!d.get("lecturer_id").equals("")) {
+				if (((String) d.get("lecturer_id")).length() <= 6) {
+					boolean parseUnsignedIntError;
+					
+					// try to parse 'lecturer_id' into unsigned integer
+					try {
+						Integer.parseUnsignedInt((String) d.get("lecturer_id"));
+						parseUnsignedIntError = false;
+					} catch (NumberFormatException e) {
+						parseUnsignedIntError = true;
+					}
+					
+					// check whether there are no error in parsing process
+					if (!parseUnsignedIntError) {
+						// permit execution
+						execute = true;
+					} else {
+						rc.put("error_code", 400);
+						rc.put("message", "Admin ID must be an unsigned integer.");
+						rc.put("description", "Bad Request: 'lecturer_id' must be an unsigned integer");
+					}
+				} else {
+					rc.put("error_code", 400);
+					rc.put("description", "Bad Request: 'lecturer_id' length can't be more than 6");
+				}
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'lecturer_id' can't be empty");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: Parameter 'lecturer_id' is required");
+		}
 	} else {
 		rc.put("redirect", "index.jsp");
 		rc.put("error_code", 401);
-		rc.put("description", "Unauthorized: Session not found");
+		rc.put("description", "Unauthorized: Session not found or invalid session");
 	}
 }
 
 
 // execution
 if (execute) {
-	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> lecturerDict;
-	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
-	
 	Admin adminUser = new Admin();
-	ArrayList<Lecturer> lecturers = adminUser.getAllLecturers();
+	Lecturer lecturer = adminUser.getLecturer(Integer.parseUnsignedInt((String) d.get("lecturer_id")));
 	
-	for (Lecturer lecturer : lecturers) {
-		lecturerDict = new HashMap<String, Object>();
-		lecturerDict.put("lecturer_id", lecturer.getId());
-		lecturerDict.put("lecturer_name", lecturer.getName());
-		lecturerDict.put("modified_by", lecturer.getModifiedBy().getName());
-		lecturerDict.put("modified_on", sdf.format(lecturer.getModifiedOn()));
-		result.add(lecturerDict);
+	if (lecturer != null) {
+		boolean ok = adminUser.deleteLecturer(Integer.parseUnsignedInt((String) d.get("lecturer_id")));
+		
+		if (ok) {
+			rc.put("ok", true);
+		} else {
+			rc.put("error_code", 500);
+			rc.put("description", "Internal Server Error: Database Error");
+		}
+	} else {
+		rc.put("error_code", 400);
+		rc.put("message", "The lecturer doesn't exist.");
+		rc.put("description", "Bad Request: The lecturer doesn't exist");
 	}
-	
-	rc.put("result", result);
-	rc.put("ok", true);
 }
 
 
