@@ -7,7 +7,7 @@
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
-<%-- <%@ page import="com.project.backend.*"%> --%>
+<%@ page import="com.project.backend.*"%>
 
 
 <%
@@ -22,6 +22,7 @@ HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
 // define logic control variables
+boolean validate = false;
 boolean execute = false;
 
 
@@ -53,8 +54,8 @@ if (request.getMethod().equals("POST")) {
 				
 				// check whether there are no error in JSON parsing
 				if (!JSONError) {
-					// permit execution
-					execute = true;
+					// perform parameter validation
+					validate = true;
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: Bad POST Request: Can't parse JSON object");
@@ -77,17 +78,40 @@ if (request.getMethod().equals("POST")) {
 }
 
 
+//parameter validation
+if (validate) {
+	
+	// check session for all user types
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type") != null) {
+		// permit execution
+		execute = true;
+	} else {
+		rc.put("redirect", "index.jsp");
+		rc.put("error_code", 401);
+		rc.put("description", "Unauthorized: Session not found or invalid session");
+	}
+}
+
+
 // execution
 if (execute) {
+	Admin adminUser = new Admin();
 	
-	// execute backend logic...
-	// parent if clause for call backend result (to-be)
-	if (true) {
-		rc.put("user_id", "_user_id_");
-		rc.put("name", "_name_");
-		rc.put("email", "_email_");
-		rc.put("ok", true);
+	if (session.getAttribute("user_type").equals("admin")) {
+		Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		rc.put("user_id", admin.getId());
+		rc.put("name", admin.getName());
+	} else if (session.getAttribute("user_type").equals("lecturer")) {
+		Lecturer lecturer = adminUser.getLecturer(Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		rc.put("user_id", lecturer.getId());
+		rc.put("name", lecturer.getName());
+	} else if (session.getAttribute("user_type").equals("student")) {
+		Student student = adminUser.getStudent((String) session.getAttribute("user_id"));
+		rc.put("user_id", student.getId());
+		rc.put("name", student.getName());
 	}
+	
+	rc.put("ok", true);
 }
 
 

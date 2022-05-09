@@ -81,7 +81,7 @@ if (request.getMethod().equals("POST")) {
 //parameter validation
 if (validate) {
 	
-	// check session for all user types
+	// check session for admin
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
 		
 		// validate parameter 'subject_id'

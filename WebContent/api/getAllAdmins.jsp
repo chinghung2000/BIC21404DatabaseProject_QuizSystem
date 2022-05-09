@@ -81,14 +81,14 @@ if (request.getMethod().equals("POST")) {
 //parameter validation
 if (validate) {
 	
-	// check session for all user types
+	// check session for admin
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
 		// permit execution
 		execute = true;
 	} else {
 		rc.put("redirect", "index.jsp");
 		rc.put("error_code", 401);
-		rc.put("description", "Unauthorized: Session not found");
+		rc.put("description", "Unauthorized: Session not found or invalid session");
 	}
 }
 

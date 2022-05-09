@@ -81,7 +81,7 @@ if (request.getMethod().equals("POST")) {
 //parameter validation
 if (validate) {
 	
-	// check session for all user types
+	// check session for admin
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
 		
 		// validate parameter 'admin_id'
@@ -133,13 +133,19 @@ if (execute) {
 	Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")));
 	
 	if (admin != null) {
-		boolean ok = adminUser.deleteAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")));
-		
-		if (ok) {
-			rc.put("ok", true);
+		if (!d.get("admin_id").equals(session.getAttribute("user_id"))) {
+			boolean ok = adminUser.deleteAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")));
+			
+			if (ok) {
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Currently logged in admin cannot be deleted.");
+			rc.put("description", "Bad Request: Cannot delete currently logged in admin");
 		}
 	} else {
 		rc.put("error_code", 400);
