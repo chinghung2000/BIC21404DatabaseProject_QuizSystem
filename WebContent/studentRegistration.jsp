@@ -125,21 +125,17 @@
 		}
 	}
 	
-	function add(studentId, studentName, studentEmail) {
+	function add(studentId, studentName) {
 		var d = {};
 		d["student_id"] = studentId;
 		d["student_name"] = studentName;
-		d["student_email"] = studentEmail;
 		
 		if (d["student_id"] != "") {
 			if (d["student_name"] != "") {
-				if (d["student_email"] != "") {
-					XHRequest("addStudent", JSON.stringify(d));
-					loadTable();
-				} else {
-					$e("span-message").innerHTML = "Please enter student email.";
-					clearMessage();
-				}
+				XHRequest("addStudent", JSON.stringify(d), {async: false});
+				loadTable();
+				$e("input-student-id").value = null;
+				$e("input-student-name").value = null;
 			} else {
 				$e("span-message").innerHTML = "Please enter student name.";
 				clearMessage();
@@ -150,27 +146,27 @@
 		}
 	}
 	
-	function update(studentId, studentName, studentEmail) {
+	function update(oldStudentId, studentId, studentName) {
 		var d = {};
+		d["old_student_id"] = oldStudentId;
 		d["student_id"] = studentId;
 		d["student_name"] = studentName;
-		d["student_email"] = studentEmail;
 		
-		if (d["student_id"] != "") {
-			if (d["student_name"] != "") {
-				if (d["student_email"] != "") {
-					XHRequest("updateStudent", JSON.stringify(d));
+		if (d["old_student_id"] != "") {
+			if (d["student_id"] != "") {
+				if (d["student_name"] != "") {
+					XHRequest("updateStudent", JSON.stringify(d), {async: false});
 					loadTable();
 				} else {
-					$e("span-message").innerHTML = "Please enter student email.";
+					$e("span-message").innerHTML = "Please enter student name.";
 					clearMessage();
 				}
 			} else {
-				$e("span-message").innerHTML = "Please enter student name.";
+				$e("span-message").innerHTML = "Please enter student ID.";
 				clearMessage();
 			}
 		} else {
-			$e("span-message").innerHTML = "Please enter student ID.";
+			$e("span-message").innerHTML = "Missing current student ID.";
 			clearMessage();
 		}
 	}
@@ -179,12 +175,14 @@
 		var d = {};
 		d["student_id"] = studentId;
 		
-		if (d["student_id"] != "") {
-			XHRequest("deleteStudent", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing student ID.";
-			clearMessage();
+		if (confirm("Are you sure to delete student with ID '" + studentId + "'?") == true) {
+			if (d["student_id"] != "") {
+				XHRequest("deleteStudent", JSON.stringify(d), {async: false});
+				loadTable();
+			} else {
+				$e("span-message").innerHTML = "Missing student ID.";
+				clearMessage();
+			}
 		}
 	}
 	
@@ -198,6 +196,7 @@
 		input = document.createElement("input");
 		input.type = "text";
 		input.value = span.innerHTML;
+		input.maxLength = 8;
 		cell.appendChild(input);
 		
 		cell = row.cells[1];
@@ -206,15 +205,16 @@
 		input = document.createElement("input");
 		input.type = "text";
 		input.value = span.innerHTML;
+		input.maxLength = 50;
 		cell.appendChild(input);
 		
-		cell = row.cells[4];
+		cell = row.cells[5];
 		button = cell.childNodes[0];
 		button.innerHTML = "Done";
-		button.setAttribute("onclick", "update(this.parentNode.parentNode.cells[0].childNodes[1].value, "
+		button.setAttribute("onclick", "update('" + studentId + "', this.parentNode.parentNode.cells[0].childNodes[1].value, "
 				+ "this.parentNode.parentNode.cells[1].childNodes[1].value);");
 		
-		cell = row.cells[5];
+		cell = row.cells[6];
 		button = cell.childNodes[0];
 		button.innerHTML = "Cancel";
 		button.setAttribute("onclick", "cancelEdit(this, '" + studentId + "');");
@@ -232,12 +232,12 @@
 		cell.childNodes[0].style.display = "block";
 		cell.removeChild(cell.childNodes[1]);
 		
-		cell = row.cells[4];
+		cell = row.cells[5];
 		button = cell.childNodes[0];
 		button.innerHTML = "Update";
 		button.setAttribute("onclick", "edit(this, '" + studentId + "');");
 		
-		cell = row.cells[5];
+		cell = row.cells[6];
 		button = cell.childNodes[0];
 		button.innerHTML = "Delete";
 		button.setAttribute("onclick", "remove('" + studentId + "');");
