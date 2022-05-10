@@ -4,7 +4,6 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
-<%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -84,8 +83,42 @@ if (validate) {
 	
 	// check session for admin
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
-		// permit execution
-		execute = true;
+		
+		// validate parameter 'student_id'
+		if (d.containsKey("student_id")) {
+			if (!d.get("student_id").equals("")) {
+				if (((String) d.get("student_id")).length() <= 8) {
+					
+					// validate parameter 'student_name'
+					if (d.containsKey("student_name")) {
+						if (!d.get("student_name").equals("")) {
+							if (((String) d.get("student_name")).length() <= 50) {
+								// permit execution
+								execute = true;
+							} else {
+								rc.put("error_code", 400);
+								rc.put("description", "Bad Request: 'student_name' length can't be more than 50");
+							}
+						} else {
+							rc.put("error_code", 400);
+							rc.put("description", "Bad Request: 'student_name' can't be empty");
+						}
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: Parameter 'student_name' is required");
+					}
+				} else {
+					rc.put("error_code", 400);
+					rc.put("description", "Bad Request: 'student_id' length can't be more than 8");
+				}
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'student_id' can't be empty");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: Parameter 'student_id' is required");
+		}
 	} else {
 		rc.put("redirect", "index.jsp");
 		rc.put("error_code", 401);
@@ -96,25 +129,24 @@ if (validate) {
 
 // execution
 if (execute) {
-	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> studentDict;
-	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
-	
 	Admin adminUser = new Admin();
-	ArrayList<Student> students = adminUser.getAllStudents();
+	Student student = adminUser.getStudent((String) d.get("student_id"));
 	
-	for (Student student : students) {
-		studentDict = new HashMap<String, Object>();
-		studentDict.put("student_id", student.getId());
-		studentDict.put("student_name", student.getName());
-		studentDict.put("student_email", student.getEmail());
-		studentDict.put("modified_by", student.getModifiedBy().getName());
-		studentDict.put("modified_on", sdf.format(student.getModifiedOn()));
-		result.add(studentDict);
+	if (student == null) {
+		boolean ok = adminUser.addStudent(((String) d.get("student_id")).toUpperCase(), (String) d.get("student_name"),
+				((String) d.get("student_id")).toLowerCase() + "@siswa.uthm.edu.my", Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		
+		if (ok) {
+			rc.put("ok", true);
+		} else {
+			rc.put("error_code", 500);
+			rc.put("description", "Internal Server Error: Database Error");
+		}
+	} else {
+		rc.put("error_code", 400);
+		rc.put("message", "The student already exist.");
+		rc.put("description", "Bad Request: The student already exist");
 	}
-	
-	rc.put("result", result);
-	rc.put("ok", true);
 }
 
 

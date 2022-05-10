@@ -150,7 +150,7 @@ if (execute) {
 	Subject subject = adminUser.getSubject((String) d.get("old_subject_id"));
 	
 	if (subject != null) {
-		boolean ok = adminUser.updateSubject((String) d.get("old_subject_id"), (String) d.get("subject_id"),
+		boolean ok = adminUser.updateSubject((String) d.get("old_subject_id"), ((String) d.get("subject_id")).toUpperCase(),
 				(String) d.get("subject_name"), Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 		
 		if (ok) {

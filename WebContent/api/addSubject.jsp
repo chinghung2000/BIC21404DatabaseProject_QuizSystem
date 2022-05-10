@@ -133,7 +133,7 @@ if (execute) {
 	Subject subject = adminUser.getSubject((String) d.get("subject_id"));
 	
 	if (subject == null) {
-		boolean ok = adminUser.addSubject((String) d.get("subject_id"), (String) d.get("subject_name"),
+		boolean ok = adminUser.addSubject(((String) d.get("subject_id")).toUpperCase(), (String) d.get("subject_name"),
 				Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 		
 		if (ok) {
