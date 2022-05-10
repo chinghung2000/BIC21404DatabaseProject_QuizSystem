@@ -329,7 +329,7 @@ public class Admin extends User implements AdminInterface {
 	public ArrayList<Student> getAllStudents() {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("SELECT s.student_id, s.student_name, s.student_email, a.admin_id, a.admin_name FROM student s INNER JOIN admin a ON s.modified_by = a.admin_id;");
+		db.prepare("SELECT s.student_id, s.student_name, s.student_email, a.admin_id, a.admin_name, s.modified_on FROM student s INNER JOIN admin a ON s.modified_by = a.admin_id;");
 		ResultSet rs = db.executeQuery();
 		ArrayList<Student> students = new ArrayList<Student>();
 		
@@ -348,7 +348,7 @@ public class Admin extends User implements AdminInterface {
 	public Student getStudent(String studentId) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("SELECT s.student_id, s.student_name, s.student_email, a.admin_id, a.admin_name FROM student s INNER JOIN admin a ON s.modified_by = a.admin_id WHERE s.student_id = ?;",
+		db.prepare("SELECT s.student_id, s.student_name, s.student_email, a.admin_id, a.admin_name, s.modified_on FROM student s INNER JOIN admin a ON s.modified_by = a.admin_id WHERE s.student_id = ?;",
 				studentId);
 		ResultSet rs = db.executeQuery();
 		
