@@ -82,7 +82,7 @@
 				cell.innerHTML = Number(i) + 1;
 				
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["description"];
+				cell.innerHTML = r[i];
 			}
 		}
 	}
@@ -100,6 +100,23 @@
 		d["type"] = type;
 		
 		XHRequest("getSystemLogs", JSON.stringify(d), {callback: "loadTable"});
+	}
+	
+	function loadSelectionType(rc = null) {
+		if (rc == null) {
+			XHRequest("getSystemLogTypes", JSON.stringify({}), {callback: "loadSelectionType"});
+		} else {
+			var r = rc["result"];
+			var select = $e("select-type");
+			var option;
+			
+			for (var i in r) {
+				option = document.createElement("option");
+				option.text = r[i];
+				option.value = r[i];
+				select.add(option);
+			}
+		}
 	}
 	
 	var t;
@@ -184,7 +201,7 @@ table th {
 table th, table td {
 	border: 1px solid #bfbfbf;
 	padding: 5px 10px;
-	max-width: 400px;
+	max-width: 1000px;
 }
 
 input[type=text], [type=password] {
@@ -230,7 +247,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); loadTable();">
+<body onload="loadUserInfo(); loadTable(); loadSelectionType();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
@@ -254,7 +271,7 @@ button:hover {
 		</div>
 		<div class="select-area">
 			<label class="select-field" for="select-type">Show logs of type:</label>
-			<select id="select-type">
+			<select id="select-type" onchange="loadByType(this.value);">
 				<option value="" selected>ALL</option>
 			</select>
 		</div>
