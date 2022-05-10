@@ -97,8 +97,8 @@ public class Admin extends User implements AdminInterface {
 	public boolean updateAdmin(int oldAdminId, int adminId, String adminName) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("UPDATE admin SET admin_id = ?, admin_name = ? WHERE admin_id = ?;",
-				adminId, adminName, oldAdminId);
+		db.prepare("UPDATE admin SET admin_id = ?, password = ?, admin_name = ? WHERE admin_id = ?;",
+				adminId, AES.encrypt(Integer.toString(adminId)), adminName, oldAdminId);
 		return db.executeUpdate();
 	}
 
@@ -162,8 +162,8 @@ public class Admin extends User implements AdminInterface {
 	public boolean updateLecturer(int oldLecturerId, int lecturerId, String lecturerName, int modifiedBy) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("UPDATE lecturer SET lecturer_id = ?, lecturer_name = ?, modified_by = ?, modified_on = CURRENT_TIMESTAMP() WHERE lecturer_id = ?;",
-				lecturerId, lecturerName, modifiedBy, oldLecturerId);
+		db.prepare("UPDATE lecturer SET lecturer_id = ?, password = ?, lecturer_name = ?, modified_by = ?, modified_on = CURRENT_TIMESTAMP() WHERE lecturer_id = ?;",
+				lecturerId, AES.encrypt(Integer.toString(lecturerId)), lecturerName, modifiedBy, oldLecturerId);
 		return db.executeUpdate();
 	}
 
@@ -376,8 +376,8 @@ public class Admin extends User implements AdminInterface {
 	public boolean updateStudent(String oldStudentId, String studentId, String studentName, String studentEmail, int modifiedBy) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("UPDATE student SET student_id = ?, student_name = ?, student_email = ?, modified_by = ?, modified_on = CURRENT_TIMESTAMP() WHERE student_id = ?;",
-				studentId, studentName, studentEmail, modifiedBy, oldStudentId);
+		db.prepare("UPDATE student SET student_id = ?, password = ?, student_name = ?, student_email = ?, modified_by = ?, modified_on = CURRENT_TIMESTAMP() WHERE student_id = ?;",
+				studentId, AES.encrypt(studentId), studentName, studentEmail, modifiedBy, oldStudentId);
 		return db.executeUpdate();
 	}
 
@@ -391,10 +391,29 @@ public class Admin extends User implements AdminInterface {
 	}
 
 	@Override
+	public ArrayList<String> getSystemLogTypes() {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT DISTINCT type FROM log;");
+		ResultSet rs = db.executeQuery();
+		ArrayList<String> logTypes = new ArrayList<String>();
+		
+		try {
+			while (rs.next()) {
+				logTypes.add(rs.getString("type"));
+			}
+		} catch (SQLException e) {
+			System.out.println("Admin: There are some errors: " + e.toString());
+		}
+		
+		return logTypes;
+	}
+
+	@Override
 	public ArrayList<Log> getSystemLogs() {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("SELECT log_id, type, description FROM log;");
+		db.prepare("SELECT log_id, type, description FROM log ORDER BY log_id DESC LIMIT 50;");
 		ResultSet rs = db.executeQuery();
 		ArrayList<Log> logs = new ArrayList<Log>();
 		
@@ -413,7 +432,7 @@ public class Admin extends User implements AdminInterface {
 	public ArrayList<Log> getSystemLogs(String type) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("SELECT log_id, type, description FROM log WHERE type = ?;",
+		db.prepare("SELECT log_id, type, description FROM log WHERE type = ? ORDER BY log_id DESC LIMIT 50;",
 				type);
 		ResultSet rs = db.executeQuery();
 		ArrayList<Log> logs = new ArrayList<Log>();

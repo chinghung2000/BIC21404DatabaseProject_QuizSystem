@@ -34,6 +34,7 @@ public interface AdminInterface {
 	boolean updateStudent(String oldStudentId, String studentId, String studentName, String studentEmail, int modifiedBy);
 	boolean deleteStudent(String studentId);
 
+	ArrayList<String> getSystemLogTypes();
 	ArrayList<Log> getSystemLogs();
 	ArrayList<Log> getSystemLogs(String type);
 	boolean addLogRecord(String type, String description);
