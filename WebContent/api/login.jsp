@@ -5,6 +5,8 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -142,7 +144,10 @@ if (validate) {
 
 // execution
 if (execute) {
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
+	
 	User user = new User().login((String) d.get("user_type"), (String) d.get("user_id"), (String) d.get("password"));
+	Admin adminUser = new Admin();
 	
 	if (user != null) {
 		session.setAttribute("user_type", d.get("user_type"));
@@ -150,12 +155,18 @@ if (execute) {
 		if (user instanceof Admin) {
 			Admin admin = (Admin) user;
 			session.setAttribute("user_id", Integer.toString(admin.getId()));
+			
+			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") + " logged in");
 		} else if (user instanceof Lecturer) {
 			Lecturer lecturer = (Lecturer) user;
 			session.setAttribute("user_id", Integer.toString(lecturer.getId()));
+			
+			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") + " logged in");
 		} else if (user instanceof Student) {
 			Student student = (Student) user;
 			session.setAttribute("user_id", student.getId());
+			
+			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") + " logged in");
 		}
 		
 		if (d.get("user_id").equals(d.get("password"))) {
@@ -166,6 +177,17 @@ if (execute) {
 		
 		rc.put("ok", true);
 	} else {
+		if (d.get("user_type").equals("admin")) {
+			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) d.get("user_id") +
+					" attempted to log in with incorrect credential");
+		} else if (d.get("user_type").equals("lecturer")) {
+			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) d.get("user_id") +
+					" attempted to log in with incorrect credential");
+		} else if (d.get("user_type").equals("student")) {
+			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) d.get("user_id") +
+					" attempted to log in with incorrect credential");
+		}
+		
 		rc.put("error_code", 401);
 		rc.put("message", "Incorrect user ID or password.");
 		rc.put("description", "Unauthorized: Incorrect user ID or password");

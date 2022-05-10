@@ -4,8 +4,6 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
-<%@ page import="java.text.SimpleDateFormat"%>
-<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -86,40 +84,23 @@ if (validate) {
 	// check session for admin
 	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
 		
-		// validate parameter 'student_id'
-		if (d.containsKey("student_id")) {
-			if (!d.get("student_id").equals("")) {
-				if (((String) d.get("student_id")).length() <= 8) {
-					
-					// validate parameter 'student_name'
-					if (d.containsKey("student_name")) {
-						if (!d.get("student_name").equals("")) {
-							if (((String) d.get("student_name")).length() <= 50) {
-								// permit execution
-								execute = true;
-							} else {
-								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: 'student_name' length can't be more than 50");
-							}
-						} else {
-							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'student_name' can't be empty");
-						}
-					} else {
-						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'student_name' is required");
-					}
+		// validate parameter 'type' if exists
+		if (d.containsKey("type")) {
+			if (!d.get("type").equals("")) {
+				if (((String) d.get("type")).length() <= 15) {
+					// permit execution
+					execute = true;
 				} else {
 					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'student_id' length can't be more than 8");
+					rc.put("description", "Bad Request: 'type' length can't be more than 15");
 				}
 			} else {
-				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: 'student_id' can't be empty");
+				// permit execution
+				execute = true;
 			}
 		} else {
-			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: Parameter 'student_id' is required");
+			// permit execution
+			execute = true;
 		}
 	} else {
 		rc.put("redirect", "index.jsp");
@@ -131,29 +112,23 @@ if (validate) {
 
 // execution
 if (execute) {
-	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
+	ArrayList<String> result = new ArrayList<String>();
 	
 	Admin adminUser = new Admin();
-	Student student = adminUser.getStudent((String) d.get("student_id"));
+	ArrayList<Log> logs;
 	
-	if (student == null) {
-		boolean ok = adminUser.addStudent(((String) d.get("student_id")).toUpperCase(), (String) d.get("student_name"),
-				((String) d.get("student_id")).toLowerCase() + "@siswa.uthm.edu.my", Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
-		
-		if (ok) {
-			adminUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" added new student: " + (String) d.get("student_name") + " with ID " + (String) d.get("student_id"));
-			
-			rc.put("ok", true);
-		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
-		}
+	if (!d.containsKey("type") || d.get("type").equals("")) {
+		logs = adminUser.getSystemLogs();
 	} else {
-		rc.put("error_code", 400);
-		rc.put("message", "The student already exist.");
-		rc.put("description", "Bad Request: The student already exist");
+		logs = adminUser.getSystemLogs((String) d.get("type"));
 	}
+	
+	for (Log log : logs) {
+		result.add(log.getDescription());
+	}
+	
+	rc.put("result", result);
+	rc.put("ok", true);
 }
 
 

@@ -4,6 +4,8 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -146,6 +148,8 @@ if (validate) {
 
 // execution
 if (execute) {
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
+	
 	Admin adminUser = new Admin();
 	Workload workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"));
 	
@@ -154,6 +158,9 @@ if (execute) {
 				Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 		
 		if (ok) {
+			adminUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+					" added new workload for lecturer ID " + (String) d.get("lecturer_id") + " with subject ID" + (String) d.get("subject_id"));
+			
 			rc.put("ok", true);
 		} else {
 			rc.put("error_code", 500);

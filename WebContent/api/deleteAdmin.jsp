@@ -4,6 +4,8 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -129,6 +131,8 @@ if (validate) {
 
 // execution
 if (execute) {
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
+	
 	Admin adminUser = new Admin();
 	Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")));
 	
@@ -137,6 +141,9 @@ if (execute) {
 			boolean ok = adminUser.deleteAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")));
 			
 			if (ok) {
+				adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" deleted admin with ID " + (String) d.get("admin_id"));
+				
 				rc.put("ok", true);
 			} else {
 				rc.put("error_code", 500);

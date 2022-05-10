@@ -4,6 +4,8 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -137,11 +139,26 @@ if (validate) {
 
 // execution
 if (execute) {
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
+	
 	User user = new User();
 	boolean ok = user.updatePassword((String) session.getAttribute("user_type"), (String) session.getAttribute("user_id"),
 			(String) d.get("npassword"));
 	
 	if (ok) {
+		Admin adminUser = new Admin();
+		
+		if (session.getAttribute("user_type").equals("admin")) {
+			adminUser.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+					" updated the password");
+		} else if (session.getAttribute("user_type").equals("lecturer")) {
+			adminUser.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
+					" updated tge password");
+		} else if (session.getAttribute("user_type").equals("student")) {
+			adminUser.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") +
+					" updated the password");
+		}
+		
 		rc.put("landing", "index.jsp");
 		rc.put("ok", true);
 	} else {
