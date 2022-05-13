@@ -99,14 +99,17 @@ if (execute) {
 	
 	if (session.getAttribute("user_type").equals("admin")) {
 		Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		
 		rc.put("user_id", admin.getId());
 		rc.put("name", admin.getName());
 	} else if (session.getAttribute("user_type").equals("lecturer")) {
 		Lecturer lecturer = adminUser.getLecturer(Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		
 		rc.put("user_id", lecturer.getId());
 		rc.put("name", lecturer.getName());
 	} else if (session.getAttribute("user_type").equals("student")) {
 		Student student = adminUser.getStudent((String) session.getAttribute("user_id"));
+		
 		rc.put("user_id", student.getId());
 		rc.put("name", student.getName());
 	}

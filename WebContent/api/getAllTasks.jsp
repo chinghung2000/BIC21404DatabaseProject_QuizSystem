@@ -5,7 +5,6 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
 <%@ page import="java.text.SimpleDateFormat"%>
-<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -83,60 +82,26 @@ if (request.getMethod().equals("POST")) {
 //parameter validation
 if (validate) {
 	
-	// check session for admin
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
+	// check session for lecturer and student
+	if (session.getAttribute("user_id") != null && (session.getAttribute("user_type").equals("lecturer") || session.getAttribute("user_type").equals("student"))) {
 		
-		// validate parameter 'lecturer_id'
-		if (d.containsKey("lecturer_id")) {
-			if (!d.get("lecturer_id").equals("")) {
-				if (((String) d.get("lecturer_id")).length() <= 6) {
-					boolean parseUnsignedIntError;
-					
-					// try to parse 'lecturer_id' into unsigned integer
-					try {
-						Integer.parseUnsignedInt((String) d.get("lecturer_id"));
-						parseUnsignedIntError = false;
-					} catch (NumberFormatException e) {
-						parseUnsignedIntError = true;
-					}
-					
-					// check whether there are no error in parsing process
-					if (!parseUnsignedIntError) {
-						
-						// validate parameter 'subject_id'
-						if (d.containsKey("subject_id")) {
-							if (!d.get("subject_id").equals("")) {
-								if (((String) d.get("subject_id")).length() <= 8) {
-									// permit execution
-									execute = true;
-								} else {
-									rc.put("error_code", 400);
-									rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
-								}
-							} else {
-								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: 'subject_id' can't be empty");
-							}
-						} else {
-							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: Parameter 'subject_id' is required");
-						}
-					} else {
-						rc.put("error_code", 400);
-						rc.put("message", "Lecturer ID must be an unsigned integer.");
-						rc.put("description", "Bad Request: 'lecturer_id' must be an unsigned integer");
-					}
+		// validate parameter 'subject_id'
+		if (d.containsKey("subject_id")) {
+			if (!d.get("subject_id").equals("")) {
+				if (((String) d.get("subject_id")).length() <= 8) {
+					// permit execution
+					execute = true;
 				} else {
 					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'lecturer_id' length can't be more than 6");
+					rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
 				}
 			} else {
 				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: 'lecturer_id' can't be empty");
+				rc.put("description", "Bad Request: 'subject_id' can't be empty");
 			}
 		} else {
 			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: Parameter 'lecturer_id' is required");
+			rc.put("description", "Bad Request: Parameter 'subject_id' is required");
 		}
 	} else {
 		rc.put("redirect", "index.jsp");
@@ -148,29 +113,30 @@ if (validate) {
 
 // execution
 if (execute) {
-	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
+	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
+	HashMap<String, Object> taskDict;
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
 	
-	Admin adminUser = new Admin();
-	Workload workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"));
-	
-	if (workload == null) {
-		boolean ok = adminUser.addWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"),
-				Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+	if (session.getAttribute("user_type").equals("lecturer")) {
+		Lecturer lecturerUser = new Lecturer();
+		Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
+		ArrayList<Task> tasks = lecturerUser.getAllTasks(workload.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" added new workload for lecturer ID " + (String) d.get("lecturer_id") + " with subject ID " + (String) d.get("subject_id"));
-			
-			rc.put("ok", true);
-		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+		for (Task task : tasks) {
+			taskDict = new HashMap<String, Object>();
+			taskDict.put("task_id", task.getId());
+			taskDict.put("task_name", task.getName());
+			taskDict.put("task_file_name", task.getFileName());
+			taskDict.put("modified_by", task.getModifiedBy().getName());
+			taskDict.put("modified_on", sdf.format(task.getModifiedOn()));
+			result.add(taskDict);
 		}
-	} else {
-		rc.put("error_code", 400);
-		rc.put("message", "The workload already exist.");
-		rc.put("description", "Bad Request: The workload already exist");
+	} else if (session.getAttribute("user_type").equals("student")) {
+		
 	}
+	
+	rc.put("result", result);
+	rc.put("ok", true);
 }
 
 

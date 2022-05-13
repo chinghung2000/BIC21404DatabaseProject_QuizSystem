@@ -142,7 +142,7 @@ if (execute) {
 		
 		if (ok) {
 			adminUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" added new subject: " + (String) d.get("subject_id") + " - " + (String) d.get("subject_name"));
+					" added new subject: " + ((String) d.get("subject_id")).toUpperCase() + " - " + (String) d.get("subject_name"));
 			
 			rc.put("ok", true);
 		} else {

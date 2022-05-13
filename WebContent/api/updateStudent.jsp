@@ -160,7 +160,8 @@ if (execute) {
 		
 		if (ok) {
 			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated student with ID " + (String) d.get("old_student_id") + " (New ID: " + (String) d.get("student_id") + ")");
+					" updated student with ID " + (String) d.get("old_student_id") + " => Student ID: " + ((String) d.get("student_id")).toUpperCase() +
+					", Student Name: " + (String) d.get("student_name"));
 			
 			rc.put("ok", true);
 		} else {

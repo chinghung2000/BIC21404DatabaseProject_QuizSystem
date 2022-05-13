@@ -1,11 +1,8 @@
-<%@page import="com.mysql.cj.protocol.ValueDecoder"%>
-<%@page import="java.io.FileNotFoundException"%>
-<%@page import="org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException"%>
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
-<%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.HashMap"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.io.File"%>
@@ -15,6 +12,7 @@
 <%@ page import="org.apache.commons.fileupload.disk.DiskFileItemFactory"%>
 <%@ page import="org.apache.commons.fileupload.servlet.ServletFileUpload"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
+<%@ page import="org.apache.commons.fileupload.FileUploadBase.FileSizeLimitExceededException"%>
 <%@ page import="com.project.backend.*"%>
 
 

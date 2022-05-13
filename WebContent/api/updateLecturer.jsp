@@ -178,7 +178,8 @@ if (execute) {
 		
 		if (ok) {
 			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated lecturer with ID " + (String) d.get("old_lecturer_id") + " (New ID: " + (String) d.get("lecturer_id") + ")");
+					" updated lecturer with ID " + (String) d.get("old_lecturer_id") + " => Lecturer ID: " + (String) d.get("lecturer_id") +
+					", Lecturer Name: " + (String) d.get("lecturer_name"));
 			
 			rc.put("ok", true);
 		} else {

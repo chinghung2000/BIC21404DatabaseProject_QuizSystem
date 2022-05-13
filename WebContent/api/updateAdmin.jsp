@@ -177,7 +177,8 @@ if (execute) {
 		
 		if (ok) {
 			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated admin with ID " + (String) d.get("old_admin_id") + " (New ID: " + (String) d.get("admin_id") + ")");
+					" updated admin with ID " + (String) d.get("old_admin_id") + " => Admin ID: " + (String) d.get("admin_id") +
+					", Admin Name: " + (String) d.get("admin_name"));
 			
 			rc.put("ok", true);
 		} else {

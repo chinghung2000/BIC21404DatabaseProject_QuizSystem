@@ -82,8 +82,8 @@ if (request.getMethod().equals("POST")) {
 //parameter validation
 if (validate) {
 	
-	// check session for admin
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
+	// check session for admin and lecturer
+	if (session.getAttribute("user_id") != null && (session.getAttribute("user_type").equals("admin") || session.getAttribute("user_type").equals("lecturer"))) {
 		// permit execution
 		execute = true;
 	} else {
@@ -100,19 +100,31 @@ if (execute) {
 	HashMap<String, Object> workloadDict;
 	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
 	
-	Admin adminUser = new Admin();
-	ArrayList<Workload> workloads = adminUser.getAllWorkloads();
-	
-	for (Workload workload : workloads) {
-		workloadDict = new HashMap<String, Object>();
-		workloadDict.put("workload_id", workload.getId());
-		workloadDict.put("lecturer_id", workload.getLecturer().getId());
-		workloadDict.put("lecturer_name", workload.getLecturer().getName());
-		workloadDict.put("subject_id", workload.getSubject().getId());
-		workloadDict.put("subject_name", workload.getSubject().getName());
-		workloadDict.put("modified_by", workload.getModifiedBy().getName());
-		workloadDict.put("modified_on", sdf.format(workload.getModifiedOn()));
-		result.add(workloadDict);
+	if (session.getAttribute("user_type").equals("admin")) {
+		Admin adminUser = new Admin();
+		ArrayList<Workload> workloads = adminUser.getAllWorkloads();
+		
+		for (Workload workload : workloads) {
+			workloadDict = new HashMap<String, Object>();
+			workloadDict.put("workload_id", workload.getId());
+			workloadDict.put("lecturer_id", workload.getLecturer().getId());
+			workloadDict.put("lecturer_name", workload.getLecturer().getName());
+			workloadDict.put("subject_id", workload.getSubject().getId());
+			workloadDict.put("subject_name", workload.getSubject().getName());
+			workloadDict.put("modified_by", workload.getModifiedBy().getName());
+			workloadDict.put("modified_on", sdf.format(workload.getModifiedOn()));
+			result.add(workloadDict);
+		}
+	} else if (session.getAttribute("user_type").equals("lecturer")) {
+		Lecturer lecturerUser = new Lecturer();
+		ArrayList<Workload> workloads = lecturerUser.getAllWorkloads(Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		
+		for (Workload workload : workloads) {
+			workloadDict = new HashMap<String, Object>();
+			workloadDict.put("subject_id", workload.getSubject().getId());
+			workloadDict.put("subject_name", workload.getSubject().getName());
+			result.add(workloadDict);
+		}
 	}
 	
 	rc.put("result", result);

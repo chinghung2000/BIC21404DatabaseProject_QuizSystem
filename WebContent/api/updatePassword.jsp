@@ -153,7 +153,7 @@ if (execute) {
 					" updated the password");
 		} else if (session.getAttribute("user_type").equals("lecturer")) {
 			adminUser.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
-					" updated tge password");
+					" updated the password");
 		} else if (session.getAttribute("user_type").equals("student")) {
 			adminUser.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") +
 					" updated the password");

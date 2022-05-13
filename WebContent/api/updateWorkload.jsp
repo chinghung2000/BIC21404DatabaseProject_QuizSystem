@@ -186,7 +186,8 @@ if (execute) {
 	Workload workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")));
 	
 	if (workload != null) {
-		workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"));
+		workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"),
+				Integer.parseUnsignedInt((String) d.get("workload_id")));
 		
 		if (workload == null) {
 			boolean ok = adminUser.updateWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")),
@@ -195,7 +196,8 @@ if (execute) {
 			
 			if (ok) {
 				adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-						" updated worklaod with ID " + (String) d.get("workload_id"));
+						" updated workload with ID " + (String) d.get("workload_id") + " => Lecturer ID: " + (String) d.get("lecturer_id") +
+						", Subject ID: " + (String) d.get("subject_id"));
 				
 				rc.put("ok", true);
 			} else {
