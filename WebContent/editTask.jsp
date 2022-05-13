@@ -65,8 +65,8 @@
 						if (rc["ok"] === true) {
 							if (callback != null) window[callback](rc);
 						} else {
-							if ("kickout" in rc) {
-								location.href = "index.jsp";
+							if ("redirect" in rc) {
+								location.href = rc["redirect"];
 							} else if ("message" in rc) {
 								$e("span-message").innerHTML = rc["message"];
 							} else {
@@ -99,6 +99,18 @@
 			XHRequest("getUserInfo", JSON.stringify({}), {callback: "loadUserInfo"});
 		} else {
 			$e("span-welcome-name").innerHTML = rc["name"];
+		}
+	}
+	
+	function loadWorkloadInfo(rc = null) {
+		if (rc == null) {
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			
+			XHRequest("getWorkloadInfo", JSON.stringify(d), {callback: "loadWorkloadInfo"});
+		} else {
+			$e("span-subject-id").innerHTML = rc["subject_id"];
+			$e("span-subject-name").innerHTML = rc["subject_name"];
 		}
 	}
 	
@@ -135,7 +147,7 @@
 				
 				cell = row.insertCell();
 				button = document.createElement("button");
-				button.innerHTML = "View";
+				button.innerHTML = "Download";
 				button.setAttribute("onclick", "location.href = '';");
 				cell.appendChild(button);
 				
@@ -348,7 +360,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); loadTable();">
+<body onload="loadUserInfo(); loadWorkloadInfo(); loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
