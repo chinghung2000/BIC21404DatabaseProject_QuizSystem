@@ -24,6 +24,7 @@ public interface AdminInterface {
 	ArrayList<Workload> getAllWorkloads();
 	Workload getWorkload(int workloadId);
 	Workload getWorkload(int lecturerId, String subjectId);
+	Workload getWorkload(int lecturerId, String subjectId, int exceptWorkloadId);
 	boolean addWorkload(int lecturerId, String subjectId, int modifiedBy);
 	boolean updateWorkload(int workloadId, int lecturerId, String subjectId, int modifiedBy);
 	boolean deleteWorkload(int workloadId);

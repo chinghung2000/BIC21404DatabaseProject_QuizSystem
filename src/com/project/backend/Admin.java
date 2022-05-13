@@ -299,6 +299,25 @@ public class Admin extends User implements AdminInterface {
 	}
 
 	@Override
+	public Workload getWorkload(int lecturerId, String subjectId, int exceptWorkloadId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT w.workload_id, l.lecturer_id, l.lecturer_name, s.subject_id, s.subject_name, a.admin_id, a.admin_name, w.modified_on FROM workload w INNER JOIN lecturer l ON w.lecturer_id = l.lecturer_id INNER JOIN subject s ON w.subject_id = s.subject_id INNER JOIN admin a ON w.modified_by = a.admin_id WHERE w.lecturer_id = ? AND w.subject_id = ? AND w.workload_id != ?;",
+				lecturerId, subjectId, exceptWorkloadId);
+		ResultSet rs = db.executeQuery();
+		
+		try {
+			if (rs.next()) {
+				return new Workload(rs);
+			}
+		} catch (SQLException e) {
+			System.out.println("Admin: There are some errors: " + e.toString());
+		}
+		
+		return null;
+	}
+
+	@Override
 	public boolean addWorkload(int lecturerId, String subjectId, int modifiedBy) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
