@@ -16,10 +16,10 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of data ($d)
+// create a HashMap of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
@@ -46,7 +46,7 @@ if (request.getMethod().equals("POST")) {
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into Dictionary $d 
+				// try JSON parsing request body and convert into HashMap $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -80,7 +80,7 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-//parameter validation
+// parameter validation
 if (validate) {
 	
 	// check session for admin
@@ -186,18 +186,17 @@ if (execute) {
 	Workload workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")));
 	
 	if (workload != null) {
-		workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"),
+		Workload conflictWorkload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"),
 				Integer.parseUnsignedInt((String) d.get("workload_id")));
 		
-		if (workload == null) {
-			boolean ok = adminUser.updateWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")),
-					Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"),
-					Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		if (conflictWorkload == null) {
+			boolean ok = adminUser.updateWorkload(workload.getId(), Integer.parseUnsignedInt((String) d.get("lecturer_id")),
+					(String) d.get("subject_id"), Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 			
 			if (ok) {
 				adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-						" updated workload with ID " + (String) d.get("workload_id") + " => Lecturer ID: " + (String) d.get("lecturer_id") +
-						", Subject ID: " + (String) d.get("subject_id"));
+						" updated workload (ID: \"" + Integer.toString(workload.getId()) + "\") to Lecturer ID: \"" + (String) d.get("lecturer_id") +
+						"\", Subject ID: \"" + (String) d.get("subject_id") + "\"");
 				
 				rc.put("ok", true);
 			} else {

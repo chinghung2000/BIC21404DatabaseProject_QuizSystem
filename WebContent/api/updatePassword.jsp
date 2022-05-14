@@ -16,10 +16,10 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of data ($d)
+// create a HashMap of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
@@ -46,7 +46,7 @@ if (request.getMethod().equals("POST")) {
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into Dictionary $d 
+				// try JSON parsing request body and convert into HashMap $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -142,20 +142,17 @@ if (execute) {
 	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
 	
 	User user = new User();
-	boolean ok = user.updatePassword((String) session.getAttribute("user_type"), (String) session.getAttribute("user_id"),
-			(String) d.get("npassword"));
+	boolean ok = user.updatePassword((String) session.getAttribute("user_type"), (String) session.getAttribute("user_id"), (String) d.get("npassword"));
 	
 	if (ok) {
-		Admin adminUser = new Admin();
-		
 		if (session.getAttribute("user_type").equals("admin")) {
-			adminUser.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+			user.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
 					" updated the password");
 		} else if (session.getAttribute("user_type").equals("lecturer")) {
-			adminUser.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
+			user.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
 					" updated the password");
 		} else if (session.getAttribute("user_type").equals("student")) {
-			adminUser.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") +
+			user.addLogRecord("UPDATE PASSWORD", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") +
 					" updated the password");
 		}
 		

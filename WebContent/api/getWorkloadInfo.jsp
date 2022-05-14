@@ -14,10 +14,10 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of data ($d)
+// create a HashMap of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
@@ -44,7 +44,7 @@ if (request.getMethod().equals("POST")) {
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into Dictionary $d 
+				// try JSON parsing request body and convert into HashMap $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -78,7 +78,7 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-//parameter validation
+// parameter validation
 if (validate) {
 	
 	// check session for lecturer and student
@@ -116,13 +116,17 @@ if (execute) {
 		Lecturer lecturerUser = new Lecturer();
 		Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
 		
-		rc.put("subject_id", workload.getSubject().getId());
-		rc.put("subject_name", workload.getSubject().getName());
+		if (workload != null) {
+			rc.put("subject_id", workload.getSubject().getId());
+			rc.put("subject_name", workload.getSubject().getName());
+			rc.put("ok", true);
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: The corresponding workload doesn't exist");
+		}
 	} else if (session.getAttribute("user_type").equals("student")) {
 		
 	}
-	
-	rc.put("ok", true);
 }
 
 

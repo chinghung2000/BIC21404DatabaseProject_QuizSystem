@@ -16,10 +16,10 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of data ($d)
+// create a HashMap of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
@@ -46,7 +46,7 @@ if (request.getMethod().equals("POST")) {
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into Dictionary $d 
+				// try JSON parsing request body and convert into HashMap $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -80,7 +80,7 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-//parameter validation
+// parameter validation
 if (validate) {
 	
 	// check session for admin
@@ -141,7 +141,7 @@ if (execute) {
 		
 		if (ok) {
 			adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" deleted lecturer with ID " + (String) d.get("lecturer_id"));
+					" deleted lecturer (ID: \"" + Integer.toString(lecturer.getId()) + "\", Name: \"" + lecturer.getName() + "\")");
 			
 			rc.put("ok", true);
 		} else {

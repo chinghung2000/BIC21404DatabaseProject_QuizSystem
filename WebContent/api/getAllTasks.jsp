@@ -15,10 +15,10 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of data ($d)
+// create a HashMap of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
@@ -45,7 +45,7 @@ if (request.getMethod().equals("POST")) {
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into Dictionary $d 
+				// try JSON parsing request body and convert into HashMap $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -79,7 +79,7 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-//parameter validation
+// parameter validation
 if (validate) {
 	
 	// check session for lecturer and student
@@ -126,7 +126,7 @@ if (execute) {
 			taskDict = new HashMap<String, Object>();
 			taskDict.put("task_id", task.getId());
 			taskDict.put("task_name", task.getName());
-			taskDict.put("task_file_name", task.getFileName());
+			taskDict.put("file_name", task.getFileName());
 			taskDict.put("modified_by", task.getModifiedBy().getName());
 			taskDict.put("modified_on", sdf.format(task.getModifiedOn()));
 			result.add(taskDict);

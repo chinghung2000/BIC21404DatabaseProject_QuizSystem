@@ -17,10 +17,10 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of data ($d)
+// create a HashMap of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
@@ -47,7 +47,7 @@ if (request.getMethod().equals("POST")) {
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into Dictionary $d 
+				// try JSON parsing request body and convert into HashMap $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -147,7 +147,6 @@ if (execute) {
 	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
 	
 	User user = new User().login((String) d.get("user_type"), (String) d.get("user_id"), (String) d.get("password"));
-	Admin adminUser = new Admin();
 	
 	if (user != null) {
 		session.setAttribute("user_type", d.get("user_type"));
@@ -156,17 +155,17 @@ if (execute) {
 			Admin admin = (Admin) user;
 			session.setAttribute("user_id", Integer.toString(admin.getId()));
 			
-			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") + " logged in");
+			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") + " logged in");
 		} else if (user instanceof Lecturer) {
 			Lecturer lecturer = (Lecturer) user;
 			session.setAttribute("user_id", Integer.toString(lecturer.getId()));
 			
-			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") + " logged in");
+			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") + " logged in");
 		} else if (user instanceof Student) {
 			Student student = (Student) user;
 			session.setAttribute("user_id", student.getId());
 			
-			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") + " logged in");
+			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") + " logged in");
 		}
 		
 		if (d.get("user_id").equals(d.get("password"))) {
@@ -178,13 +177,13 @@ if (execute) {
 		rc.put("ok", true);
 	} else {
 		if (d.get("user_type").equals("admin")) {
-			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) d.get("user_id") +
+			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) d.get("user_id") +
 					" attempted to log in with incorrect credential");
 		} else if (d.get("user_type").equals("lecturer")) {
-			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) d.get("user_id") +
+			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) d.get("user_id") +
 					" attempted to log in with incorrect credential");
 		} else if (d.get("user_type").equals("student")) {
-			adminUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) d.get("user_id") +
+			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) d.get("user_id") +
 					" attempted to log in with incorrect credential");
 		}
 		

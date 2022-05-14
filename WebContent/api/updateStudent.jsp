@@ -16,10 +16,10 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of data ($d)
+// create a HashMap of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
@@ -46,7 +46,7 @@ if (request.getMethod().equals("POST")) {
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into Dictionary $d 
+				// try JSON parsing request body and convert into HashMap $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -80,7 +80,7 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-//parameter validation
+// parameter validation
 if (validate) {
 	
 	// check session for admin
@@ -154,14 +154,13 @@ if (execute) {
 	Student student = adminUser.getStudent((String) d.get("old_student_id"));
 	
 	if (student != null) {
-		boolean ok = adminUser.updateStudent((String) d.get("old_student_id"), ((String) d.get("student_id")).toUpperCase(),
-				(String) d.get("student_name"), ((String) d.get("student_id")).toLowerCase() + "@siswa.uthm.edu.my",
-				Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		boolean ok = adminUser.updateStudent(student.getId(), ((String) d.get("student_id")).toUpperCase(), (String) d.get("student_name"),
+				((String) d.get("student_id")).toLowerCase() + "@siswa.uthm.edu.my", Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 		
 		if (ok) {
 			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated student with ID " + (String) d.get("old_student_id") + " => Student ID: " + ((String) d.get("student_id")).toUpperCase() +
-					", Student Name: " + (String) d.get("student_name"));
+					" updated student (ID: \"" + student.getId() + "\") to ID: \"" + ((String) d.get("student_id")).toUpperCase() +
+					"\", Name: \"" + (String) d.get("student_name") + "\"");
 			
 			rc.put("ok", true);
 		} else {

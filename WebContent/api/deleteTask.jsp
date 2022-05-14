@@ -83,31 +83,47 @@ if (request.getMethod().equals("POST")) {
 // parameter validation
 if (validate) {
 	
-	// check session for admin
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
+	// check session for lecturer
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("lecturer")) {
 		
 		// validate parameter 'subject_id'
 		if (d.containsKey("subject_id")) {
 			if (!d.get("subject_id").equals("")) {
 				if (((String) d.get("subject_id")).length() <= 8) {
 					
-					// validate parameter 'subject_name'
-					if (d.containsKey("subject_name")) {
-						if (!d.get("subject_name").equals("")) {
-							if (((String) d.get("subject_name")).length() <= 30) {
-								// permit execution
-								execute = true;
+					// validate parameter 'task_id'
+					if (d.containsKey("task_id")) {
+						if (!d.get("task_id").equals("")) {
+							boolean parseUnsignedIntError;
+							
+							// try to parse 'task_id' into unsigned integer
+							try {
+								Integer.parseUnsignedInt((String) d.get("task_id"));
+								parseUnsignedIntError = false;
+							} catch (NumberFormatException e) {
+								parseUnsignedIntError = true;
+							}
+							
+							// check whether there are no error in parsing process
+							if (!parseUnsignedIntError) {
+								if (Integer.parseUnsignedInt((String) d.get("task_id")) <= 2147483647) {
+									// permit execution
+									execute = true;
+								} else {
+									rc.put("error_code", 400);
+									rc.put("description", "Bad Request: 'task_id' is out of range");
+								}
 							} else {
 								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: 'subject_name' length can't be more than 30");
+								rc.put("description", "Bad Request: 'task_id' must be an unsigned integer");
 							}
 						} else {
 							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'subject_name' can't be empty");
+							rc.put("description", "Bad Request: 'task_id' can't be empty");
 						}
 					} else {
 						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'subject_name' is required");
+						rc.put("description", "Bad Request: Parameter 'task_id' is required");
 					}
 				} else {
 					rc.put("error_code", 400);
@@ -133,26 +149,31 @@ if (validate) {
 if (execute) {
 	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
 	
-	Admin adminUser = new Admin();
-	Subject subject = adminUser.getSubject((String) d.get("subject_id"));
+	Lecturer lecturerUser = new Lecturer();
+	Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
 	
-	if (subject == null) {
-		boolean ok = adminUser.addSubject(((String) d.get("subject_id")).toUpperCase(), (String) d.get("subject_name"),
-				Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+	if (workload != null) {
+		Task task = lecturerUser.getTask(Integer.parseUnsignedInt((String) d.get("task_id")), workload.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" added new subject (ID: \"" + ((String) d.get("subject_id")).toUpperCase() + "\", Name: \"" + (String) d.get("subject_name") + "\")");
+		if (task != null) {
+			boolean ok = lecturerUser.deleteTask(task.getId());
 			
-			rc.put("ok", true);
+			if (ok) {
+				lecturerUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
+						" deleted task (ID: \"" + Integer.toString(task.getId()) + "\", Name: \"" + task.getName() + "\")");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: The task doesn't exist");
+			}
 		} else {
 			rc.put("error_code", 500);
 			rc.put("description", "Internal Server Error: Database Error");
 		}
 	} else {
 		rc.put("error_code", 400);
-		rc.put("message", "The subject already exist.");
-		rc.put("description", "Bad Request: The subject already exist");
+		rc.put("description", "Bad Request: The corresponding workload doesn't exist");
 	}
 }
 

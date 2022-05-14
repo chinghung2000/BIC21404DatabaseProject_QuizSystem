@@ -6,6 +6,8 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.io.File"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -20,11 +22,12 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
 // define logic control variables
+boolean validate = false;
 boolean execute = false;
 
 
@@ -36,8 +39,8 @@ if (request.getMethod().equals("POST")) {
 		
 		// check whether Content-Type is 'multipart/form-data'
 		if (request.getContentType().indexOf("multipart/form-data") == 0) {
-			// permit execution
-			execute = true;
+			// perform parameter validation
+			validate = true;
 		} else {
 			rc.put("error_code", 400);
 			rc.put("description", "Bad Request: Bad POST Request: Unsupported content-type: Content-type must be multipart/form-data");
@@ -52,73 +55,163 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-// execution
-if (execute) {
+// create a HashMap of parameters
+HashMap<String, Object> parameters = new HashMap<String, Object>();
+
+// create a List of file items
+List<FileItem> fileItems = null;
+
+
+// parameter validation
+if (validate) {
 	
-	// definitions of DiskFileItemFactory, ServletFileUpload objects and variables
-	int maxMemorySize = 100 * 1024 * 1024 ;	// 100 MB
-	int maxFileSize = 100 * 1024 * 1024;	// 100 MB
-	
-	DiskFileItemFactory dfif = new DiskFileItemFactory();
-	dfif.setSizeThreshold(maxMemorySize);
-	dfif.setRepository(new File("C:\\JavaWebUploads\\QuizSystem\\temp\\"));
-	ServletFileUpload upload = new ServletFileUpload(dfif);
-	upload.setFileSizeMax(maxFileSize);
-	String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
-	
-	HashMap<String, Object> parameters = new HashMap<String, Object>();
-	List<FileItem> fileItems = null;
-	
-	// try parsing form-data into FileItems
-	try {
-		fileItems = upload.parseRequest(request);
-	} catch (FileSizeLimitExceededException e) {
-		System.out.println(e);
-		rc.put("error_code", 400);
-		rc.put("message", "File size can't be more than 5 MB");
-		rc.put("description", "Bad Request: Bad POST Request: File size exceeds limit (5 MB)");
-	} catch (Exception e) {
-		System.out.println(e);
-		rc.put("error_code", 400);
-		rc.put("description", "Bad Request: Bad POST Request: Unknown error");
-	}
-	
-	if (fileItems != null) {
-		// first iteration to collect parameters
-		Iterator<FileItem> i = fileItems.iterator();
+	// check session for lecturer
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("lecturer")) {
 		
-		while (i.hasNext()) {
-			FileItem fileItem = i.next();
+		// definitions of DiskFileItemFactory, ServletFileUpload objects and variables
+		int maxMemorySize = 100 * 1024 * 1024 ;	// 100 MB
+		int maxFileSize = 100 * 1024 * 1024;	// 100 MB
+		
+		DiskFileItemFactory dfif = new DiskFileItemFactory();
+		dfif.setSizeThreshold(maxMemorySize);
+		dfif.setRepository(new File("C:\\JavaWebUploads\\QuizSystem\\temp\\"));
+		ServletFileUpload upload = new ServletFileUpload(dfif);
+		upload.setFileSizeMax(maxFileSize);
+		
+		// try parsing form-data into FileItems
+		try {
+			fileItems = upload.parseRequest(request);
+		} catch (FileSizeLimitExceededException e) {
+			System.out.println(e);
+			rc.put("error_code", 400);
+			rc.put("message", "File size can't be more than 100 MB");
+			rc.put("description", "Bad Request: Bad POST Request: File size exceeds limit (100 MB)");
+		} catch (Exception e) {
+			System.out.println(e);
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: Bad POST Request: Unknown error");
+		}
+		
+		// check whether fileItems is null or not
+		if (fileItems != null) {
 			
-			if (fileItem.isFormField()) {
-				parameters.put(fileItem.getFieldName(), fileItem.getString());
+			// iteration to collect parameters
+			Iterator<FileItem> i = fileItems.iterator();
+			
+			while (i.hasNext()) {
+				FileItem fileItem = i.next();
+				
+				if (fileItem.isFormField()) {
+					parameters.put(fileItem.getFieldName(), fileItem.getString());
+				} else {
+					parameters.put(fileItem.getFieldName(), fileItem.getName());
+				}
 			}
 		}
 		
-		// get workloadId by lecturerId and subjectId
-		int lecturerId = Integer.parseInt((String) session.getAttribute("user_id"));
-		String subjectId = (String) parameters.get("subject_id");
+		// validate parameter 'subject_id'
+		if (parameters.containsKey("subject_id")) {
+			if (!parameters.get("subject_id").equals("")) {
+				if (((String) parameters.get("subject_id")).length() <= 8) {
+					
+					// validate parameter 'task_name'
+					if (parameters.containsKey("task_name")) {
+						if (!parameters.get("task_name").equals("")) {
+							if (((String) parameters.get("task_name")).length() <= 50) {
+								
+								// validate parameter 'task_file'
+								if (parameters.containsKey("task_file")) {
+									// permit execution
+									execute = true;
+								} else {
+									rc.put("error_code", 400);
+									rc.put("description", "Bad Request: Parameter 'task_file' is required");
+								}
+							} else {
+								rc.put("error_code", 400);
+								rc.put("description", "Bad Request: 'task_name' length can't be more than 50");
+							}
+						} else {
+							rc.put("error_code", 400);
+							rc.put("description", "Bad Request: 'task_name' can't be empty");
+						}
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: Parameter 'task_name' is required");
+					}
+				} else {
+					rc.put("error_code", 400);
+					rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
+				}
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'subject_id' can't be empty");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: Parameter 'subject_id' is required");
+		}
+	} else {
+		rc.put("redirect", "index.jsp");
+		rc.put("error_code", 401);
+		rc.put("description", "Unauthorized: Session not found or invalid session");
+	}
+}
+
+
+// execution
+if (execute) {
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
+	
+	Lecturer lecturerUser = new Lecturer();
+	Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) parameters.get("subject_id"));
+	
+	if (workload != null) {
+		String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
+		String fileName = "";
 		
-		Lecturer lecturer = new Lecturer();
-// 		Workload workload = lecturer.getWorkload(lecturerId, subjectId);
-// 		int workloadId = workload.getId();
-		
-		// second iteration to get files
-		i = fileItems.iterator();
+		// iteration to write files
+		Iterator<FileItem> i = fileItems.iterator();
+		FileItem fileItem = null;
 		
 		while (i.hasNext()) {
-			FileItem fileItem = i.next();
+			fileItem = i.next();
 			
 			if (!fileItem.isFormField()) {
+				
 				// skips file with empty file name
 				if (!fileItem.getName().equals("")) {
-					File file = new File(filePath + fileItem.getName());
+					fileName = fileItem.getName();
+					File folder = new File(filePath + Integer.toString(workload.getId()) + "\\");
+					
+					if (!folder.exists()) folder.mkdir();
+					
+					File file = new File(filePath + Integer.toString(workload.getId()) + "\\" + fileItem.getName());
 					fileItem.write(file);
 				}
 			}
 		}
 		
-		rc.put("ok", true);
+		if (!fileName.equals("")) {
+			boolean ok = lecturerUser.addTask(workload.getId(), (String) parameters.get("task_name"), fileName,
+					Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+			
+			if (ok) {
+				lecturerUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
+						" added new task (Name: \"" + (String) parameters.get("task_name") + "\", File: \"" + fileName + "\")");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: File name can't be empty");
+		}
+	} else {
+		rc.put("error_code", 400);
+		rc.put("description", "Bad Request: The corresponding workload doesn't exist");
 	}
 }
 

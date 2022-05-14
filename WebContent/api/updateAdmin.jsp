@@ -16,10 +16,10 @@
 // create gson object (for JSON)
 Gson gson = new Gson();
 
-// create a Dictionary of data ($d)
+// create a HashMap of data ($d)
 HashMap<String, Object> d = new HashMap<String, Object>();
 
-// create a Dictionary of response content ($rc)
+// create a HashMap of response content ($rc)
 HashMap<String, Object> rc = new HashMap<String, Object>();
 rc.put("ok", false);
 
@@ -46,7 +46,7 @@ if (request.getMethod().equals("POST")) {
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into Dictionary $d 
+				// try JSON parsing request body and convert into HashMap $d 
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -80,7 +80,7 @@ if (request.getMethod().equals("POST")) {
 }
 
 
-//parameter validation
+// parameter validation
 if (validate) {
 	
 	// check session for admin
@@ -172,13 +172,12 @@ if (execute) {
 	Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) d.get("old_admin_id")));
 	
 	if (admin != null) {
-		boolean ok = adminUser.updateAdmin(Integer.parseUnsignedInt((String) d.get("old_admin_id")),
-				Integer.parseUnsignedInt((String) d.get("admin_id")), (String) d.get("admin_name"));
+		boolean ok = adminUser.updateAdmin(admin.getId(), Integer.parseUnsignedInt((String) d.get("admin_id")), (String) d.get("admin_name"));
 		
 		if (ok) {
 			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated admin with ID " + (String) d.get("old_admin_id") + " => Admin ID: " + (String) d.get("admin_id") +
-					", Admin Name: " + (String) d.get("admin_name"));
+					" updated admin (ID: \"" + Integer.toString(admin.getId()) + "\") to ID: \"" + (String) d.get("admin_id") +
+					"\", Name: \"" + (String) d.get("admin_name") + "\"");
 			
 			rc.put("ok", true);
 		} else {
