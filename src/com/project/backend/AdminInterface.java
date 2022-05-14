@@ -38,5 +38,4 @@ public interface AdminInterface {
 	ArrayList<String> getSystemLogTypes();
 	ArrayList<Log> getSystemLogs();
 	ArrayList<Log> getSystemLogs(String type);
-	boolean addLogRecord(String type, String description);
 }

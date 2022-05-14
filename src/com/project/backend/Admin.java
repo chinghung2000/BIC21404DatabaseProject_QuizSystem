@@ -466,13 +466,4 @@ public class Admin extends User implements AdminInterface {
 		
 		return logs;
 	}
-
-	@Override
-	public boolean addLogRecord(String type, String description) {
-		DatabaseManager db = new DatabaseManager(new MySQL().connect());
-		
-		db.prepare("INSERT INTO log (type, description) VALUES (?, ?);",
-				type, description);
-		return db.executeUpdate();
-	}
 }

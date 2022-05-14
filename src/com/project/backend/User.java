@@ -76,4 +76,12 @@ public class User {
 		
 		return false;
 	}
+	
+	public boolean addLogRecord(String type, String description) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("INSERT INTO log (type, description) VALUES (?, ?);",
+				type, description);
+		return db.executeUpdate();
+	}
 }
