@@ -65,6 +65,18 @@
 		}
 	}
 	
+	function loadWorkloadInfo(rc = null) {
+		if (rc == null) {
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			
+			XHRequest("getWorkloadInfo", JSON.stringify(d), {callback: "loadWorkloadInfo"});
+		} else {
+			$e("span-subject-id").innerHTML = rc["subject_id"];
+			$e("span-subject-name").innerHTML = rc["subject_name"];
+		}
+	}
+	
 	function loadTable(rc = null) {
 		if (rc == null) {
 			var d = {};
@@ -133,13 +145,10 @@
 		d["answer"] = answer;
 		
 		if (d["question"] != "") {
-			if (d["answer"] != "") {
-				XHRequest("addQuizTF", JSON.stringify(d));
-				loadTable();
-			} else {
-				$e("span-message").innerHTML = "Missing answer.";
-				clearMessage();
-			}
+			XHRequest("addQuizTF", JSON.stringify(d), {async: false});
+			loadTable();
+			$e("input-question").value = null;
+			$e("input-answer").checked = false;
 		} else {
 			$e("span-message").innerHTML = "Please enter question.";
 			clearMessage();
@@ -155,13 +164,8 @@
 		
 		if (d["quiz_tf_id"] != "") {
 			if (d["question"] != "") {
-				if (d["answer"] != "") {
-					XHRequest("updateQuizTF", JSON.stringify(d));
-					loadTable();
-				} else {
-					$e("span-message").innerHTML = "Missing answer..";
-					clearMessage();
-				}
+				XHRequest("updateQuizTF", JSON.stringify(d), {async: false});
+				loadTable();
 			} else {
 				$e("span-message").innerHTML = "Please enter question.";
 				clearMessage();
@@ -177,12 +181,14 @@
 		d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 		d["quiz_tf_id"] = quizTFId;
 		
-		if (d["quiz_tf_id"] != "") {
-			XHRequest("deleteQuizTF", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing quiz true/false ID.";
-			clearMessage();
+		if (confirm("Are you sure to delete the question?") == true) {
+			if (d["quiz_tf_id"] != "") {
+				XHRequest("deleteQuizTF", JSON.stringify(d), {async: false});
+				loadTable();
+			} else {
+				$e("span-message").innerHTML = "Missing quiz true/false ID.";
+				clearMessage();
+			}
 		}
 	}
 	
@@ -207,7 +213,7 @@
 		button.innerHTML = "Done";
 		button.setAttribute("onclick", "update('" + quizTFId + "', "
 				+ "this.parentNode.parentNode.cells[1].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[2].childNodes[1].checked);");
+				+ "this.parentNode.parentNode.cells[2].childNodes[0].checked);");
 		
 		cell = row.cells[6];
 		button = cell.childNodes[0];
@@ -366,7 +372,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); loadTable();">
+<body onload="loadUserInfo(); loadWorkloadInfo(); loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
@@ -409,7 +415,7 @@ button:hover {
 						<td><input type="checkbox" id="input-answer"></td>
 						<td></td>
 						<td></td>
-						<td><button onclick="add($e('input-question').value, $e('input-answer').value);">ADD</button></td>
+						<td><button onclick="add($e('input-question').value, $e('input-answer').checked);">ADD</button></td>
 					</tr>
 				</tfoot>
 			</table>

@@ -65,6 +65,20 @@
 		}
 	}
 	
+	function loadTaskInfo(rc = null) {
+		if (rc == null) {
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			d["task_id"] = "<% out.print(request.getParameter("task_id")); %>";
+			
+			XHRequest("getTaskInfo", JSON.stringify(d), {callback: "loadTaskInfo"});
+		} else {
+			$e("span-subject-id").innerHTML = rc["subject_id"];
+			$e("span-subject-name").innerHTML = rc["subject_name"];
+			$e("span-task-name").innerHTML = rc["task_name"];
+		}
+	}
+	
 	function loadTable(rc = null) {
 		if (rc == null) {
 			var d = {};
@@ -232,7 +246,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); loadTable();">
+<body onload="loadUserInfo(); loadTaskInfo(); loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
