@@ -114,7 +114,7 @@ if (validate) {
 // execution
 if (execute) {
 	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> taskDict;
+	HashMap<String, Object> quizTFDict;
 	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
 	
 	if (session.getAttribute("user_type").equals("lecturer")) {
@@ -122,16 +122,16 @@ if (execute) {
 		Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
 		
 		if (workload != null) {
-			ArrayList<Task> tasks = lecturerUser.getAllTasks(workload.getId());
+			ArrayList<QuizTrueFalse> quizTrueFalses = lecturerUser.getAllQuizTF(workload.getId());
 			
-			for (Task task : tasks) {
-				taskDict = new HashMap<String, Object>();
-				taskDict.put("task_id", task.getId());
-				taskDict.put("task_name", task.getName());
-				taskDict.put("file_name", task.getFileName());
-				taskDict.put("modified_by", task.getModifiedBy().getName());
-				taskDict.put("modified_on", sdf.format(task.getModifiedOn()));
-				result.add(taskDict);
+			for (QuizTrueFalse quizTrueFalse: quizTrueFalses) {
+				quizTFDict = new HashMap<String, Object>();
+				quizTFDict.put("quiz_tf_id", quizTrueFalse.getId());
+				quizTFDict.put("question", quizTrueFalse.getQuestion());
+				quizTFDict.put("answer", quizTrueFalse.getAnswer());
+				quizTFDict.put("modified_by", quizTrueFalse.getModifiedBy().getName());
+				quizTFDict.put("modified_on", sdf.format(quizTrueFalse.getModifiedOn()));
+				result.add(quizTFDict);
 			}
 			
 			rc.put("result", result);

@@ -168,8 +168,8 @@ if (execute) {
 		}
 	} else {
 		rc.put("error_code", 400);
-		rc.put("message", "The workload already exist.");
-		rc.put("description", "Bad Request: The workload already exist");
+		rc.put("message", "The workload conflicts with another existing record.");
+		rc.put("description", "Bad Request: The workload conflicts with another existing record");
 	}
 }
 

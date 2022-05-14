@@ -146,7 +146,8 @@ if (validate) {
 if (execute) {
 	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
 	
-	User user = new User().login((String) d.get("user_type"), (String) d.get("user_id"), (String) d.get("password"));
+	User publicUser = new User(); 
+	User user = publicUser.login((String) d.get("user_type"), (String) d.get("user_id"), (String) d.get("password"));
 	
 	if (user != null) {
 		session.setAttribute("user_type", d.get("user_type"));
@@ -155,17 +156,17 @@ if (execute) {
 			Admin admin = (Admin) user;
 			session.setAttribute("user_id", Integer.toString(admin.getId()));
 			
-			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") + " logged in");
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") + " logged in");
 		} else if (user instanceof Lecturer) {
 			Lecturer lecturer = (Lecturer) user;
 			session.setAttribute("user_id", Integer.toString(lecturer.getId()));
 			
-			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") + " logged in");
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") + " logged in");
 		} else if (user instanceof Student) {
 			Student student = (Student) user;
 			session.setAttribute("user_id", student.getId());
 			
-			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") + " logged in");
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") + " logged in");
 		}
 		
 		if (d.get("user_id").equals(d.get("password"))) {
@@ -177,13 +178,13 @@ if (execute) {
 		rc.put("ok", true);
 	} else {
 		if (d.get("user_type").equals("admin")) {
-			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) d.get("user_id") +
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) d.get("user_id") +
 					" attempted to log in with incorrect credential");
 		} else if (d.get("user_type").equals("lecturer")) {
-			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) d.get("user_id") +
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) d.get("user_id") +
 					" attempted to log in with incorrect credential");
 		} else if (d.get("user_type").equals("student")) {
-			user.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) d.get("user_id") +
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) d.get("user_id") +
 					" attempted to log in with incorrect credential");
 		}
 		

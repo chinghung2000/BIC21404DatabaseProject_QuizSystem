@@ -5,6 +5,7 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
 <%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -82,15 +83,48 @@ if (request.getMethod().equals("POST")) {
 // parameter validation
 if (validate) {
 	
-	// check session for lecturer and student
-	if (session.getAttribute("user_id") != null && (session.getAttribute("user_type").equals("lecturer") || session.getAttribute("user_type").equals("student"))) {
+	// check session for lecturer
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("lecturer")) {
 		
 		// validate parameter 'subject_id'
 		if (d.containsKey("subject_id")) {
 			if (!d.get("subject_id").equals("")) {
 				if (((String) d.get("subject_id")).length() <= 8) {
-					// permit execution
-					execute = true;
+					
+					// validate parameter 'quiz_tf_id'
+					if (d.containsKey("quiz_tf_id")) {
+						if (!d.get("quiz_tf_id").equals("")) {
+							boolean parseUnsignedIntError;
+							
+							// try to parse 'quiz_tf_id' into unsigned integer
+							try {
+								Integer.parseUnsignedInt((String) d.get("quiz_tf_id"));
+								parseUnsignedIntError = false;
+							} catch (NumberFormatException e) {
+								parseUnsignedIntError = true;
+							}
+							
+							// check whether there are no error in parsing process
+							if (!parseUnsignedIntError) {
+								if (Integer.parseUnsignedInt((String) d.get("quiz_tf_id")) <= 2147483647) {
+									// permit execution
+									execute = true;
+								} else {
+									rc.put("error_code", 400);
+									rc.put("description", "Bad Request: 'quiz_tf_id' is out of range");
+								}
+							} else {
+								rc.put("error_code", 400);
+								rc.put("description", "Bad Request: 'quiz_tf_id' must be an unsigned integer");
+							}
+						} else {
+							rc.put("error_code", 400);
+							rc.put("description", "Bad Request: 'quiz_tf_id' can't be empty");
+						}
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: Parameter 'quiz_tf_id' is required");
+					}
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
@@ -113,35 +147,33 @@ if (validate) {
 
 // execution
 if (execute) {
-	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> taskDict;
-	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
 	
-	if (session.getAttribute("user_type").equals("lecturer")) {
-		Lecturer lecturerUser = new Lecturer();
-		Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
+	Lecturer lecturerUser = new Lecturer();
+	Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
+	
+	if (workload != null) {
+		QuizTrueFalse quizTrueFalse = lecturerUser.getQuizTF(Integer.parseUnsignedInt((String) d.get("quiz_tf_id")), workload.getId());
 		
-		if (workload != null) {
-			ArrayList<Task> tasks = lecturerUser.getAllTasks(workload.getId());
+		if (quizTrueFalse != null) {
+			boolean ok = lecturerUser.deleteQuizTF(quizTrueFalse.getId());
 			
-			for (Task task : tasks) {
-				taskDict = new HashMap<String, Object>();
-				taskDict.put("task_id", task.getId());
-				taskDict.put("task_name", task.getName());
-				taskDict.put("file_name", task.getFileName());
-				taskDict.put("modified_by", task.getModifiedBy().getName());
-				taskDict.put("modified_on", sdf.format(task.getModifiedOn()));
-				result.add(taskDict);
+			if (ok) {
+				lecturerUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
+						" deleted quiz true/false question");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
 			}
-			
-			rc.put("result", result);
-			rc.put("ok", true);
 		} else {
 			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: The corresponding workload doesn't exist");
+			rc.put("description", "Bad Request: The corresponding quiz true/false doesn't exist");
 		}
-	} else if (session.getAttribute("user_type").equals("student")) {
-		
+	} else {
+		rc.put("error_code", 400);
+		rc.put("description", "Bad Request: The corresponding workload doesn't exist");
 	}
 }
 

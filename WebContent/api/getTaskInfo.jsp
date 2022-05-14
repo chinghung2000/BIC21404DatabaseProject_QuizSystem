@@ -4,7 +4,6 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
-<%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -89,8 +88,41 @@ if (validate) {
 		if (d.containsKey("subject_id")) {
 			if (!d.get("subject_id").equals("")) {
 				if (((String) d.get("subject_id")).length() <= 8) {
-					// permit execution
-					execute = true;
+					
+					// validate parameter 'task_id'
+					if (d.containsKey("task_id")) {
+						if (!d.get("task_id").equals("")) {
+							boolean parseUnsignedIntError;
+							
+							// try to parse 'task_id' into unsigned integer
+							try {
+								Integer.parseUnsignedInt((String) d.get("task_id"));
+								parseUnsignedIntError = false;
+							} catch (NumberFormatException e) {
+								parseUnsignedIntError = true;
+							}
+							
+							// check whether there are no error in parsing process
+							if (!parseUnsignedIntError) {
+								if (Integer.parseUnsignedInt((String) d.get("task_id")) <= 2147483647) {
+									// permit execution
+									execute = true;
+								} else {
+									rc.put("error_code", 400);
+									rc.put("description", "Bad Request: 'task_id' is out of range");
+								}
+							} else {
+								rc.put("error_code", 400);
+								rc.put("description", "Bad Request: 'task_id' must be an unsigned integer");
+							}
+						} else {
+							rc.put("error_code", 400);
+							rc.put("description", "Bad Request: 'task_id' can't be empty");
+						}
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: Parameter 'task_id' is required");
+					}
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
@@ -113,29 +145,22 @@ if (validate) {
 
 // execution
 if (execute) {
-	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> taskDict;
-	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
-	
 	if (session.getAttribute("user_type").equals("lecturer")) {
 		Lecturer lecturerUser = new Lecturer();
 		Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
 		
 		if (workload != null) {
-			ArrayList<Task> tasks = lecturerUser.getAllTasks(workload.getId());
+			Task task = lecturerUser.getTask(Integer.parseUnsignedInt((String) d.get("task_id")), workload.getId());
 			
-			for (Task task : tasks) {
-				taskDict = new HashMap<String, Object>();
-				taskDict.put("task_id", task.getId());
-				taskDict.put("task_name", task.getName());
-				taskDict.put("file_name", task.getFileName());
-				taskDict.put("modified_by", task.getModifiedBy().getName());
-				taskDict.put("modified_on", sdf.format(task.getModifiedOn()));
-				result.add(taskDict);
+			if (task != null) {
+				rc.put("subject_id", workload.getSubject().getId());
+				rc.put("subject_name", workload.getSubject().getName());
+				rc.put("task_name", task.getName());
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: The corresponding task doesn't exist");
 			}
-			
-			rc.put("result", result);
-			rc.put("ok", true);
 		} else {
 			rc.put("error_code", 400);
 			rc.put("description", "Bad Request: The corresponding workload doesn't exist");
