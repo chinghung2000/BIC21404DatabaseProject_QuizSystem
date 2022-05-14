@@ -52,7 +52,7 @@ public class QuizTrueFalse {
 		this.question = question;
 	}
 
-	public boolean isAnswer() {
+	public boolean getAnswer() {
 		return answer;
 	}
 

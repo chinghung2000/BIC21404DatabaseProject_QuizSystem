@@ -14,13 +14,13 @@ public interface LecturerInterface {
 	ArrayList<Submission> getAllSubmissions(int taskId);
 
 	ArrayList<QuizTrueFalse> getAllQuizTF(int workloadId);
-	QuizTrueFalse getQuizTF(int quizTFId);
+	QuizTrueFalse getQuizTF(int quizTFId, int workloadId);
 	boolean addQuizTF(int workloadId, String question, boolean answer, int modifiedBy);
 	boolean updateQuizTF(int quizTFId, String question, boolean answer, int modifiedBy);
 	boolean deleteQuizTF(int quizTFId);
 
 	ArrayList<QuizObjective> getAllQuizObj(int workloadId);
-	QuizObjective getQuizObj(int quizObjId);
+	QuizObjective getQuizObj(int quizObjId, int workloadId);
 	boolean addQuizObj(int workloadId, String question, String choiceA, String choiceB, String choiceC, String choiceD, char answer, int modifiedBy);
 	boolean updateQuizObj(int quizObjId, String question, String choiceA, String choiceB, String choiceC, String choiceD, char answer, int modifiedBy);
 	boolean deleteQuizObj(int quizObjId);

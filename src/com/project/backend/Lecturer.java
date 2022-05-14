@@ -220,11 +220,11 @@ public class Lecturer extends User implements LecturerInterface {
 	}
 
 	@Override
-	public QuizTrueFalse getQuizTF(int quizTFId) {
+	public QuizTrueFalse getQuizTF(int quizTFId, int workloadId) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("SELECT q.quiz_tf_id, q.workload_id, q.question, q.answer, l.lecturer_id, l.lecturer_name, q.modified_on FROM quiz_tf q INNER JOIN lecturer l ON q.modified_by = l.lecturer_id WHERE q.quiz_tf_id = ?;",
-				quizTFId);
+		db.prepare("SELECT q.quiz_tf_id, q.workload_id, q.question, q.answer, l.lecturer_id, l.lecturer_name, q.modified_on FROM quiz_tf q INNER JOIN lecturer l ON q.modified_by = l.lecturer_id WHERE q.quiz_tf_id = ? AND q.workload_id = ?;",
+				quizTFId, workloadId);
 		ResultSet rs = db.executeQuery();
 		
 		try {
@@ -286,7 +286,7 @@ public class Lecturer extends User implements LecturerInterface {
 	}
 
 	@Override
-	public QuizObjective getQuizObj(int quizObjId) {
+	public QuizObjective getQuizObj(int quizObjId, int workloadId) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
 		db.prepare("SELECT q.quiz_obj_id, q.workload_id, q.question, q.choice_a, q.choice_b, q.choice_c, q.choice_d, q.answer, l.lecturer_id, l.lecturer_name, q.modified_on FROM quiz_obj q INNER JOIN lecturer l ON q.modified_by = l.lecturer_id WHERE q.quiz_obj_id = ?;",
