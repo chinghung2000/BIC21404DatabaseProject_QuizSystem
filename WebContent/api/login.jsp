@@ -100,7 +100,7 @@ if (validate) {
 									ArrayList<String> allowedUserTypes = new ArrayList<String>();
 									Collections.addAll(allowedUserTypes, "admin", "lecturer", "student");
 									
-									if (allowedUserTypes.contains(d.get("user_type"))) {
+									if (allowedUserTypes.contains(((String) d.get("user_type")).toLowerCase())) {
 										// permit execution
 										execute = true;
 									} else {
