@@ -167,38 +167,37 @@ if (execute) {
 	Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) parameters.get("subject_id"));
 	
 	if (workload != null) {
-		String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
-		String fileName = "";
-		
-		// iteration to write files
-		Iterator<FileItem> i = fileItems.iterator();
-		FileItem fileItem = null;
-		
-		while (i.hasNext()) {
-			fileItem = i.next();
-			
-			if (!fileItem.isFormField()) {
-				
-				// skips file with empty file name
-				if (!fileItem.getName().equals("")) {
-					fileName = fileItem.getName();
-					File folder = new File(filePath + Integer.toString(workload.getId()) + "\\");
-					
-					if (!folder.exists()) folder.mkdir();
-					
-					File file = new File(filePath + Integer.toString(workload.getId()) + "\\" + fileItem.getName());
-					fileItem.write(file);
-				}
-			}
-		}
-		
-		if (!fileName.equals("")) {
-			boolean ok = lecturerUser.addTask(workload.getId(), (String) parameters.get("task_name"), fileName,
+		if (!parameters.get("task_file").equals("")) {
+			int logId = lecturerUser.addTask(workload.getId(), (String) parameters.get("task_name"), (String) parameters.get("task_file"),
 					Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 			
-			if (ok) {
+			if (logId != -1) {
+				String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
+				
+				// iteration to write files
+				Iterator<FileItem> i = fileItems.iterator();
+				
+				while (i.hasNext()) {
+					FileItem fileItem = i.next();
+					
+					if (!fileItem.isFormField()) {
+						
+						// skips file with empty file name
+						if (!fileItem.getName().equals("")) {
+							File workloadFolder = new File(filePath + Integer.toString(workload.getId()) + "\\");
+							if (!workloadFolder.exists()) workloadFolder.mkdir();
+							
+							File taskFolder = new File(filePath + Integer.toString(workload.getId()) + "\\" + Integer.toString(logId) + "\\");
+							if (!taskFolder.exists()) taskFolder.mkdir();
+							
+							File file = new File(filePath + Integer.toString(workload.getId()) + "\\" + Integer.toString(logId) + "\\" + fileItem.getName());
+							fileItem.write(file);
+						}
+					}
+				}
+				
 				lecturerUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
-						" added new task (Name: \"" + (String) parameters.get("task_name") + "\", File: \"" + fileName + "\")");
+						" added new task (Name: \"" + (String) parameters.get("task_name") + "\", File: \"" + (String) parameters.get("task_file") + "\")");
 				
 				rc.put("ok", true);
 			} else {
