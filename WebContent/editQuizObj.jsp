@@ -65,6 +65,30 @@
 		}
 	}
 	
+	function loadWorkloadInfo(rc = null) {
+		if (rc == null) {
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			
+			XHRequest("getWorkloadInfo", JSON.stringify(d), {callback: "loadWorkloadInfo"});
+		} else {
+			$e("span-subject-id").innerHTML = rc["subject_id"];
+			$e("span-subject-name").innerHTML = rc["subject_name"];
+		}
+	}
+	
+	var selectAnswerOptions = ["A", "B", "C", "D"];
+	var selectAnswer = document.createElement("select");
+	selectAnswer.disabled = true;
+	var option;
+	
+	for (var i = 0; i < selectAnswerOptions.length; i++) {
+		option = document.createElement("option");
+		option.text = selectAnswerOptions[i];
+		option.value = selectAnswerOptions[i];
+		selectAnswer.add(option);
+	}
+	
 	function loadTable(rc = null) {
 		if (rc == null) {
 			var d = {};
@@ -76,7 +100,7 @@
 			
 			var r = rc["result"]; 
 			var tBody = $e("list").tBodies[0];
-			var row, cell, span, button;
+			var row, cell, span, select, button;
 			
 			for (var i in r) {
 				row = tBody.insertRow();
@@ -115,10 +139,8 @@
 				cell.appendChild(span);
 				
 				cell = row.insertCell();
-				span = document.createElement("span");
-				span.innerHTML = r[i]["answer"];
-				span.setAttribute("style", "display: block;");
-				cell.appendChild(span);
+				select = cell.appendChild(selectAnswer.cloneNode(true));
+				select.value = r[i]["answer"];
 				
 				cell = row.insertCell();
 				cell.innerHTML = r[i]["modified_by"];
@@ -163,10 +185,16 @@
 			if (d["choice_a"] != "") {
 				if (d["choice_b"] != "") {
 					if (d["answer"] != "") {
-						XHRequest("addQuizObj", JSON.stringify(d));
+						XHRequest("addQuizObj", JSON.stringify(d), {async: false});
 						loadTable();
+						$e("input-question").value = null;
+						$e("input-choice-a").value = null;
+						$e("input-choice-b").value = null;
+						$e("input-choice-c").value = null;
+						$e("input-choice-d").value = null;
+						$e("select-answer").value = "A";
 					} else {
-						$e("span-message").innerHTML = "Please enter answer.";
+						$e("span-message").innerHTML = "Please choose an answer.";
 						clearMessage();
 					}
 				} else {
@@ -199,7 +227,7 @@
 				if (d["choice_a"] != "") {
 					if (d["choice_b"] != "") {
 						if (d["answer"] != "") {
-							XHRequest("updateQuizObj", JSON.stringify(d));
+							XHRequest("updateQuizObj", JSON.stringify(d), {async: false});
 							loadTable();
 						} else {
 							$e("span-message").innerHTML = "Please enter answer.";
@@ -228,18 +256,20 @@
 		d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 		d["quiz_obj_id"] = quizObjId;
 		
-		if (d["quiz_obj_id"] != "") {
-			XHRequest("deleteQuizObj", JSON.stringify(d));
-			loadTable();
-		} else {
-			$e("span-message").innerHTML = "Missing quiz objective ID.";
-			clearMessage();
+		if (confirm("Are you sure to delete the question?") == true) {
+			if (d["quiz_obj_id"] != "") {
+				XHRequest("deleteQuizObj", JSON.stringify(d), {async: false});
+				loadTable();
+			} else {
+				$e("span-message").innerHTML = "Missing quiz objective ID.";
+				clearMessage();
+			}
 		}
 	}
 	
 	function edit(element, quizObjId) {
 		var row = element.parentNode.parentNode;
-		var cell, span, input, button;
+		var cell, span, input, select, button;
 		
 		cell = row.cells[1];
 		span = cell.childNodes[0];
@@ -282,12 +312,8 @@
 		cell.appendChild(input);
 		
 		cell = row.cells[6];
-		span = cell.childNodes[0];
-		span.style.display = "none";
-		input = document.createElement("input");
-		input.type = "text";
-		input.value = span.innerHTML;
-		cell.appendChild(input);
+		select = cell.childNodes[0];
+		select.disabled = false;
 		
 		cell = row.cells[9];
 		button = cell.childNodes[0];
@@ -298,7 +324,7 @@
 				+ "this.parentNode.parentNode.cells[3].childNodes[1].value, "
 				+ "this.parentNode.parentNode.cells[4].childNodes[1].value, "
 				+ "this.parentNode.parentNode.cells[5].childNodes[1].value, "
-				+ "this.parentNode.parentNode.cells[6].childNodes[1].value);");
+				+ "this.parentNode.parentNode.cells[6].childNodes[0].value);");
 		
 		cell = row.cells[10];
 		button = cell.childNodes[0];
@@ -308,7 +334,7 @@
 	
 	function cancelEdit(element, quizObjId) {
 		var row = element.parentNode.parentNode;
-		var cell, button;
+		var cell, select, button;
 		
 		cell = row.cells[1];
 		cell.childNodes[0].style.display = "block";
@@ -331,8 +357,8 @@
 		cell.removeChild(cell.childNodes[1]);
 		
 		cell = row.cells[6];
-		cell.childNodes[0].style.display = "block";
-		cell.removeChild(cell.childNodes[1]);
+		select = cell.childNodes[0];
+		select.disabled = true;
 		
 		cell = row.cells[9];
 		button = cell.childNodes[0];
@@ -427,7 +453,7 @@ table th {
 table th, table td {
 	border: 1px solid #bfbfbf;
 	padding: 5px 10px;
-	max-width: 100px;
+	max-width: 120px;
 }
 
 input[type=text], [type=password] {
@@ -437,6 +463,16 @@ input[type=text], [type=password] {
 }
 
 input[type=text]:hover, [type=password]:hover {
+	outline: 1px solid;
+}
+
+select {
+	min-width: 50px;
+	font-family: verdana;
+	font-size: 16px;
+}
+
+select:hover {
 	outline: 1px solid;
 }
 
@@ -463,7 +499,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); loadTable();">
+<body onload="loadUserInfo(); loadWorkloadInfo(); loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
@@ -511,10 +547,17 @@ button:hover {
 						<td><input type="text" id="input-choice-b"></td>
 						<td><input type="text" id="input-choice-c"></td>
 						<td><input type="text" id="input-choice-d"></td>
-						<td><input type="text" id="input-answer"></td>
+						<td>
+							<select id="select-answer">
+								<option value="A">A</option>
+								<option value="B">B</option>
+								<option value="C">C</option>
+								<option value="D">D</option>
+							</select>
+						</td>
 						<td></td>
 						<td></td>
-						<td><button onclick="add($e('input-question').value, $e('input-is-true').value);">ADD</button></td>
+						<td><button onclick="add($e('input-question').value, $e('input-choice-a').value, $e('input-choice-b').value, $e('input-choice-c').value, $e('input-choice-d').value, $e('select-answer').value);">ADD</button></td>
 					</tr>
 				</tfoot>
 			</table>
