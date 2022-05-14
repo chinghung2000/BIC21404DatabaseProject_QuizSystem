@@ -8,7 +8,7 @@ public interface LecturerInterface {
 
 	ArrayList<Task> getAllTasks(int workloadId);
 	Task getTask(int taskId, int workloadId);
-	boolean addTask(int workloadId, String taskName, String fileName, int modifiedBy);
+	int addTask(int workloadId, String taskName, String fileName, int modifiedBy);
 	boolean deleteTask(int taskId);
 
 	ArrayList<Submission> getAllSubmissions(int taskId);

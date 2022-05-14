@@ -148,12 +148,26 @@ public class Lecturer extends User implements LecturerInterface {
 	}
 
 	@Override
-	public boolean addTask(int workloadId, String taskName, String fileName, int modifiedBy) {
+	public int addTask(int workloadId, String taskName, String fileName, int modifiedBy) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("INSERT INTO task (workload_id, task_name, task_file_name, modified_by, modified_on) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());",
+		db.prepareForGeneratedKey("INSERT INTO task (workload_id, task_name, task_file_name, modified_by, modified_on) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP());",
 				workloadId, taskName, fileName, modifiedBy);
-		return db.executeUpdate();
+		ResultSet rs = db.executeUpdateForGeneratedKey();
+		
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			} catch (SQLException e) {
+				System.out.println("Lecturer: There are some errors: " + e.toString());
+			}
+		} else {
+			System.out.println("User: Cannot retrieve result from database");
+		}
+		
+		return -1;
 	}
 
 	@Override
