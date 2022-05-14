@@ -154,7 +154,7 @@
 				cell = row.insertCell();
 				button = document.createElement("button");
 				button.innerHTML = "View";
-				button.setAttribute("onclick", "location.href = 'viewSubmission.jsp?subject_id=" + <% out.print(request.getParameter("subject_id")); %> + "&task_id=" + r[i]["task_id"] + "';");
+				button.setAttribute("onclick", "location.href = 'viewSubmission.jsp?subject_id=" + "<% out.print(request.getParameter("subject_id")); %>" + "&task_id=" + r[i]["task_id"] + "';");
 				cell.appendChild(button);
 				
 				cell = row.insertCell();
@@ -205,17 +205,19 @@
 		d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 		d["task_id"] = taskId;
 		
-		if (d["subject_id"] != "") {
-			if (d["task_id"] != "") {
-				XHRequest("deleteTask", JSON.stringify(d));
-				loadTable();
+		if (confirm("Are you sure to delete task with ID '" + taskId + "'?") == true) {
+			if (d["subject_id"] != "") {
+				if (d["task_id"] != "") {
+					XHRequest("deleteTask", JSON.stringify(d), {async: false});
+					loadTable();
+				} else {
+					$e("span-message").innerHTML = "Missing task ID.";
+					clearMessage();
+				}
 			} else {
-				$e("span-message").innerHTML = "Missing task ID.";
+				$e("span-message").innerHTML = "Missing subject ID.";
 				clearMessage();
 			}
-		} else {
-			$e("span-message").innerHTML = "Missing subject ID.";
-			clearMessage();
 		}
 	}
 	
