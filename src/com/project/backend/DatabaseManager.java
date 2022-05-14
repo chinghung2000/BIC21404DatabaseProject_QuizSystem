@@ -34,8 +34,10 @@ public class DatabaseManager {
 						this.pstmt.setFloat(i, (float) parameter);
 					} else if (parameter instanceof Double) {
 						this.pstmt.setDouble(i, (double) parameter);
-					} else if (parameter instanceof Character || parameter instanceof String) {
+					} else if (parameter instanceof String) {
 						this.pstmt.setString(i, (String) parameter);
+					} else if (parameter instanceof Character) {
+						this.pstmt.setString(i, Character.toString((char) parameter));
 					} else if (parameter instanceof Date) {
 						this.pstmt.setDate(i, (Date) parameter);
 					} else {
