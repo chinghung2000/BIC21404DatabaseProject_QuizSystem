@@ -205,7 +205,7 @@
 		d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
 		d["task_id"] = taskId;
 		
-		if (confirm("Are you sure to delete task with ID '" + taskId + "'?") == true) {
+		if (confirm("Are you sure to delete the task?") == true) {
 			if (d["subject_id"] != "") {
 				if (d["task_id"] != "") {
 					XHRequest("deleteTask", JSON.stringify(d), {async: false});
