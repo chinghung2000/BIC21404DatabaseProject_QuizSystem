@@ -65,6 +65,18 @@
 		}
 	}
 	
+	function loadWorkloadInfo(rc = null) {
+		if (rc == null) {
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			
+			XHRequest("getWorkloadInfo", JSON.stringify(d), {callback: "loadWorkloadInfo"});
+		} else {
+			$e("span-subject-id").innerHTML = rc["subject_id"];
+			$e("span-subject-name").innerHTML = rc["subject_name"];
+		}
+	}
+	
 	function loadTable(rc = null) {
 		if (rc == null) {
 			var d = {};
@@ -91,7 +103,7 @@
 				cell.innerHTML = r[i]["student_id"];
 				
 				cell = row.insertCell();
-				cell.innerHTML = r[i]["result"];
+				cell.innerHTML = r[i]["mark"];
 			}
 		}
 	}
@@ -222,7 +234,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); loadTable();">
+<body onload="loadUserInfo(); loadWorkloadInfo(); loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
