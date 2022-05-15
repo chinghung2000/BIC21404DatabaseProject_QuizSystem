@@ -88,41 +88,8 @@ if (validate) {
 		if (d.containsKey("subject_id")) {
 			if (!d.get("subject_id").equals("")) {
 				if (((String) d.get("subject_id")).length() <= 8) {
-					
-					// validate parameter 'task_id'
-					if (d.containsKey("task_id")) {
-						if (!d.get("task_id").equals("")) {
-							boolean parseUnsignedIntError;
-							
-							// try to parse 'task_id' into unsigned integer
-							try {
-								Integer.parseUnsignedInt((String) d.get("task_id"));
-								parseUnsignedIntError = false;
-							} catch (NumberFormatException e) {
-								parseUnsignedIntError = true;
-							}
-							
-							// check whether there are no error in parsing process
-							if (!parseUnsignedIntError) {
-								if (Integer.parseUnsignedInt((String) d.get("task_id")) <= 2147483647) {
-									// permit execution
-									execute = true;
-								} else {
-									rc.put("error_code", 400);
-									rc.put("description", "Bad Request: 'task_id' is out of range");
-								}
-							} else {
-								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: 'task_id' must be an unsigned integer");
-							}
-						} else {
-							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'task_id' can't be empty");
-						}
-					} else {
-						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'task_id' is required");
-					}
+					// permit execution
+					execute = true;
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
@@ -146,33 +113,24 @@ if (validate) {
 // execution
 if (execute) {
 	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> submissionDict;
+	HashMap<String, Object> quizTFResultDict;
 	
 	Lecturer lecturerUser = new Lecturer();
 	Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
 	
 	if (workload != null) {
-		Task task = lecturerUser.getTask(Integer.parseUnsignedInt((String) d.get("task_id")), workload.getId());
+		ArrayList<RegisteredSubject> registeredSubjects = lecturerUser.getAllRegisteredSubject(workload.getId());
 		
-		if (task != null) {
-			ArrayList<Submission> submissions = lecturerUser.getAllSubmissions(task.getId());
-			
-			for (Submission submission: submissions) {
-				submissionDict = new HashMap<String, Object>();
-				submissionDict.put("submission_id", submission.getId());
-				submissionDict.put("student_id", submission.getStudent().getId());
-				submissionDict.put("student_name", submission.getStudent().getName());
-				submissionDict.put("file_name", submission.getFileName());
-				submissionDict.put("file_hash", submission.getFileHash());
-				result.add(submissionDict);
-			}
-			
-			rc.put("result", result);
-			rc.put("ok", true);
-		} else {
-			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: The corresponding task doesn't exist");
+		for (RegisteredSubject registeredSubject: registeredSubjects) {
+			quizTFResultDict = new HashMap<String, Object>();
+			quizTFResultDict.put("student_id", registeredSubject.getStudent().getId());
+			quizTFResultDict.put("student_name", registeredSubject.getStudent().getName());
+			quizTFResultDict.put("mark", registeredSubject.getQuizTFMark());
+			result.add(quizTFResultDict);
 		}
+		
+		rc.put("result", result);
+		rc.put("ok", true);
 	} else {
 		rc.put("error_code", 400);
 		rc.put("description", "Bad Request: The corresponding workload doesn't exist");
