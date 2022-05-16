@@ -125,7 +125,17 @@ if (execute) {
 			rc.put("description", "Bad Request: The corresponding workload doesn't exist");
 		}
 	} else if (session.getAttribute("user_type").equals("student")) {
+		Student studentUser = new Student();
+		RegisteredSubject registeredSubject = studentUser.getRegisteredSubject((String) session.getAttribute("user_id"), (String) d.get("subject_id"));
 		
+		if (registeredSubject != null) {
+			rc.put("subject_id", registeredSubject.getWorkload().getSubject().getId());
+			rc.put("subject_name", registeredSubject.getWorkload().getSubject().getName());
+			rc.put("ok", true);
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: The corresponding registered subject doesn't exist");
+		}
 	}
 }
 

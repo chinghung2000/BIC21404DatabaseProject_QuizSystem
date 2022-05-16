@@ -83,8 +83,8 @@ if (request.getMethod().equals("POST")) {
 // parameter validation
 if (validate) {
 	
-	// check session for admin
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
+	// check session for student
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("student")) {
 		
 		// validate parameter 'workload_id'
 		if (d.containsKey("workload_id")) {
