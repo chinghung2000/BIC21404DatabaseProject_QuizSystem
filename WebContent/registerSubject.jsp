@@ -109,8 +109,7 @@
 		d["workload_id"] = workloadId;
 		
 		if (d["workload_id"] != "") {
-			XHRequest("addRegisteredSubject.jsp", JSON.stringify(d));
-			loadTable();
+			XHRequest("addRegisteredSubject", JSON.stringify(d));
 		} else {
 			$e("span-message").innerHTML = "Missing workload ID.";
 			clearMessage();
