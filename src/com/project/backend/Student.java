@@ -102,7 +102,8 @@ public class Student extends User implements StudentInterface {
 	public Workload getWorkload(int workloadId) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("SELECT w.workload_id, l.lecturer_id, l.lecturer_name, s.subject_id, s.subject_name, a.admin_id, a.admin_name, w.modified_on FROM workload w INNER JOIN lecturer l ON w.lecturer_id = l.lecturer_id INNER JOIN subject s ON w.subject_id = s.subject_id INNER JOIN admin a ON w.modified_by = a.admin_id WHERE w.workload_id = ?;");
+		db.prepare("SELECT w.workload_id, l.lecturer_id, l.lecturer_name, s.subject_id, s.subject_name, a.admin_id, a.admin_name, w.modified_on FROM workload w INNER JOIN lecturer l ON w.lecturer_id = l.lecturer_id INNER JOIN subject s ON w.subject_id = s.subject_id INNER JOIN admin a ON w.modified_by = a.admin_id WHERE w.workload_id = ?;",
+				workloadId);
 		ResultSet rs = db.executeQuery();
 		
 		try {
