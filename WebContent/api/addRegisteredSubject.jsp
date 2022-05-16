@@ -5,6 +5,7 @@
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
 <%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -82,10 +83,43 @@ if (request.getMethod().equals("POST")) {
 // parameter validation
 if (validate) {
 	
-	// check session for all user types
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type") != null) {
-		// permit execution
-		execute = true;
+	// check session for admin
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("admin")) {
+		
+		// validate parameter 'workload_id'
+		if (d.containsKey("workload_id")) {
+			if (!d.get("workload_id").equals("")) {
+				boolean parseUnsignedIntError;
+				
+				// try to parse 'workload_id' into unsigned integer
+				try {
+					Integer.parseUnsignedInt((String) d.get("workload_id"));
+					parseUnsignedIntError = false;
+				} catch (NumberFormatException e) {
+					parseUnsignedIntError = true;
+				}
+				
+				// check whether there are no error in parsing process
+				if (!parseUnsignedIntError) {
+					if (Integer.parseUnsignedInt((String) d.get("workload_id")) <= 2147483647) {
+						// permit execution
+						execute = true;
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: 'workload_id' is out of range");
+					}
+				} else {
+					rc.put("error_code", 400);
+					rc.put("description", "Bad Request: 'workload_id' must be an unsigned integer");
+				}
+			} else {
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'workload_id' can't be empty");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: Parameter 'workload_id' is required");
+		}
 	} else {
 		rc.put("redirect", "index.jsp");
 		rc.put("error_code", 401);
@@ -96,51 +130,36 @@ if (validate) {
 
 // execution
 if (execute) {
-	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> workloadDict;
-	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
 	
-	if (session.getAttribute("user_type").equals("admin")) {
-		Admin adminUser = new Admin();
-		ArrayList<Workload> workloads = adminUser.getAllWorkloads();
+	Student studentUser = new Student();
+	Workload workload = studentUser.getWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")));
+	
+	if (workload != null) {
+		RegisteredSubject registeredSubject = studentUser.getRegisteredSubject((String) session.getAttribute("user_id"), workload.getSubject().getId());
 		
-		for (Workload workload : workloads) {
-			workloadDict = new HashMap<String, Object>();
-			workloadDict.put("workload_id", workload.getId());
-			workloadDict.put("lecturer_id", workload.getLecturer().getId());
-			workloadDict.put("lecturer_name", workload.getLecturer().getName());
-			workloadDict.put("subject_id", workload.getSubject().getId());
-			workloadDict.put("subject_name", workload.getSubject().getName());
-			workloadDict.put("modified_by", workload.getModifiedBy().getName());
-			workloadDict.put("modified_on", sdf.format(workload.getModifiedOn()));
-			result.add(workloadDict);
+		if (registeredSubject == null) {
+			boolean ok = studentUser.addRegisteredSubject((String) session.getAttribute("user_id"), workload.getId());
+			
+			if (ok) {
+				studentUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") +
+						" registered a new subject (ID: \"" + Integer.toString(workload.getId()) + "\", Lecturer ID: \"" +
+						Integer.toString(workload.getLecturer().getId()) + "\", Subject ID: \"" + workload.getSubject().getId() + "\")");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
+		} else {
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot register the same subject twice.");
+			rc.put("description", "Bad Request: Cannot register the same subject twice");
 		}
-	} else if (session.getAttribute("user_type").equals("lecturer")) {
-		Lecturer lecturerUser = new Lecturer();
-		ArrayList<Workload> workloads = lecturerUser.getAllWorkloads(Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
-		
-		for (Workload workload : workloads) {
-			workloadDict = new HashMap<String, Object>();
-			workloadDict.put("subject_id", workload.getSubject().getId());
-			workloadDict.put("subject_name", workload.getSubject().getName());
-			result.add(workloadDict);
-		}
-	} else if (session.getAttribute("user_type").equals("student")) {
-		Student studentUser = new Student();
-		
-		ArrayList<Workload> workloads = studentUser.getAllWorkloads();
-		
-		for (Workload workload : workloads) {
-			workloadDict = new HashMap<String, Object>();
-			workloadDict.put("workload_id", workload.getId());
-			workloadDict.put("lecturer_name", workload.getLecturer().getName());
-			workloadDict.put("subject_name", workload.getSubject().getName());
-			result.add(workloadDict);
-		}
+	} else {
+		rc.put("error_code", 400);
+		rc.put("description", "Bad Request: The workload doesn't exist");
 	}
-	
-	rc.put("result", result);
-	rc.put("ok", true);
 }
 
 

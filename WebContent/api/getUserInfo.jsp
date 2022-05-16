@@ -112,6 +112,7 @@ if (execute) {
 		
 		rc.put("user_id", student.getId());
 		rc.put("name", student.getName());
+		rc.put("email", student.getEmail());
 	}
 	
 	rc.put("ok", true);

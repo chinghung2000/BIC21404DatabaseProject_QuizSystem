@@ -156,17 +156,17 @@ if (execute) {
 			Admin admin = (Admin) user;
 			session.setAttribute("user_id", Integer.toString(admin.getId()));
 			
-			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") + " logged in");
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Admin " + Integer.toString(admin.getId()) + " logged in");
 		} else if (user instanceof Lecturer) {
 			Lecturer lecturer = (Lecturer) user;
 			session.setAttribute("user_id", Integer.toString(lecturer.getId()));
 			
-			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") + " logged in");
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Lecturer " + Integer.toString(lecturer.getId()) + " logged in");
 		} else if (user instanceof Student) {
 			Student student = (Student) user;
 			session.setAttribute("user_id", student.getId());
 			
-			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") + " logged in");
+			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + student.getId() + " logged in");
 		}
 		
 		if (d.get("user_id").equals(d.get("password"))) {
