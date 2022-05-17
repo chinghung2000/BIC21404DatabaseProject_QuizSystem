@@ -169,7 +169,7 @@ if (execute) {
 			publicUser.addLogRecord("LOGIN", "[" + sdf.format(new Date()) + "] Student " + student.getId() + " logged in");
 		}
 		
-		if (d.get("user_id").equals(d.get("password"))) {
+		if (((String) d.get("user_id")).toUpperCase().equals(d.get("password"))) {
 			rc.put("landing", "updatePassword.jsp");
 		} else {
 			rc.put("landing", d.get("user_type") + ".jsp");

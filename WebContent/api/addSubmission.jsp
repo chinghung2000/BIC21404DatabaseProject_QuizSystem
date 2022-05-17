@@ -65,8 +65,8 @@ List<FileItem> fileItems = null;
 // parameter validation
 if (validate) {
 	
-	// check session for lecturer
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("lecturer")) {
+	// check session for student
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("student")) {
 		
 		// definitions of DiskFileItemFactory, ServletFileUpload objects and variables
 		int maxMemorySize = 100 * 1024 * 1024 ;	// 100 MB
@@ -114,30 +114,46 @@ if (validate) {
 			if (!parameters.get("subject_id").equals("")) {
 				if (((String) parameters.get("subject_id")).length() <= 8) {
 					
-					// validate parameter 'task_name'
-					if (parameters.containsKey("task_name")) {
-						if (!parameters.get("task_name").equals("")) {
-							if (((String) parameters.get("task_name")).length() <= 50) {
-								
-								// validate parameter 'task_file'
-								if (parameters.containsKey("task_file")) {
-									// permit execution
-									execute = true;
+					// validate parameter 'task_id'
+					if (parameters.containsKey("task_id")) {
+						if (!parameters.get("task_id").equals("")) {
+							boolean parseUnsignedIntError;
+							
+							// try to parse 'task_id' into unsigned integer
+							try {
+								Integer.parseUnsignedInt((String) parameters.get("task_id"));
+								parseUnsignedIntError = false;
+							} catch (NumberFormatException e) {
+								parseUnsignedIntError = true;
+							}
+							
+							// check whether there are no error in parsing process
+							if (!parseUnsignedIntError) {
+								if (Integer.parseUnsignedInt((String) parameters.get("task_id")) <= 2147483647) {
+									
+									// validate parameter 'file'
+									if (parameters.containsKey("file")) {
+										// permit execution
+										execute = true;
+									} else {
+										rc.put("error_code", 400);
+										rc.put("description", "Bad Request: Parameter 'file' is required");
+									}
 								} else {
 									rc.put("error_code", 400);
-									rc.put("description", "Bad Request: Parameter 'task_file' is required");
+									rc.put("description", "Bad Request: 'task_id' is out of range");
 								}
 							} else {
 								rc.put("error_code", 400);
-								rc.put("description", "Bad Request: 'task_name' length can't be more than 50");
+								rc.put("description", "Bad Request: 'task_id' must be an unsigned integer");
 							}
 						} else {
 							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'task_name' can't be empty");
+							rc.put("description", "Bad Request: 'task_id' can't be empty");
 						}
 					} else {
 						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: Parameter 'task_name' is required");
+						rc.put("description", "Bad Request: Parameter 'task_id' is required");
 					}
 				} else {
 					rc.put("error_code", 400);
@@ -163,58 +179,75 @@ if (validate) {
 if (execute) {
 	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy hh:mm:ss a");
 	
-	Lecturer lecturerUser = new Lecturer();
-	Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) parameters.get("subject_id"));
+	Student studentUser = new Student();
+	RegisteredSubject registeredSubject = studentUser.getRegisteredSubject((String) session.getAttribute("user_id"), (String) parameters.get("subject_id"));
 	
-	if (workload != null) {
-		if (!parameters.get("task_file").equals("")) {
-			int taskId = lecturerUser.addTask(workload.getId(), (String) parameters.get("task_name"), (String) parameters.get("task_file"),
-					Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
-			
-			if (taskId != -1) {
-				String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
+	if (registeredSubject != null) {
+		Task task = studentUser.getTask(Integer.parseUnsignedInt((String) parameters.get("task_id")), registeredSubject.getWorkload().getId());
+		
+		if (task != null) {
+			if (!parameters.get("file").equals("")) {
+				Submission submission = studentUser.getSubmission(task.getId(), (String) session.getAttribute("user_id"));
 				
-				// iteration to write files
-				Iterator<FileItem> i = fileItems.iterator();
-				
-				while (i.hasNext()) {
-					FileItem fileItem = i.next();
-					
-					if (!fileItem.isFormField()) {
-						
-						// check whether the file name is not empty string
-						if (!fileItem.getName().equals("")) {
-							
-							// create workload folder if not exist
-							File workloadFolder = new File(filePath + Integer.toString(workload.getId()) + "\\");
-							if (!workloadFolder.exists()) workloadFolder.mkdir();
-							
-							// create task folder if not exist
-							File taskFolder = new File(filePath + Integer.toString(workload.getId()) + "\\" + Integer.toString(taskId) + "\\");
-							if (!taskFolder.exists()) taskFolder.mkdir();
-							
-							// create and write uploaded file into folder
-							File file = new File(filePath + Integer.toString(workload.getId()) + "\\" + Integer.toString(taskId) + "\\" + fileItem.getName());
-							fileItem.write(file);
-						}
-					}
+				if (submission != null) {
+					studentUser.deleteSubmission(submission.getId());
 				}
 				
-				lecturerUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
-						" added new task (Name: \"" + (String) parameters.get("task_name") + "\", File: \"" + (String) parameters.get("task_file") + "\")");
+				int submissionId = studentUser.addSubmission(task.getId(), (String) session.getAttribute("user_id"), (String) parameters.get("file"),
+						"");
 				
-				rc.put("ok", true);
+				if (submissionId != -1) {
+					String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
+					
+					// iteration to write files
+					Iterator<FileItem> i = fileItems.iterator();
+					
+					while (i.hasNext()) {
+						FileItem fileItem = i.next();
+						
+						if (!fileItem.isFormField()) {
+							
+							// check whether the file name is not empty string
+							if (!fileItem.getName().equals("")) {
+								
+								// create workload folder if not exist
+								File workloadFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\");
+								if (!workloadFolder.exists()) workloadFolder.mkdir();
+								
+								// create task folder if not exist
+								File taskFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\");
+								if (!taskFolder.exists()) taskFolder.mkdir();
+								
+								// create student folder if not exist
+								File studentFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\" + registeredSubject.getStudent().getId() + "\\");
+								if (!studentFolder.exists()) studentFolder.mkdir();
+								
+								// create and write uploaded file into folder
+								File file = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\" + registeredSubject.getStudent().getId() + "\\" + fileItem.getName());
+								fileItem.write(file);
+							}
+						}
+					}
+					
+					studentUser.addLogRecord("INSERT", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") +
+							" submitted a task (Task Name: \"" + task.getName() + "\", File: \"" + (String) parameters.get("file") + "\")");
+					
+					rc.put("ok", true);
+				} else {
+					rc.put("error_code", 500);
+					rc.put("description", "Internal Server Error: Database Error");
+				}
 			} else {
-				rc.put("error_code", 500);
-				rc.put("description", "Internal Server Error: Database Error");
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: File name can't be empty");
 			}
 		} else {
 			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: File name can't be empty");
+			rc.put("description", "Bad Request: The corresponding task doesn't exist");
 		}
 	} else {
 		rc.put("error_code", 400);
-		rc.put("description", "Bad Request: The corresponding workload doesn't exist");
+		rc.put("description", "Bad Request: The corresponding registered subject doesn't exist");
 	}
 }
 

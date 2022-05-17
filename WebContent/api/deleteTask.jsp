@@ -164,12 +164,12 @@ if (execute) {
 				
 				rc.put("ok", true);
 			} else {
-				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: The task doesn't exist");
+				rc.put("error_code", 500);
+			rc.put("description", "Internal Server Error: Database Error");
 			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: The task doesn't exist");
 		}
 	} else {
 		rc.put("error_code", 400);
