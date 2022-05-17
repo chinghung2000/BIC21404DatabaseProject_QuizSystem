@@ -26,6 +26,7 @@
 						var rc = JSON.parse(this.responseText);
 						
 						if (rc["ok"] === true) {
+							if ("message" in rc) $e("span-message").innerHTML = rc["message"];
 							if (callback != null) window[callback](rc);
 						} else {
 							if ("redirect" in rc) {

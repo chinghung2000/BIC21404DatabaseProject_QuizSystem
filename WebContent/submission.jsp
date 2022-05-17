@@ -52,6 +52,43 @@
 		xhttp.send(jsonString);
 	}
 	
+	function XHRFormData(APIHandler, formData, {async = true, callback = null, nextCall = null} = {}) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.open("POST", "api/" + APIHandler + ".jsp", async);
+		
+		xhttp.onreadystatechange = function() {
+			if (this.readyState === 4) {
+				switch (this.status) {
+					case 200:
+						var rc = JSON.parse(this.responseText);
+						
+						if (rc["ok"] === true) {
+							if (callback != null) window[callback](rc);
+						} else {
+							if ("redirect" in rc) {
+								location.href = rc["redirect"];
+							} else if ("message" in rc) {
+								$e("span-message").innerHTML = rc["message"];
+							} else {
+								$e("span-message").innerHTML = "Error " + rc["error_code"] + ": " + rc["description"];
+							}
+						}
+						
+						break;
+					case 404:
+						alert("Requested server file not found. Error code: " + this.status);
+						break;
+					default:
+						alert("Request failed. " + this.statusText + "Error Code: " + this.status);
+				}
+			}
+			
+			if (nextCall != null) window[nextCall]();
+		}
+		
+		xhttp.send(formData);
+	}
+	
 	function logout() {
 		XHRequest("logout", JSON.stringify({}), {async: false});
 		location.href = "index.jsp";
@@ -62,6 +99,20 @@
 			XHRequest("getUserInfo", JSON.stringify({}), {callback: "loadUserInfo"});
 		} else {
 			$e("span-welcome-name").innerHTML = rc["name"];
+		}
+	}
+	
+	function loadTaskInfo(rc = null) {
+		if (rc == null) {
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			d["task_id"] = "<% out.print(request.getParameter("task_id")); %>";
+			
+			XHRequest("getTaskInfo", JSON.stringify(d), {callback: "loadTaskInfo"});
+		} else {
+			$e("span-subject-id").innerHTML = rc["subject_id"];
+			$e("span-subject-name").innerHTML = rc["subject_name"];
+			$e("span-task-name").innerHTML = rc["task_name"];
 		}
 	}
 	
@@ -78,21 +129,21 @@
 	}
 	
 	function add(files) {
-		if (taskName != "") {
-			if (files.length > 0) {
-				var formData = new FormData();
-				formData.append("subject_id", "<% out.print(request.getParameter("subject_id")); %>");
-				formData.append("task_id", "<% out.print(request.getParameter("task_id")); %>");
-				formData.append("file", files[0], files[0].name);
-				
-				XHRFormData("addSubmission", formData);
-				loadTable();
-			} else {
-				$e("span-message").innerHTML = "Please select a file.";
-				clearMessage();
-			}
+		if (files.length > 0) {
+			var formData = new FormData();
+			formData.append("subject_id", "<% out.print(request.getParameter("subject_id")); %>");
+			formData.append("task_id", "<% out.print(request.getParameter("task_id")); %>");
+			formData.append("file", files[0], files[0].name);
+			
+			$e("button-upload").innerHTML = "Uploading...";
+			$e("button-upload").disabled = true;
+			XHRFormData("addSubmission", formData, {async: false});
+			$e("button-upload").innerHTML = "Upload";
+			$e("button-upload").disabled = false;
+			$e("input-upload-file").value = null;
+			location.href = "";
 		} else {
-			$e("span-message").innerHTML = "Please enter task name.";
+			$e("span-message").innerHTML = "Please select a file.";
 			clearMessage();
 		}
 	}
@@ -171,7 +222,7 @@ div.upload-area {
 }
 
 label.upload-field {
-	width: 240px;
+	width: 100px;
 	text-align: right;
 	display: inline-block;
 }
@@ -246,7 +297,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); getSubmission();">
+<body onload="loadUserInfo(); loadTaskInfo(); getSubmission();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
@@ -276,7 +327,7 @@ button:hover {
 		<div class="upload-area">
 			<label class="upload-field" for="input-upload-file">Document:</label>
 			<input type="file" id="input-upload-file">
-			<button onclick="add($e('input-upload-file').files);">Upload</button>
+			<button id="button-upload" onclick="add($e('input-upload-file').files);">Upload</button>
 		</div>
 	</div>
 </body>

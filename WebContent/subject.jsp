@@ -96,7 +96,7 @@
 				cell = row.insertCell();
 				button = document.createElement("button");
 				button.innerHTML = "View";
-				button.setAttribute("onclick", "location.href = 'QuizTF.jsp?subject_id=" + r[i]["subject_id"] + "';");
+				button.setAttribute("onclick", "location.href = 'quizTF.jsp?subject_id=" + r[i]["subject_id"] + "';");
 				cell.appendChild(button);
 				
 				cell = row.insertCell();
@@ -105,7 +105,7 @@
 				cell = row.insertCell();
 				button = document.createElement("button");
 				button.innerHTML = "View";
-				button.setAttribute("onclick", "location.href = 'QuizObj.jsp?subject_id=" + r[i]["subject_id"] + "';");
+				button.setAttribute("onclick", "location.href = 'quizObj.jsp?subject_id=" + r[i]["subject_id"] + "';");
 				cell.appendChild(button);
 				
 				cell = row.insertCell();

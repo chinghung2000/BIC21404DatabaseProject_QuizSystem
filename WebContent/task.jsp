@@ -146,7 +146,7 @@
 				cell = row.insertCell();
 				button = document.createElement("button");
 				button.innerHTML = "View";
-				button.setAttribute("onclick", "location.href = 'submission.jsp?subject_id=" + <% out.print(request.getParameter("subject_id")); %> + "&task_id=" + r[i]["task_id"] + "';");
+				button.setAttribute("onclick", "location.href = 'submission.jsp?subject_id=" + "<% out.print(request.getParameter("subject_id")); %>" + "&task_id=" + r[i]["task_id"] + "';");
 				cell.appendChild(button);
 			}
 		}

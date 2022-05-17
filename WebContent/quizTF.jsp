@@ -317,6 +317,8 @@ button:hover {
 				<tbody></tbody>
 				<tfoot>
 					<tr>
+						<td></td>
+						<td></td>
 						<td><button onclick="submitQuiz();">Submit</button></td>
 					</tr>
 				</tfoot>
