@@ -13,8 +13,9 @@ public interface StudentInterface {
 	ArrayList<Task> getAllTasks(int workloadId);
 	Task getTask(int taskId, int workloadId);
 	
-	ArrayList<Submission> getAllSubmissions(int taskId, String studentId);
-	boolean addSubmission(int taskId, String studentId, String fileName, String fileHash);
+	Submission getSubmission(int taskId, String studentId);
+	int addSubmission(int taskId, String studentId, String fileName, String fileHash);
+	boolean deleteSubmission(int submissionId);
 	
 	ArrayList<QuizTrueFalse> getAllQuizTF(int workloadId);
 	boolean updateQuizTFMark(int registeredSubjectId, int quizTFMark);

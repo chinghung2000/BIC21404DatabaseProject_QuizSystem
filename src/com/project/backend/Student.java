@@ -205,31 +205,53 @@ public class Student extends User implements StudentInterface {
 	}
 
 	@Override
-	public ArrayList<Submission> getAllSubmissions(int taskId, String studentId) {
+	public Submission getSubmission(int taskId, String studentId) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
 		db.prepare("SELECT sn.submission_id, sn.task_id, s.student_id, s.student_name, sn.submission_file_name, sn.submission_file_hash FROM submission sn INNER JOIN student s ON sn.student_id = s.student_id WHERE sn.task_id = ? AND sn.student_id = ?;",
 				taskId, studentId);
 		ResultSet rs = db.executeQuery();
-		ArrayList<Submission> submissions = new ArrayList<Submission>();
 		
 		try {
-			while (rs.next()) {
-				submissions.add(new Submission(rs));
+			if (rs.next()) {
+				return new Submission(rs);
 			}
 		} catch (SQLException e) {
 			System.out.println("Student: There are some errors: " + e.toString());
 		}
 		
-		return submissions;
+		return null;
 	}
 
 	@Override
-	public boolean addSubmission(int taskId, String studentId, String fileName, String fileHash) {
+	public int addSubmission(int taskId, String studentId, String fileName, String fileHash) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepare("INSERT INTO submission (task_id, student_id, submission_file_name, submission_file_hash) VALUES (?, ?, ?, ?);",
+		db.prepareForGeneratedKey("INSERT INTO submission (task_id, student_id, submission_file_name, submission_file_hash) VALUES (?, ?, ?, ?);",
 				taskId, studentId, fileName, fileHash);
+		ResultSet rs = db.executeUpdateForGeneratedKey();
+		
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			} catch (SQLException e) {
+				System.out.println("Student: There are some errors: " + e.toString());
+			}
+		} else {
+			System.out.println("Student: Cannot retrieve result from database");
+		}
+		
+		return -1;
+	}
+
+	@Override
+	public boolean deleteSubmission(int submissionId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("DELETE FROM submission WHERE submission_id = ?;",
+				submissionId);
 		return db.executeUpdate();
 	}
 

@@ -164,7 +164,7 @@ public class Lecturer extends User implements LecturerInterface {
 				System.out.println("Lecturer: There are some errors: " + e.toString());
 			}
 		} else {
-			System.out.println("User: Cannot retrieve result from database");
+			System.out.println("Lecturer: Cannot retrieve result from database");
 		}
 		
 		return -1;
