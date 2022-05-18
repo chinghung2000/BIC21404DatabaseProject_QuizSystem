@@ -102,20 +102,26 @@
 				
 				cell = row.insertCell();
 				radio = document.createElement("input");
-				radio.type = "checkbox";
+				radio.type = "radio";
+				radio.setAttribute("id", "input-true-" + r[i]["quiz_tf_id"]);
+				radio.name = "answer-" + r[i]["quiz_tf_id"];
 				radio.value = "true";
 				cell.appendChild(radio);
 				label = document.createElement("label");
 				label.innerHTML = "True";
+				label.htmlFor = "input-true-" + r[i]["quiz_tf_id"];
 				cell.appendChild(label);
 				br = document.createElement("br");
 				cell.appendChild(br);
 				radio = document.createElement("input");
-				radio.type = "checkbox";
+				radio.type = "radio";
+				radio.setAttribute("id", "input-false-" + r[i]["quiz_tf_id"]);
+				radio.name = "answer-" + r[i]["quiz_tf_id"];
 				radio.value = "false";
 				cell.appendChild(radio);
 				label = document.createElement("label");
 				label.innerHTML = "False";
+				label.htmlFor = "input-false-" + r[i]["quiz_tf_id"];
 				cell.appendChild(label);
 			}
 		}
@@ -138,7 +144,7 @@
 			d["answers"] = answers;
 			
 			XHRequest("submitQuizTF", JSON.stringify(d), {async: false});
-			location.href = "subject.jsp";
+// 			location.href = "subject.jsp";
 		} else {
 			$e("span-message").innerHTML = "Please answer all questions.";
 			clearMessage();
@@ -153,13 +159,14 @@
 		for (var i = 0; i < tBody.rows.length; i++) {
 			row = tBody.rows[i];
 			cell = row.cells[2];
+			choice = null;
 			
 			for (var j = 0; j < cell.childNodes.length; j++) {
 				radio = cell.childNodes[j];
 				if (radio.checked) choice = radio.value;
 			}
 			
-			if (answer == null) return false;
+			if (choice == null) return false;
 			answers.push({quiz_tf_id: row.cells[1].getAttribute("data-quiz-tf-id"), answer: choice});
 		}
 		
@@ -257,18 +264,12 @@ input[type=text], [type=password] {
 	font-size: 16px;
 }
 
-input[type=text]:hover, [type=password]:hover {
+input[type=text]:hover, [type=password]:hover, [type=radio]:hover {
 	outline: 1px solid;
 }
 
-input[type=checkbox] {
-	height: 20px;
-	width: 20px;
+input[type=radio] {
 	cursor: pointer;
-}
-
-input[type=checkbox]:hover {
-	outline: 1px solid;
 }
 
 div.button {

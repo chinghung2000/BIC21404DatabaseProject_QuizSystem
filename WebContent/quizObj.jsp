@@ -160,7 +160,7 @@
 		
 		for (var i = 0; i < tBody.rows.length; i++) {
 			row = tBody.rows[i];
-			cell = row.cells[2];
+			cell = row.cells[6];
 			select = cell.childNodes[0];
 			
 			if (select.value == "") return false;
@@ -265,13 +265,13 @@ input[type=text]:hover, [type=password]:hover {
 	outline: 1px solid;
 }
 
-input[type=checkbox] {
-	height: 20px;
-	width: 20px;
-	cursor: pointer;
+select {
+	min-width: 50px;
+	font-family: verdana;
+	font-size: 16px;
 }
 
-input[type=checkbox]:hover {
+select:hover {
 	outline: 1px solid;
 }
 
@@ -337,6 +337,12 @@ button:hover {
 				<tbody></tbody>
 				<tfoot>
 					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
 						<td><button onclick="submitQuiz();">Submit</button></td>
 					</tr>
 				</tfoot>
