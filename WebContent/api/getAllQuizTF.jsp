@@ -141,7 +141,25 @@ if (execute) {
 			rc.put("description", "Bad Request: The corresponding workload doesn't exist");
 		}
 	} else if (session.getAttribute("user_type").equals("student")) {
+		Student studentUser = new Student();
+		RegisteredSubject registeredSubject = studentUser.getRegisteredSubject((String) session.getAttribute("user_id"), (String) d.get("subject_id"));
 		
+		if (registeredSubject != null) {
+			ArrayList<QuizTrueFalse> quizTrueFalses = studentUser.getAllQuizTF(registeredSubject.getWorkload().getId());
+			
+			for (QuizTrueFalse quizTrueFalse : quizTrueFalses) {
+				quizTFDict = new HashMap<String, Object>();
+				quizTFDict.put("quiz_tf_id", quizTrueFalse.getId());
+				quizTFDict.put("question", quizTrueFalse.getQuestion());
+				result.add(quizTFDict);
+			}
+			
+			rc.put("result", result);
+			rc.put("ok", true);
+		} else {
+			rc.put("error_code", 400);
+			rc.put("description", "Bad Request: The corresponding registered subject doesn't exist");
+		}
 	}
 }
 
