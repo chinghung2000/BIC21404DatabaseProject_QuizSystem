@@ -137,7 +137,7 @@
 				cell = row.insertCell();
 				button = document.createElement("button");
 				button.innerHTML = "Download";
-				button.setAttribute("onclick", "");
+				button.setAttribute("onclick", "location.href = 'download.jsp?subject_id=" + "<% out.print(request.getParameter("subject_id")); %>" + "&task_id=" + r[i]["task_id"] + "';");
 				cell.appendChild(button);
 				
 				cell = row.insertCell();

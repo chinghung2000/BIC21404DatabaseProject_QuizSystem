@@ -113,8 +113,8 @@
 				
 				cell = row.insertCell();
 				button = document.createElement("button");
-				button.innerHTML = "View";
-				button.setAttribute("onclick", "");
+				button.innerHTML = "Download";
+				button.setAttribute("onclick", "location.href = 'download.jsp?subject_id=" + "<% out.print(request.getParameter("subject_id")); %>" + "&task_id=" + "<% out.print(request.getParameter("task_id")); %>" + "&submission_id=" + r[i]["submission_id"] + "';");
 				cell.appendChild(button);
 			}
 		}
