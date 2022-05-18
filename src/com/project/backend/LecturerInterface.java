@@ -12,6 +12,7 @@ public interface LecturerInterface {
 	boolean deleteTask(int taskId);
 
 	ArrayList<Submission> getAllSubmissions(int taskId);
+	Submission getSubmission(int submissionId, int taskId);
 
 	ArrayList<QuizTrueFalse> getAllQuizTF(int workloadId);
 	QuizTrueFalse getQuizTF(int quizTFId, int workloadId);

@@ -200,6 +200,25 @@ public class Lecturer extends User implements LecturerInterface {
 	}
 
 	@Override
+	public Submission getSubmission(int submissionId, int taskId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT sn.submission_id, sn.task_id, s.student_id, s.student_name, sn.submission_file_name, sn.submission_file_hash FROM submission sn INNER JOIN student s ON sn.student_id = s.student_id WHERE sn.submission_id = ? AND sn.task_id = ?;",
+				submissionId, taskId);
+		ResultSet rs = db.executeQuery();
+		
+		try {
+			if (rs.next()) {
+				return new Submission(rs);
+			}
+		} catch (SQLException e) {
+			System.out.println("Lecturer: There are some errors: " + e.toString());
+		}
+		
+		return null;
+	}
+
+	@Override
 	public ArrayList<QuizTrueFalse> getAllQuizTF(int workloadId) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
