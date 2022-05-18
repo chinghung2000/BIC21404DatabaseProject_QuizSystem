@@ -194,7 +194,7 @@ if (execute) {
 				}
 				
 				int submissionId = studentUser.addSubmission(task.getId(), (String) session.getAttribute("user_id"), (String) parameters.get("file"),
-						"");
+						"<Hash>");
 				
 				if (submissionId != -1) {
 					String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";

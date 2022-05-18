@@ -148,10 +148,18 @@ if (execute) {
 			ArrayList<Task> tasks = studentUser.getAllTasks(registeredSubject.getWorkload().getId());
 			
 			for (Task task : tasks) {
+				Submission submission = studentUser.getSubmission(task.getId(), (String) session.getAttribute("user_id"));
+				
 				taskDict = new HashMap<String, Object>();
 				taskDict.put("task_id", task.getId());
 				taskDict.put("task_name", task.getName());
-				taskDict.put("file_name", task.getFileName());
+				
+				if (submission != null) {
+					taskDict.put("file_name", submission.getFileName());
+				} else {
+					taskDict.put("file_name", "");
+				}
+				
 				result.add(taskDict);
 			}
 			
