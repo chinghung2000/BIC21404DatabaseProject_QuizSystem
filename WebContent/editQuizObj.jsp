@@ -77,16 +77,15 @@
 		}
 	}
 	
-	var selectAnswerOptions = ["A", "B", "C", "D"];
 	var selectAnswer = document.createElement("select");
+	var option = document.createElement("option");
+	var options = ["A", "B", "C", "D"];
 	selectAnswer.disabled = true;
-	var option;
 	
-	for (var i = 0; i < selectAnswerOptions.length; i++) {
-		option = document.createElement("option");
-		option.text = selectAnswerOptions[i];
-		option.value = selectAnswerOptions[i];
-		selectAnswer.add(option);
+	for (var i = 0; i < options.length; i++) {
+		option.text = options[i];
+		option.value = options[i];
+		selectAnswer.add(option.cloneNode(true));
 	}
 	
 	function loadTable(rc = null) {

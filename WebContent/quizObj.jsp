@@ -65,6 +65,18 @@
 		}
 	}
 	
+	function loadWorkloadInfo(rc = null) {
+		if (rc == null) {
+			var d = {};
+			d["subject_id"] = "<% out.print(request.getParameter("subject_id")); %>";
+			
+			XHRequest("getWorkloadInfo", JSON.stringify(d), {callback: "loadWorkloadInfo"});
+		} else {
+			$e("span-subject-id").innerHTML = rc["subject_id"];
+			$e("span-subject-name").innerHTML = rc["subject_name"];
+		}
+	}
+	
 	var selectAnswer = document.createElement("select");
 	var option = document.createElement("option");
 	var options = ["--", "A", "B", "C", "D"];
@@ -72,8 +84,8 @@
 	
 	for (var i = 0; i < options.length; i++) {
 		option.text = options[i];
-		option.value =  options[i];
-		selectAnswer.add(option);
+		option.value =  values[i];
+		selectAnswer.add(option.cloneNode(true));
 	}
 	
 	function loadTable(rc = null) {
@@ -286,7 +298,7 @@ button:hover {
 }
 </style>
 </head>
-<body onload="loadUserInfo(); loadTable();">
+<body onload="loadUserInfo(); loadWorkloadInfo(); loadTable();">
 	<div class="welcome-text">
 		Welcome, <span class="welcome-name" id="span-welcome-name">Guest</span> !
 	</div>
