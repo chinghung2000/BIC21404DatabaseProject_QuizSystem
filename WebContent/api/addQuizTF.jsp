@@ -103,7 +103,7 @@ if (validate) {
 										execute = true;
 									} else {
 										rc.put("error_code", 400);
-										rc.put("description", "Bad Request: Invalid value for 'answer'");
+										rc.put("description", "Bad Request: 'answer' must be a boolean");
 									}
 								} else {
 									rc.put("error_code", 400);

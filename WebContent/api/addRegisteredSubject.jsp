@@ -154,8 +154,8 @@ if (execute) {
 			}
 		} else {
 			rc.put("error_code", 400);
-			rc.put("message", "Cannot register the same subject twice.");
-			rc.put("description", "Bad Request: Cannot register the same subject twice");
+			rc.put("message", "The subject is already registered. Cannot register the same subject twice.");
+			rc.put("description", "Bad Request: The subject is already registered. Cannot register the same subject twice");
 		}
 	} else {
 		rc.put("error_code", 400);
