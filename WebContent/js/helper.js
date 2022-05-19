@@ -11,7 +11,7 @@ server API interaction.
 Send XML HTTP requests and supports Content-Type of application/json and Form-Data.
 Supports callback to user-defined function to receive and handle response data.
 Supports consecutive function-call upon receiving responses.
-Included error handling, safely output the error message when error occurs.
+Provides error handling, safely output the error message when error occurs.
 
 
 Basic usage:
