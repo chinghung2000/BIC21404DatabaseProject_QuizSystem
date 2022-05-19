@@ -142,17 +142,17 @@ if (execute) {
 					response.setContentType("application/octet-stream");
 					response.setHeader("Content-Disposition", "attachment; filename=\"" + task.getFileName() + "\"");
 					FileInputStream fileInputStream = new FileInputStream(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\" + task.getFileName());
-					ServletOutputStream outStream = response.getOutputStream();
+					ServletOutputStream outputStream = response.getOutputStream();
 					
 					byte[] outputByte = new byte[4096];
 					
 					while (fileInputStream.read(outputByte, 0, 4096) != -1) {
-						outStream.write(outputByte, 0, 4096);
+						outputStream.write(outputByte, 0, 4096);
 					}
 					
 					fileInputStream.close();
-					outStream.flush();
-					outStream.close();
+					outputStream.flush();
+					outputStream.close();
 				}
 			}
 		}
