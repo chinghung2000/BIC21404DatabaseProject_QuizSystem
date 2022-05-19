@@ -15,35 +15,35 @@
  * ... create DatabaseManager object:
  * 
  *     +----------------------------------------------------------------------------------------+
- *     |																						|
- *     |	Connection databaseConnection = null;												|
- *     |																						|
- *     |	try {																				|
- *     |		databaseConnection = DriverManager.getConnection(url, username, password);		|
- *     |	} catch (SQLException e) {															|
- *     |		e.printStackTrace();															|
- *     |	}																					|
- *     |																						|
- *     |	DatabaseManager db = new DatabaseManager(databaseConnection);						|
- *     |																						|
+ *     |	                                                                                    |
+ *     |	Connection databaseConnection = null;                                               |
+ *     |	                                                                                    |
+ *     |	try {                                                                               |
+ *     |		databaseConnection = DriverManager.getConnection(url, username, password);      |
+ *     |	} catch (SQLException e) {                                                          |
+ *     |		e.printStackTrace();                                                            |
+ *     |	}                                                                                   |
+ *     |	                                                                                    |
+ *     |	DatabaseManager db = new DatabaseManager(databaseConnection);                       |
+ *     |	                                                                                    |
  *     +----------------------------------------------------------------------------------------+
  * 
  * ... or prepare a statement:
  * 
  *     +----------------------------------------------------------------------------------------+
- *     |																						|
- *     |	int adminId = 1;																	|
- *     |	db.prepare("SELECT * FROM admin WHERE admin_id = ?;", adminId);						|
- *     |																						|
+ *     |	                                                                                    |
+ *     |	int adminId = 1;                                                                    |
+ *     |	db.prepare("SELECT * FROM admin WHERE admin_id = ?;", adminId);                     |
+ *     |	                                                                                    |
  *     +----------------------------------------------------------------------------------------+
  * 
  * ... or execute a query with returning results:
  * 
  *     +----------------------------------------------------------------------------------------+
- *     |																						|
- *     |	ResultSet rs = db.executeQuery();													|
- *     |	String adminName = rs.getString("admin_name");										|
- *     |																						|
+ *     |	                                                                                    |
+ *     |	ResultSet rs = db.executeQuery();                                                   |
+ *     |	String adminName = rs.getString("admin_name");                                      |
+ *     |	                                                                                    |
  *     +----------------------------------------------------------------------------------------+
  * 
  * 
