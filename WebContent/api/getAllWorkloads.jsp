@@ -41,11 +41,11 @@ if (request.getMethod().equals("POST")) {
 			String reqBody = br.readLine();
 			br.close();
 			
-			// check whether request body is not null 
+			// check whether request body is not null
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into HashMap $d 
+				// try JSON parsing request body and convert into HashMap $d
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;

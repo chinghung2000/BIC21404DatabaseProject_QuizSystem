@@ -4,6 +4,7 @@
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
+<%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -81,27 +82,10 @@ if (request.getMethod().equals("POST")) {
 // parameter validation
 if (validate) {
 	
-	// check session for lecturer
-	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("lecturer")) {
-		
-		// validate parameter 'subject_id'
-		if (d.containsKey("subject_id")) {
-			if (!d.get("subject_id").equals("")) {
-				if (((String) d.get("subject_id")).length() <= 8) {
-					// permit execution
-					execute = true;
-				} else {
-					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
-				}
-			} else {
-				rc.put("error_code", 400);
-				rc.put("description", "Bad Request: 'subject_id' can't be empty");
-			}
-		} else {
-			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: Parameter 'subject_id' is required");
-		}
+	// check session for student
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("student")) {
+		// permit execution
+		execute = true;
 	} else {
 		rc.put("redirect", "index.jsp");
 		rc.put("error_code", 401);
@@ -113,28 +97,24 @@ if (validate) {
 // execution
 if (execute) {
 	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> quizTFResultDict;
+	HashMap<String, Object> registeredSubjectDict;
+	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
 	
-	Lecturer lecturerUser = new Lecturer();
-	Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
+	Student studentUser = new Student();
+	ArrayList<RegisteredSubject> registeredSubjects = studentUser.getAllRegisteredSubjects((String) session.getAttribute("user_id"));
 	
-	if (workload != null) {
-		ArrayList<RegisteredSubject> registeredSubjects = lecturerUser.getAllRegisteredSubject(workload.getId());
-		
-		for (RegisteredSubject registeredSubject: registeredSubjects) {
-			quizTFResultDict = new HashMap<String, Object>();
-			quizTFResultDict.put("student_id", registeredSubject.getStudent().getId());
-			quizTFResultDict.put("student_name", registeredSubject.getStudent().getName());
-			quizTFResultDict.put("mark", registeredSubject.getQuizTFMark());
-			result.add(quizTFResultDict);
-		}
-		
-		rc.put("result", result);
-		rc.put("ok", true);
-	} else {
-		rc.put("error_code", 400);
-		rc.put("description", "Bad Request: The corresponding workload doesn't exist");
+	for (RegisteredSubject registeredSubject : registeredSubjects) {
+		registeredSubjectDict = new HashMap<String, Object>();
+		registeredSubjectDict.put("lecturer_name", registeredSubject.getWorkload().getLecturer().getName());
+		registeredSubjectDict.put("subject_id", registeredSubject.getWorkload().getSubject().getId());
+		registeredSubjectDict.put("subject_name", registeredSubject.getWorkload().getSubject().getName());
+		registeredSubjectDict.put("quiz_tf_mark", registeredSubject.getQuizTFMark());
+		registeredSubjectDict.put("quiz_obj_mark", registeredSubject.getQuizObjMark());
+		result.add(registeredSubjectDict);
 	}
+	
+	rc.put("result", result);
+	rc.put("ok", true);
 }
 
 
