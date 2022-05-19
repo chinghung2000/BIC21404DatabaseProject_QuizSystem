@@ -149,21 +149,27 @@ if (execute) {
 		RegisteredSubject registeredSubject = studentUser.getRegisteredSubject((String) session.getAttribute("user_id"), (String) d.get("subject_id"));
 		
 		if (registeredSubject != null) {
-			ArrayList<QuizObjective> quizObjectives = studentUser.getAllQuizObj(registeredSubject.getWorkload().getId());
-			
-			for (QuizObjective quizObjective : quizObjectives) {
-				quizObjDict = new HashMap<String, Object>();
-				quizObjDict.put("quiz_obj_id", quizObjective.getId());
-				quizObjDict.put("question", quizObjective.getQuestion());
-				quizObjDict.put("choice_a", quizObjective.getChoiceA());
-				quizObjDict.put("choice_b", quizObjective.getChoiceB());
-				quizObjDict.put("choice_c", quizObjective.getChoiceC());
-				quizObjDict.put("choice_d", quizObjective.getChoiceD());
-				result.add(quizObjDict);
+			if (registeredSubject.getQuizObjMark() == 0) {
+				ArrayList<QuizObjective> quizObjectives = studentUser.getAllQuizObj(registeredSubject.getWorkload().getId());
+				
+				for (QuizObjective quizObjective : quizObjectives) {
+					quizObjDict = new HashMap<String, Object>();
+					quizObjDict.put("quiz_obj_id", quizObjective.getId());
+					quizObjDict.put("question", quizObjective.getQuestion());
+					quizObjDict.put("choice_a", quizObjective.getChoiceA());
+					quizObjDict.put("choice_b", quizObjective.getChoiceB());
+					quizObjDict.put("choice_c", quizObjective.getChoiceC());
+					quizObjDict.put("choice_d", quizObjective.getChoiceD());
+					result.add(quizObjDict);
+				}
+				
+				rc.put("result", result);
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 400);
+				rc.put("message", "The quiz is already taken.");
+				rc.put("description", "Bad Request: The quiz is already taken");
 			}
-			
-			rc.put("result", result);
-			rc.put("ok", true);
 		} else {
 			rc.put("error_code", 400);
 			rc.put("description", "Bad Request: The corresponding registered subject doesn't exist");

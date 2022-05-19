@@ -115,7 +115,7 @@ if (validate) {
 											// validate parameter 'answer'
 											if (d.containsKey("answer")) {
 												if (!d.get("answer").equals("")) {
-													if (d.get("answer").equals(true) || d.get("answer").equals(false)) {
+													if (d.get("answer") instanceof Boolean) {
 														// permit execution
 														execute = true;
 													} else {

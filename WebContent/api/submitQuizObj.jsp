@@ -1,10 +1,12 @@
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
+<%@ page import="java.util.Collections"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.HashMap"%>
 <%@ page import="java.io.BufferedReader"%>
 <%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="java.util.Date"%>
 <%@ page import="com.google.gson.Gson"%>
 <%@ page import="com.google.gson.reflect.TypeToken"%>
 <%@ page import="com.google.gson.JsonSyntaxException"%>
@@ -41,11 +43,11 @@ if (request.getMethod().equals("POST")) {
 			String reqBody = br.readLine();
 			br.close();
 			
-			// check whether request body is not null 
+			// check whether request body is not null
 			if (reqBody != null) {
 				boolean JSONError;
 				
-				// try JSON parsing request body and convert into HashMap $d 
+				// try JSON parsing request body and convert into HashMap $d
 				try {
 					d = gson.fromJson(reqBody, new TypeToken<HashMap<String, Object>>() {}.getType());
 					JSONError = false;
@@ -79,18 +81,36 @@ if (request.getMethod().equals("POST")) {
 }
 
 
+// create an ArrayList of HashMap of answers
+ArrayList<HashMap<String, Object>> answers = null;
+
+
 // parameter validation
 if (validate) {
 	
-	// check session for lecturer and student
-	if (session.getAttribute("user_id") != null && (session.getAttribute("user_type").equals("lecturer") || session.getAttribute("user_type").equals("student"))) {
+	// check session for student
+	if (session.getAttribute("user_id") != null && session.getAttribute("user_type").equals("student")) {
 		
 		// validate parameter 'subject_id'
 		if (d.containsKey("subject_id")) {
 			if (!d.get("subject_id").equals("")) {
 				if (((String) d.get("subject_id")).length() <= 8) {
-					// permit execution
-					execute = true;
+					
+					// validate parameter 'answers'
+					if (d.containsKey("answers")) {
+						if (d.get("answers") instanceof ArrayList) {
+							answers = gson.fromJson(((ArrayList<HashMap<String, Object>>) d.get("answers")).toString(), new TypeToken<ArrayList<HashMap<String, Object>>>() {}.getType());
+							
+							// permit execution
+							execute = true;
+						} else {
+							rc.put("error_code", 400);
+							rc.put("description", "Bad Request: 'answers' must be an array");
+						}
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: Parameter 'answers' is required");
+					}
 				} else {
 					rc.put("error_code", 400);
 					rc.put("description", "Bad Request: 'subject_id' length can't be more than 8");
@@ -113,59 +133,74 @@ if (validate) {
 
 // execution
 if (execute) {
-	ArrayList<HashMap<String, Object>> result = new ArrayList<HashMap<String, Object>>();
-	HashMap<String, Object> quizTFDict;
 	SimpleDateFormat sdf = new SimpleDateFormat("d/M/yyyy h:mm:ss a");
 	
-	if (session.getAttribute("user_type").equals("lecturer")) {
-		Lecturer lecturerUser = new Lecturer();
-		Workload workload = lecturerUser.getWorkload(Integer.parseUnsignedInt((String) session.getAttribute("user_id")), (String) d.get("subject_id"));
-		
-		if (workload != null) {
-			ArrayList<QuizTrueFalse> quizTrueFalses = lecturerUser.getAllQuizTF(workload.getId());
+	Student studentUser = new Student();
+	RegisteredSubject registeredSubject = studentUser.getRegisteredSubject((String) session.getAttribute("user_id"), (String) d.get("subject_id"));
+	
+	if (registeredSubject != null) {
+		if (registeredSubject.getQuizObjMark() == 0) {
+			ArrayList<QuizObjective> quizObjectives = studentUser.getAllQuizObj(registeredSubject.getWorkload().getId());
+			boolean loopError = false;
+			int mark = 0;
 			
-			for (QuizTrueFalse quizTrueFalse: quizTrueFalses) {
-				quizTFDict = new HashMap<String, Object>();
-				quizTFDict.put("quiz_tf_id", quizTrueFalse.getId());
-				quizTFDict.put("question", quizTrueFalse.getQuestion());
-				quizTFDict.put("answer", quizTrueFalse.getAnswer());
-				quizTFDict.put("modified_by", quizTrueFalse.getModifiedBy().getName());
-				quizTFDict.put("modified_on", sdf.format(quizTrueFalse.getModifiedOn()));
-				result.add(quizTFDict);
+			for (QuizObjective quizObjective: quizObjectives) {
+				if (loopError) break;
+				
+				for (HashMap<String, Object> answer : answers) {
+					if (answer.containsKey("quiz_obj_id")) {
+						if (answer.get("quiz_obj_id") instanceof Double) {
+							if (0 < (int) (double) answer.get("quiz_obj_id") && (int) (double) answer.get("quiz_obj_id") <= 2147483647) {
+								ArrayList<String> allowedAnswer = new ArrayList<String>();
+								Collections.addAll(allowedAnswer, "A", "B", "C", "D");
+								
+								if (allowedAnswer.contains(((String) answer.get("answer")).toUpperCase())) {
+									if (quizObjective.getId() == (int) (double) answer.get("quiz_obj_id")) {
+										if (Character.toString(quizObjective.getAnswer()).equals(answer.get("answer"))) {
+											mark += 2;
+										}
+									}
+								} else {
+									rc.put("error_code", 400);
+									rc.put("description", "Bad Request: Invalid value for 'answer'");
+									loopError = true;
+								}
+							} else {
+								rc.put("error_code", 400);
+								rc.put("description", "Bad Request: 'quiz_obj_id' is out of range");
+								loopError = true;
+							}
+						} else {
+							rc.put("error_code", 400);
+							rc.put("description", "Bad Request: 'quiz_obj_id' must be unsigned integer");
+							loopError = true;
+						}
+					} else {
+						rc.put("error_code", 400);
+						rc.put("description", "Bad Request: Parameter 'quiz_obj_id' is required for each member in 'answers'");
+						loopError = true;
+					}
+				}
 			}
 			
-			rc.put("result", result);
-			rc.put("ok", true);
-		} else {
-			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: The corresponding workload doesn't exist");
-		}
-	} else if (session.getAttribute("user_type").equals("student")) {
-		Student studentUser = new Student();
-		RegisteredSubject registeredSubject = studentUser.getRegisteredSubject((String) session.getAttribute("user_id"), (String) d.get("subject_id"));
-		
-		if (registeredSubject != null) {
-			if (registeredSubject.getQuizTFMark() == 0) {
-				ArrayList<QuizTrueFalse> quizTrueFalses = studentUser.getAllQuizTF(registeredSubject.getWorkload().getId());
+			boolean ok = studentUser.updateQuizObjMark(registeredSubject.getId(), mark);
+			
+			if (ok) {
+				studentUser.addLogRecord("ANSWER QUIZ", "[" + sdf.format(new Date()) + "] Student " + (String) session.getAttribute("user_id") +
+						" took the quiz objective");
 				
-				for (QuizTrueFalse quizTrueFalse : quizTrueFalses) {
-					quizTFDict = new HashMap<String, Object>();
-					quizTFDict.put("quiz_tf_id", quizTrueFalse.getId());
-					quizTFDict.put("question", quizTrueFalse.getQuestion());
-					result.add(quizTFDict);
-				}
-				
-				rc.put("result", result);
 				rc.put("ok", true);
 			} else {
-				rc.put("error_code", 400);
-				rc.put("message", "The quiz is already taken.");
-				rc.put("description", "Bad Request: The quiz is already taken");
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
 			}
 		} else {
 			rc.put("error_code", 400);
-			rc.put("description", "Bad Request: The corresponding registered subject doesn't exist");
+			rc.put("description", "Bad Request: The quiz is already taken. Cannot retake the quiz");
 		}
+	} else {
+		rc.put("error_code", 400);
+		rc.put("description", "Bad Request: The corresponding registered subject doesn't exist");
 	}
 }
 

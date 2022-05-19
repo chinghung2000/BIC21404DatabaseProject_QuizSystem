@@ -42,7 +42,7 @@ if (request.getMethod().equals("POST")) {
 			String reqBody = br.readLine();
 			br.close();
 			
-			// check whether request body is not null 
+			// check whether request body is not null
 			if (reqBody != null) {
 				boolean JSONError;
 				
@@ -147,24 +147,33 @@ if (execute) {
 				if (loopError) break;
 				
 				for (HashMap<String, Object> answer : answers) {
-					int quizTFId = (int) (double) answer.get("quiz_tf_id");
-					
-					if ((int) (double) answer.get("quiz_tf_id") <= 2147483647) {
-						if (answer.get("answer").equals(true) || answer.get("answer").equals(false)) {
-							if (quizTrueFalse.getId() == (int) (double) answer.get("quiz_tf_id")) {
-								if (quizTrueFalse.getAnswer() == (boolean) answer.get("answer")) {
-									mark += 2;
+					if (answer.containsKey("quiz_tf_id")) {
+						if (answer.get("quiz_tf_id") instanceof Double) {
+							if (0 < (int) (double) answer.get("quiz_tf_id") && (int) (double) answer.get("quiz_tf_id") <= 2147483647) {
+								if (answer.get("answer") instanceof Boolean) {
+									if (quizTrueFalse.getId() == (int) (double) answer.get("quiz_tf_id")) {
+										if (quizTrueFalse.getAnswer() == (boolean) answer.get("answer")) {
+											mark += 2;
+										}
+									}
+								} else {
+									rc.put("error_code", 400);
+									rc.put("description", "Bad Request: 'answer' must be a boolean");
+									loopError = true;
 								}
+							} else {
+								rc.put("error_code", 400);
+								rc.put("description", "Bad Request: 'quiz_tf_id' is out of range");
+								loopError = true;
 							}
 						} else {
 							rc.put("error_code", 400);
-							rc.put("description", "Bad Request: 'answer' must be a boolean");
+							rc.put("description", "Bad Request: 'quiz_tf_id' must be unsigned integer");
 							loopError = true;
 						}
 					} else {
 						rc.put("error_code", 400);
-						rc.put("description", "Bad Request: 'quiz_tf_id' is out of range");
-						loopError = true;
+						rc.put("description", "Bad Request: Parameter 'quiz_tf_id' is required for each member in 'answers'");
 					}
 				}
 			}
