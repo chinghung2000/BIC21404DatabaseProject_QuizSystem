@@ -1,3 +1,51 @@
+/*
+ * MySQL Connector v2.1.0
+ * ~~~~~~~~~~~~~~~~~~~~~
+ * 
+ * MySQL Connector is written in Java, for easy MySQL implementation.
+ * Create database connection to MySQL database server by using the
+ * MySQL Connector/J driver. 
+ * 
+ * 
+ * Basic usage:
+ * ... create MySQL database connection:
+ * 
+ *     +----------------------------------------------------------------------------------------+
+ *     |                                                                                        |
+ *     |    Connection databaseConnection = null;                                               |
+ *     |                                                                                        |
+ *     |    try {                                                                               |
+ *     |        databaseConnection = new MySQL().connect();                                     |
+ *     |    } catch (SQLException e) {                                                          |
+ *     |        e.printStackTrace();                                                            |
+ *     |    }                                                                                   |
+ *     |                                                                                        |
+ *     +----------------------------------------------------------------------------------------+
+ * 
+ * ... or use along with Database Manager:
+ * 
+ *     +----------------------------------------------------------------------------------------+
+ *     |                                                                                        |
+ *     |    DatabaseManager db = new DatabaseManager(new MySQL().connect());                    |
+ *     |                                                                                        |
+ *     |    int adminId = 1;                                                                    |
+ *     |    db.prepare("SELECT * FROM admin WHERE admin_id = ?;", adminId);                     |
+ *     |    ResultSet rs = db.executeQuery();                                                   |
+ *     |    String adminName = rs.getString("admin_name");                                      |
+ *     |                                                                                        |
+ *     +----------------------------------------------------------------------------------------+
+ * 
+ * 
+ * 
+ * Copyright (c) 2022 BotBox Studio. All rights reserved.
+ * Version: 2.1.0
+ * Last updated on 19/05/2022, 15:46:58 UTC
+ * Author: Ching Hung Tan
+ * GitHub: chinghung2000
+ * Email: tanchinghung5098.1@gmail.com
+ */
+
+
 package com.project.backend;
 
 import java.sql.DriverManager;

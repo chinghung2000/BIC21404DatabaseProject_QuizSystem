@@ -1,12 +1,12 @@
 /*
- * Database Manager 2.3.2
+ * Database Manager v2.3.2
  * ~~~~~~~~~~~~~~~~~~~~~~
  * 
- * Database Manager is written in Java, for shorten the code in programming.
+ * Database Manager is written in Java, to shorten the code in programming.
  * Provides better database implementation when coding with Java.
  * 
  * Database Manager can handle SQL statement preparation with flexible
- * parameter binding. Say bye to manually preparing SQL statements and binds
+ * parameter binding. Say bye to manually preparing SQL statements and bind
  * parameters to SQL statements one by one with corresponding data types.
  * Provides error handling, as well as event logging to make debugging easier.
  * 
@@ -55,6 +55,7 @@
  * GitHub: chinghung2000
  * Email: tanchinghung5098.1@gmail.com
  */
+
 
 package com.project.backend;
 
