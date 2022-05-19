@@ -14,7 +14,8 @@ public interface StudentInterface {
 	Task getTask(int taskId, int workloadId);
 	
 	Submission getSubmission(int taskId, String studentId);
-	int addSubmission(int taskId, String studentId, String fileName, String fileHash);
+	int addSubmission(int taskId, String studentId, String fileName);
+	boolean insertSubmissionFileHash(int submissionId, String filePath);
 	boolean deleteSubmission(int submissionId);
 	
 	ArrayList<QuizTrueFalse> getAllQuizTF(int workloadId);

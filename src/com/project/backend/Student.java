@@ -224,11 +224,11 @@ public class Student extends User implements StudentInterface {
 	}
 
 	@Override
-	public int addSubmission(int taskId, String studentId, String fileName, String fileHash) {
+	public int addSubmission(int taskId, String studentId, String fileName) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 		
-		db.prepareForGeneratedKey("INSERT INTO submission (task_id, student_id, submission_file_name, submission_file_hash) VALUES (?, ?, ?, ?);",
-				taskId, studentId, fileName, fileHash);
+		db.prepareForGeneratedKey("INSERT INTO submission (task_id, student_id, submission_file_name, submission_file_hash) VALUES (?, ?, ?, '');",
+				taskId, studentId, fileName);
 		ResultSet rs = db.executeUpdateForGeneratedKey();
 		
 		if (rs != null) {
@@ -244,6 +244,15 @@ public class Student extends User implements StudentInterface {
 		}
 		
 		return -1;
+	}
+
+	@Override
+	public boolean insertSubmissionFileHash(int submissionId, String filePath) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("UPDATE submission SET submission_file_hash = ? WHERE submission_id = ?;",
+				FileChecksum.checksum(filePath, FileChecksum.SHA_256), submissionId);
+		return db.executeUpdate();
 	}
 
 	@Override

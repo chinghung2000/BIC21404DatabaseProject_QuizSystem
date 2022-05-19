@@ -168,7 +168,6 @@ public class DatabaseManager {
 				int rowCount = rs.last() ? rs.getRow() : 0;
 				rs.beforeFirst();
 				System.out.println("DatabaseManager.executeQuery: " + rowCount + " row(s) found.");
-
 				return rs;
 			} catch (SQLException e) {
 				System.out.println("DatabaseManager.executeQuery: There is an error: " + e.toString());
@@ -187,7 +186,6 @@ public class DatabaseManager {
 				System.out.println("DatabaseManager.executeUpdate: Executing prepared SQL statement...");
 				int affectedRowCount = this.pstmt.executeUpdate();
 				System.out.println("DatabaseManager.executeUpdate: " + affectedRowCount + " row(s) affected.");
-
 				return true;
 			} catch (SQLException e) {
 				System.out.println("DatabaseManager.executeUpdate: There is an error: " + e.toString());
@@ -207,7 +205,6 @@ public class DatabaseManager {
 				System.out.println("DatabaseManager.executeUpdateForGeneratedKey: Executing prepared SQL statement...");
 				int affectedRowCount = this.pstmt.executeUpdate();
 				System.out.println("DatabaseManager.executeUpdateForGeneratedKey: " + affectedRowCount + " row(s) affected.");
-
 				return this.pstmt.getGeneratedKeys();
 			} catch (SQLException e) {
 				System.out.println("DatabaseManager.executeUpdateForGeneratedKey: There is an error: " + e.toString());
@@ -225,7 +222,6 @@ public class DatabaseManager {
 			try {
 				this.connection.close();
 				System.out.println("DatabaseManager.close: Database connection closed.");
-
 				return true;
 			} catch (SQLException e) {
 				System.out.println("DatabaseManager.close: There is an error: " + e.toString());

@@ -14,8 +14,7 @@ public class FileChecksum {
 	public static final String SHA_384 = "SHA-384";
 	public static final String SHA_512 = "SHA-512";
 
-	@SuppressWarnings("unused")
-	private static String checksum(String filePath, String algorithm) {
+	public static String checksum(String filePath, String algorithm) {
 		MessageDigest messageDigest = null;
 
 		// file hashing with DigestInputStream
