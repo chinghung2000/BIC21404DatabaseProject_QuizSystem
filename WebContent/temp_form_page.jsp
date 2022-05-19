@@ -8,52 +8,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Title</title>
+<script type="text/javascript" src="js/helper.js"></script>
 <script type="text/javascript">
-	function $e(id) {
-		var element = document.getElementById(id);
-		return element;
-	}
-	
-	function XHRequest(APIMethod, jsonString, {async = true, callback = null, nextCall = null} = {}) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
-		xhttp.setRequestHeader("Content-Type", "application/json");
-	
-		xhttp.onreadystatechange = function() {
-			if (this.readyState === 4) {
-				switch (this.status) {
-					case 200:
-						var rc = JSON.parse(this.responseText);
-						
-						if (rc["ok"] === true) {
-							// ?
-							
-							if (callback != null) window[callback](rc);
-						} else {
-							if ("redirect" in rc) {
-								location.href = rc["redirect"];
-							} else if ("message" in rc) {
-								$e("span-message").innerHTML = rc["message"];
-							} else {
-								$e("span-message").innerHTML = "Error " + rc["error_code"] + ": " + rc["description"];
-							}
-						}
-						
-						break;
-					case 404:
-						alert("Requested server file not found. Error code: " + this.status);
-						break;
-					default:
-						alert("Request failed. " + this.statusText + "Error Code: " + this.status);
-				}
-			}
-			
-			if (nextCall != null) window[nextCall]();
-		}
-		
-		xhttp.send(jsonString);
-	}
-	
 	function method() {
 		var d = {};
 		d["<key>"] = $e("<id>").value;

@@ -8,55 +8,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Login page</title>
+<script type="text/javascript" src="js/helper.js"></script>
 <script type="text/javascript">
-	function $e(id) {
-		var element = document.getElementById(id);
-		return element;
-	}
-
-	function $n(name) {
-		var elements = document.getElementsByName(name);
-		return elements;
-	}
-
-	function XHRequest(APIMethod, jsonString, {async = true, callback = null, nextCall = null} = {}) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "api/" + APIMethod + ".jsp", async);
-		xhttp.setRequestHeader("Content-Type", "application/json");
-
-		xhttp.onreadystatechange = function() {
-			if (this.readyState === 4) {
-				switch (this.status) {
-					case 200:
-						var rc = JSON.parse(this.responseText);
-						
-						if (rc["ok"] === true) {
-							if (callback != null) window[callback](rc);
-						} else {
-							if ("redirect" in rc) {
-								location.href = rc["redirect"];
-							} else if ("message" in rc) {
-								$e("span-login-message").innerHTML = rc["message"];
-							} else {
-								$e("span-login-message").innerHTML = "Error " + rc["error_code"] + ": " + rc["description"];
-							}
-						}
-						
-						break;
-					case 404:
-						alert("Requested server file not found. Error code: " + this.status);
-						break;
-					default:
-						alert(this.statusText + "Error Code: " + this.status);
-				}
-			}
-			
-			if (nextCall != null) window[nextCall]();
-		}
-		
-		xhttp.send(jsonString);
-	}
-	
 	function login() {
 		var e = $n("user_type");
 		var userType = "";
@@ -76,7 +29,7 @@
 		if (d["user_id"] != "") {
 			if (d["password"] != "") {
 				if (d["user_type"] != "") {
-					XHRequest("login", JSON.stringify(d), {callback: "loginCallback"});
+					XHRequest("login", JSON.stringify(d), {async: false, callback: "loginCallback"});
 				} else {
 					$e("span-login-message").innerHTML = "Please choose a user type.";
 					clearMessage();
