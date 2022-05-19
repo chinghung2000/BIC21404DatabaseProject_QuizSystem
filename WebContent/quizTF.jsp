@@ -26,6 +26,7 @@
 						var rc = JSON.parse(this.responseText);
 						
 						if (rc["ok"] === true) {
+							if ("message" in rc) $e("span-message").innerHTML = rc["message"];
 							if (callback != null) window[callback](rc);
 						} else {
 							if ("redirect" in rc) {
@@ -124,6 +125,8 @@
 				label.htmlFor = "input-false-" + r[i]["quiz_tf_id"];
 				cell.appendChild(label);
 			}
+			
+			$e("button-submit").style.display = "block";
 		}
 	}
 	
@@ -144,7 +147,7 @@
 			d["answers"] = answers;
 			
 			XHRequest("submitQuizTF", JSON.stringify(d), {async: false});
-// 			location.href = "subject.jsp";
+			location.href = "subject.jsp";
 		} else {
 			$e("span-message").innerHTML = "Please answer all questions.";
 			clearMessage();
@@ -161,8 +164,8 @@
 			cell = row.cells[2];
 			choice = null;
 			
-			for (var j = 0; j < cell.childNodes.length; j++) {
-				radio = cell.childNodes[j];
+			for (var j = 0; j < cell.getElementsByTagName("input").length; j++) {
+				radio = cell.getElementsByTagName("input")[j];
 				if (radio.checked) choice = radio.value;
 			}
 			
@@ -332,7 +335,7 @@ button:hover {
 					<tr>
 						<td></td>
 						<td></td>
-						<td><button onclick="submitQuiz();">Submit</button></td>
+						<td><button id="button-submit" style="display: none;" onclick="submitQuiz();">Submit</button></td>
 					</tr>
 				</tfoot>
 			</table>

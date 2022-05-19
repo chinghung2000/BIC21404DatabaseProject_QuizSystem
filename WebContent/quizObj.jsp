@@ -26,6 +26,7 @@
 						var rc = JSON.parse(this.responseText);
 						
 						if (rc["ok"] === true) {
+							if ("message" in rc) $e("span-message").innerHTML = rc["message"];
 							if (callback != null) window[callback](rc);
 						} else {
 							if ("redirect" in rc) {
@@ -126,6 +127,8 @@
 				cell = row.insertCell();
 				cell.appendChild(selectAnswer.cloneNode(true))
 			}
+			
+			$e("button-submit").style.display = "block";
 		}
 	}
 	
@@ -343,7 +346,7 @@ button:hover {
 						<td></td>
 						<td></td>
 						<td></td>
-						<td><button onclick="submitQuiz();">Submit</button></td>
+						<td><button id="button-submit" style="display: none;" onclick="submitQuiz();">Submit</button></td>
 					</tr>
 				</tfoot>
 			</table>

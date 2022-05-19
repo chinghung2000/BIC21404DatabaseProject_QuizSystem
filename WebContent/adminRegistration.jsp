@@ -81,13 +81,11 @@
 				cell = row.insertCell();
 				span = document.createElement("span");
 				span.innerHTML = r[i]["admin_id"];
-				span.setAttribute("style", "display: block;");
 				cell.appendChild(span);
 				
 				cell = row.insertCell();
 				span = document.createElement("span");
 				span.innerHTML = r[i]["admin_name"];
-				span.setAttribute("style", "display: block;");
 				cell.appendChild(span);
 				
 				cell = row.insertCell();
