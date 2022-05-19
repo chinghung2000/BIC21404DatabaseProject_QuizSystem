@@ -182,20 +182,24 @@ if (execute) {
 					
 					if (!fileItem.isFormField()) {
 						
-						// check whether the file name is not empty string
-						if (!fileItem.getName().equals("")) {
+						// check whether the field name is 'task_file'
+						if (fileItem.getFieldName().equals("task_file")) {
 							
-							// create workload folder if not exist
-							File workloadFolder = new File(filePath + Integer.toString(workload.getId()) + "\\");
-							if (!workloadFolder.exists()) workloadFolder.mkdir();
-							
-							// create task folder if not exist
-							File taskFolder = new File(filePath + Integer.toString(workload.getId()) + "\\" + Integer.toString(taskId) + "\\");
-							if (!taskFolder.exists()) taskFolder.mkdir();
-							
-							// create and write uploaded file into folder
-							File file = new File(filePath + Integer.toString(workload.getId()) + "\\" + Integer.toString(taskId) + "\\" + fileItem.getName());
-							fileItem.write(file);
+							// check whether the file name is not empty string
+							if (!fileItem.getName().equals("")) {
+								
+								// create workload folder if not exist
+								File workloadFolder = new File(filePath + Integer.toString(workload.getId()) + "\\");
+								if (!workloadFolder.exists()) workloadFolder.mkdir();
+								
+								// create task folder if not exist
+								File taskFolder = new File(filePath + Integer.toString(workload.getId()) + "\\" + Integer.toString(taskId) + "\\");
+								if (!taskFolder.exists()) taskFolder.mkdir();
+								
+								// create and write uploaded file into folder
+								File file = new File(filePath + Integer.toString(workload.getId()) + "\\" + Integer.toString(taskId) + "\\" + fileItem.getName());
+								fileItem.write(file);
+							}
 						}
 					}
 				}

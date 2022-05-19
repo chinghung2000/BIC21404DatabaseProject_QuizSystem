@@ -193,8 +193,7 @@ if (execute) {
 					studentUser.deleteSubmission(submission.getId());
 				}
 				
-				int submissionId = studentUser.addSubmission(task.getId(), (String) session.getAttribute("user_id"), (String) parameters.get("file"),
-						"<Hash>");
+				int submissionId = studentUser.addSubmission(task.getId(), (String) session.getAttribute("user_id"), (String) parameters.get("file"));
 				
 				if (submissionId != -1) {
 					String filePath = "C:\\JavaWebUploads\\QuizSystem\\uploads\\";
@@ -207,24 +206,30 @@ if (execute) {
 						
 						if (!fileItem.isFormField()) {
 							
-							// check whether the file name is not empty string
-							if (!fileItem.getName().equals("")) {
+							// check whether the field name is 'file'
+							if (fileItem.getFieldName().equals("file")) {
 								
-								// create workload folder if not exist
-								File workloadFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\");
-								if (!workloadFolder.exists()) workloadFolder.mkdir();
-								
-								// create task folder if not exist
-								File taskFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\");
-								if (!taskFolder.exists()) taskFolder.mkdir();
-								
-								// create student folder if not exist
-								File studentFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\" + registeredSubject.getStudent().getId() + "\\");
-								if (!studentFolder.exists()) studentFolder.mkdir();
-								
-								// create and write uploaded file into folder
-								File file = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\" + registeredSubject.getStudent().getId() + "\\" + fileItem.getName());
-								fileItem.write(file);
+								// check whether the file name is not empty string
+								if (!fileItem.getName().equals("")) {
+									
+									// create workload folder if not exist
+									File workloadFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\");
+									if (!workloadFolder.exists()) workloadFolder.mkdir();
+									
+									// create task folder if not exist
+									File taskFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\");
+									if (!taskFolder.exists()) taskFolder.mkdir();
+									
+									// create student folder if not exist
+									File studentFolder = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\" + registeredSubject.getStudent().getId() + "\\");
+									if (!studentFolder.exists()) studentFolder.mkdir();
+									
+									// create and write uploaded file into folder
+									File file = new File(filePath + Integer.toString(registeredSubject.getWorkload().getId()) + "\\" + Integer.toString(task.getId()) + "\\" + registeredSubject.getStudent().getId() + "\\" + fileItem.getName());
+									fileItem.write(file);
+									
+									studentUser.insertSubmissionFileHash(submissionId, file.getPath());
+								}
 							}
 						}
 					}
