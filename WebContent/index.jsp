@@ -31,15 +31,15 @@
 				if (d["user_type"] != "") {
 					XHRequest("login", JSON.stringify(d), {async: false, callback: "loginCallback"});
 				} else {
-					$e("span-login-message").innerHTML = "Please choose a user type.";
+					$e("span-message").innerHTML = "Please choose a user type.";
 					clearMessage();
 				}
 			} else {
-				$e("span-login-message").innerHTML = "Please enter password.";
+				$e("span-message").innerHTML = "Please enter password.";
 				clearMessage();
 			}
 		} else {
-			$e("span-login-message").innerHTML = "Please enter user ID.";
+			$e("span-message").innerHTML = "Please enter user ID.";
 			clearMessage();
 		}
 	}
@@ -53,7 +53,7 @@
 	function clearMessage() {
 		clearTimeout(t);
 		t = setTimeout(function () {
-			$e("span-login-message").innerHTML = null;
+			$e("span-message").innerHTML = null;
 		}, 5000);
 	}
 </script>
@@ -160,7 +160,7 @@ button:hover {
 			<span class="login-title">Login</span>
 		</div>
 		<div class="login-message">
-			<span class="login-message" id="span-login-message"></span>
+			<span class="login-message" id="span-message"></span>
 		</div>
 		<div class="login-form">
 			<form>

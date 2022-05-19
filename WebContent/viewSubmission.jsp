@@ -169,6 +169,7 @@ table th, table td {
 	border: 1px solid #bfbfbf;
 	padding: 5px 10px;
 	max-width: 400px;
+	overflow-wrap: break-word; 
 }
 
 input[type=text], [type=password] {
