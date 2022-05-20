@@ -186,27 +186,41 @@ if (execute) {
 	Workload workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")));
 	
 	if (workload != null) {
-		Workload conflictWorkload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"),
-				Integer.parseUnsignedInt((String) d.get("workload_id")));
+		Lecturer lecturer = adminUser.getLecturer(Integer.parseUnsignedInt((String) d.get("lecturer_id")));
 		
-		if (conflictWorkload == null) {
-			boolean ok = adminUser.updateWorkload(workload.getId(), Integer.parseUnsignedInt((String) d.get("lecturer_id")),
-					(String) d.get("subject_id"), Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		if (lecturer != null) {
+			Subject subject = adminUser.getSubject((String) d.get("subject_id"));
 			
-			if (ok) {
-				adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-						" updated workload (ID: \"" + Integer.toString(workload.getId()) + "\") to Lecturer ID: \"" + (String) d.get("lecturer_id") +
-						"\", Subject ID: \"" + (String) d.get("subject_id") + "\"");
+			if (subject != null) {
+				Workload conflictWorkload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("lecturer_id")), (String) d.get("subject_id"),
+						Integer.parseUnsignedInt((String) d.get("workload_id")));
 				
-				rc.put("ok", true);
+				if (conflictWorkload == null) {
+					boolean ok = adminUser.updateWorkload(workload.getId(), Integer.parseUnsignedInt((String) d.get("lecturer_id")),
+							(String) d.get("subject_id"), Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+					
+					if (ok) {
+						adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+								" updated workload (ID: \"" + Integer.toString(workload.getId()) + "\") to Lecturer ID: \"" + (String) d.get("lecturer_id") +
+								"\", Subject ID: \"" + (String) d.get("subject_id") + "\"");
+						
+						rc.put("ok", true);
+					} else {
+						rc.put("error_code", 500);
+						rc.put("description", "Internal Server Error: Database Error");
+					}
+				} else {
+					rc.put("error_code", 400);
+					rc.put("message", "The workload conflicts with another existing record.");
+					rc.put("description", "Bad Request: The workload conflicts with another existing record");
+				}
 			} else {
-				rc.put("error_code", 500);
-				rc.put("description", "Internal Server Error: Database Error");
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: The subject doesn't exist");
 			}
 		} else {
 			rc.put("error_code", 400);
-			rc.put("message", "The workload conflicts with another existing record.");
-			rc.put("description", "Bad Request: The workload conflicts with another existing record");
+			rc.put("description", "Bad Request: The lecturer doesn't exist");
 		}
 	} else {
 		rc.put("error_code", 400);
