@@ -56,7 +56,6 @@
  * Email: tanchinghung5098.1@gmail.com
  */
 
-
 package com.project.backend;
 
 import java.sql.Connection;
@@ -78,8 +77,7 @@ public class DatabaseManager {
 	public boolean prepare(String statement, Object... parameters) {
 		if (this.connection != null) {
 			try {
-				this.pstmt = this.connection.prepareStatement(statement, ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_READ_ONLY);
+				this.pstmt = this.connection.prepareStatement(statement, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 				System.out.println("DatabaseManager.prepare: Preparing SQL statement: \"" + statement + "\"...");
 				int i = 1;
 
