@@ -38,4 +38,16 @@ public interface AdminInterface {
 	ArrayList<String> getSystemLogTypes();
 	ArrayList<Log> getSystemLogs();
 	ArrayList<Log> getSystemLogs(String type);
+	
+	boolean checkLecturerByAdmin(int adminId);
+	boolean checkSubjectByAdmin(int adminId);
+	boolean checkStudentByAdmin(int adminId);
+	boolean checkWorkloadByAdmin(int adminId);
+	boolean checkWorkloadByLecturer(int lecturerId);
+	boolean checkWorkloadBySubject(String subjectId);
+	boolean checkRegisteredSubjectByStudent(String studentId);
+	boolean checkTaskByWorkload(int workloadId);
+	boolean checkQuizTFByWorkload(int workloadId);
+	boolean checkQuizObjByWorkload(int workloadId);
+	boolean checkRegisteredSubjectByWorkload(int workloadId);
 }

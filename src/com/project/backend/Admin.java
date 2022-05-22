@@ -18,7 +18,7 @@ public class Admin extends User implements AdminInterface {
 			this.id = rs.getInt("admin_id");
 			this.name = rs.getString("admin_name");
 		} catch (SQLException e) {
-			System.out.println("Admin: There are some errors: " + e.toString());
+			System.out.println("Admin: There is an error: " + e.toString());
 		}
 	}
 
@@ -60,7 +60,7 @@ public class Admin extends User implements AdminInterface {
 					admins.add(new Admin(rs));
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -82,7 +82,7 @@ public class Admin extends User implements AdminInterface {
 					return new Admin(rs);
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -131,7 +131,7 @@ public class Admin extends User implements AdminInterface {
 					lecturers.add(new Lecturer(rs));
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -154,7 +154,7 @@ public class Admin extends User implements AdminInterface {
 					return new Lecturer(rs);
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -203,7 +203,7 @@ public class Admin extends User implements AdminInterface {
 					subjects.add(new Subject(rs));
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -226,7 +226,7 @@ public class Admin extends User implements AdminInterface {
 					return new Subject(rs);
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -275,7 +275,7 @@ public class Admin extends User implements AdminInterface {
 					workloads.add(new Workload(rs));
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -298,7 +298,7 @@ public class Admin extends User implements AdminInterface {
 					return new Workload(rs);
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -321,7 +321,7 @@ public class Admin extends User implements AdminInterface {
 					return new Workload(rs);
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -344,7 +344,7 @@ public class Admin extends User implements AdminInterface {
 					return new Workload(rs);
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -393,7 +393,7 @@ public class Admin extends User implements AdminInterface {
 					students.add(new Student(rs));
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -416,7 +416,7 @@ public class Admin extends User implements AdminInterface {
 					return new Student(rs);
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -466,7 +466,7 @@ public class Admin extends User implements AdminInterface {
 					logTypes.add(rs.getString("type"));
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -489,7 +489,7 @@ public class Admin extends User implements AdminInterface {
 					logs.add(new Log(rs));
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
@@ -512,12 +512,265 @@ public class Admin extends User implements AdminInterface {
 					logs.add(new Log(rs));
 				}
 			} catch (SQLException e) {
-				System.out.println("Admin: There are some errors: " + e.toString());
+				System.out.println("Admin: There is an error: " + e.toString());
 			}
 		} else {
 			System.out.println("Admin: Cannot retrieve result from database");
 		}
 
 		return logs;
+	}
+
+	@Override
+	public boolean checkLecturerByAdmin(int adminId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM lecturer WHERE modified_by = ?;", adminId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkSubjectByAdmin(int adminId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM subject WHERE modified_by = ?;", adminId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkStudentByAdmin(int adminId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM student WHERE modified_by = ?;", adminId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkWorkloadByAdmin(int adminId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM workload WHERE modified_by = ?;", adminId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkWorkloadByLecturer(int lecturerId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM workload WHERE lecturer_id = ?;", lecturerId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkWorkloadBySubject(String subjectId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM workload WHERE subject_id = ?;", subjectId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkRegisteredSubjectByStudent(String studentId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM reg_subject WHERE student_id = ?;", studentId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkTaskByWorkload(int workloadId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM task WHERE workload_id = ?;", workloadId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkQuizTFByWorkload(int workloadId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM quiz_tf WHERE workload_id = ?;", workloadId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkQuizObjByWorkload(int workloadId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM quiz_obj WHERE workload_id = ?;", workloadId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean checkRegisteredSubjectByWorkload(int workloadId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM reg_subject WHERE workload_id = ?;", workloadId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Admin: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Admin: Cannot retrieve result from database");
+		}
+
+		return false;
 	}
 }

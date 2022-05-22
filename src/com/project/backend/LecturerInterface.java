@@ -27,4 +27,6 @@ public interface LecturerInterface {
 	boolean deleteQuizObj(int quizObjId);
 
 	ArrayList<RegisteredSubject> getAllRegisteredSubject(int workloadId);
+	
+	boolean checkSubmissionByTask(int taskId);
 }

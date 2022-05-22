@@ -412,4 +412,27 @@ public class Lecturer extends User implements LecturerInterface {
 
 		return registeredSubjects;
 	}
+
+	@Override
+	public boolean checkSubmissionByTask(int taskId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+
+		db.prepare("SELECT COUNT(*) FROM submission WHERE task_id = ?;", taskId);
+		ResultSet rs = db.executeQuery();
+
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					if (rs.getInt(1) == 0)
+						return true;
+				}
+			} catch (SQLException e) {
+				System.out.println("Lecturer: There is an error: " + e.toString());
+			}
+		} else {
+			System.out.println("Lecturer: Cannot retrieve result from database");
+		}
+
+		return false;
+	}
 }
