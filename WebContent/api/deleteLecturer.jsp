@@ -137,16 +137,24 @@ if (execute) {
 	Lecturer lecturer = adminUser.getLecturer(Integer.parseUnsignedInt((String) d.get("lecturer_id")));
 	
 	if (lecturer != null) {
-		boolean ok = adminUser.deleteLecturer(Integer.parseUnsignedInt((String) d.get("lecturer_id")));
+		boolean checkWorkload = adminUser.checkWorkloadByLecturer(lecturer.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" deleted lecturer (ID: \"" + Integer.toString(lecturer.getId()) + "\", Name: \"" + lecturer.getName() + "\")");
+		if (checkWorkload) {
+			boolean ok = adminUser.deleteLecturer(Integer.parseUnsignedInt((String) d.get("lecturer_id")));
 			
-			rc.put("ok", true);
+			if (ok) {
+				adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" deleted lecturer (ID: \"" + Integer.toString(lecturer.getId()) + "\", Name: \"" + lecturer.getName() + "\")");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot delete lecturer who has been assigned to at least one workload.");
+			rc.put("description", "Bad Request: Cannot delete lecturer who has been assigned to at least one workload");
 		}
 	} else {
 		rc.put("error_code", 400);

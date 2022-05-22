@@ -172,17 +172,28 @@ if (execute) {
 	Admin admin = adminUser.getAdmin(Integer.parseUnsignedInt((String) d.get("old_admin_id")));
 	
 	if (admin != null) {
-		boolean ok = adminUser.updateAdmin(admin.getId(), Integer.parseUnsignedInt((String) d.get("admin_id")), (String) d.get("admin_name"));
+		boolean checkLecturer = adminUser.checkLecturerByAdmin(admin.getId());
+		boolean checkSubject = adminUser.checkSubjectByAdmin(admin.getId());
+		boolean checkStudent = adminUser.checkStudentByAdmin(admin.getId());
+		boolean checkWorkload = adminUser.checkWorkloadByAdmin(admin.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated admin (ID: \"" + Integer.toString(admin.getId()) + "\") to ID: \"" + (String) d.get("admin_id") +
-					"\", Name: \"" + (String) d.get("admin_name") + "\"");
+		if ((checkLecturer && checkSubject && checkStudent && checkWorkload) || d.get("old_admin_id").equals(d.get("admin_id"))) {
+			boolean ok = adminUser.updateAdmin(admin.getId(), Integer.parseUnsignedInt((String) d.get("admin_id")), (String) d.get("admin_name"));
 			
-			rc.put("ok", true);
+			if (ok) {
+				adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" updated admin (ID: \"" + Integer.toString(admin.getId()) + "\") to ID: \"" + (String) d.get("admin_id") +
+						"\", Name: \"" + (String) d.get("admin_name") + "\"");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot change ID of admin who has manipulated data on other field(s).");
+			rc.put("description", "Bad Request: Cannot change ID of admin who has manipulated data on other field(s)");
 		}
 	} else {
 		rc.put("error_code", 400);

@@ -120,16 +120,24 @@ if (execute) {
 	Student student = adminUser.getStudent((String) d.get("student_id"));
 	
 	if (student != null) {
-		boolean ok = adminUser.deleteStudent((String) d.get("student_id"));
+		boolean checkRegisteredSubject = adminUser.checkRegisteredSubjectByStudent(student.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" deleted student (ID: \"" + student.getId() + "\", Name: \"" + student.getName() + "\")");
+		if (checkRegisteredSubject) {
+			boolean ok = adminUser.deleteStudent((String) d.get("student_id"));
 			
-			rc.put("ok", true);
+			if (ok) {
+				adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" deleted student (ID: \"" + student.getId() + "\", Name: \"" + student.getName() + "\")");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot delete student who has registered at least one subject.");
+			rc.put("description", "Bad Request: Cannot delete student who has registered at least one subject");
 		}
 	} else {
 		rc.put("error_code", 400);

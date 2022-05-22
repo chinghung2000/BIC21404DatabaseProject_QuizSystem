@@ -136,17 +136,28 @@ if (execute) {
 	Workload workload = adminUser.getWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")));
 	
 	if (workload != null) {
-		boolean ok = adminUser.deleteWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")));
+		boolean checkTask = adminUser.checkTaskByWorkload(workload.getId());
+		boolean checkQuizTF = adminUser.checkQuizTFByWorkload(workload.getId());
+		boolean checkQuizObj = adminUser.checkQuizObjByWorkload(workload.getId());
+		boolean checkRegisteredSubject = adminUser.checkRegisteredSubjectByWorkload(workload.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" deleted workload (ID: \"" + Integer.toString(workload.getId()) + "\", Lecturer ID: \"" +
-					Integer.toString(workload.getLecturer().getId()) + "\", Subject ID: \"" + workload.getSubject().getId() + "\")");
+		if (checkTask && checkQuizTF && checkQuizObj && checkRegisteredSubject) {
+			boolean ok = adminUser.deleteWorkload(Integer.parseUnsignedInt((String) d.get("workload_id")));
 			
-			rc.put("ok", true);
+			if (ok) {
+				adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" deleted workload (ID: \"" + Integer.toString(workload.getId()) + "\", Lecturer ID: \"" +
+						Integer.toString(workload.getLecturer().getId()) + "\", Subject ID: \"" + workload.getSubject().getId() + "\")");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot delete workload which has been used in tasks, quizzes and being registered by any student.");
+			rc.put("description", "Bad Request: Cannot delete workload which has been used in tasks, quizzes and being registered by any student");
 		}
 	} else {
 		rc.put("error_code", 400);

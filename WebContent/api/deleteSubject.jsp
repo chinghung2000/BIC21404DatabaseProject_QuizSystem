@@ -120,16 +120,24 @@ if (execute) {
 	Subject subject = adminUser.getSubject((String) d.get("subject_id"));
 	
 	if (subject != null) {
-		boolean ok = adminUser.deleteSubject((String) d.get("subject_id"));
+		boolean checkWorkload = adminUser.checkWorkloadBySubject(subject.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" deleted subject (ID: \"" + subject.getId() + "\", Name: \"" + subject.getName() + "\")");
+		if (checkWorkload) {
+			boolean ok = adminUser.deleteSubject((String) d.get("subject_id"));
 			
-			rc.put("ok", true);
+			if (ok) {
+				adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" deleted subject (ID: \"" + subject.getId() + "\", Name: \"" + subject.getName() + "\")");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot delete subject which has been assigned to at least one workload.");
+			rc.put("description", "Bad Request: Cannot delete subject which has been assigned to at least one workload");
 		}
 	} else {
 		rc.put("error_code", 400);

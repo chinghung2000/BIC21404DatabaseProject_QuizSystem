@@ -138,16 +138,27 @@ if (execute) {
 	
 	if (admin != null) {
 		if (!d.get("admin_id").equals(session.getAttribute("user_id"))) {
-			boolean ok = adminUser.deleteAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")));
+			boolean checkLecturer = adminUser.checkLecturerByAdmin(admin.getId());
+			boolean checkSubject = adminUser.checkSubjectByAdmin(admin.getId());
+			boolean checkStudent = adminUser.checkStudentByAdmin(admin.getId());
+			boolean checkWorkload = adminUser.checkWorkloadByAdmin(admin.getId());
 			
-			if (ok) {
-				adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-						" deleted admin (ID: \"" + Integer.toString(admin.getId()) + "\", Name: \"" + admin.getName() + "\")");
+			if (checkLecturer && checkSubject && checkStudent && checkWorkload) {
+				boolean ok = adminUser.deleteAdmin(Integer.parseUnsignedInt((String) d.get("admin_id")));
 				
-				rc.put("ok", true);
+				if (ok) {
+					adminUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+							" deleted admin (ID: \"" + Integer.toString(admin.getId()) + "\", Name: \"" + admin.getName() + "\")");
+					
+					rc.put("ok", true);
+				} else {
+					rc.put("error_code", 500);
+					rc.put("description", "Internal Server Error: Database Error");
+				}
 			} else {
-				rc.put("error_code", 500);
-				rc.put("description", "Internal Server Error: Database Error");
+				rc.put("error_code", 400);
+				rc.put("message", "Cannot delete admin who has manipulated data on other field(s).");
+				rc.put("description", "Bad Request: Cannot delete admin who has manipulated data on other field(s)");
 			}
 		} else {
 			rc.put("error_code", 400);

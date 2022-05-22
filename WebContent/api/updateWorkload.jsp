@@ -196,18 +196,29 @@ if (execute) {
 						Integer.parseUnsignedInt((String) d.get("workload_id")));
 				
 				if (conflictWorkload == null) {
-					boolean ok = adminUser.updateWorkload(workload.getId(), Integer.parseUnsignedInt((String) d.get("lecturer_id")),
-							(String) d.get("subject_id"), Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+					boolean checkTask = adminUser.checkTaskByWorkload(workload.getId());
+					boolean checkQuizTF = adminUser.checkQuizTFByWorkload(workload.getId());
+					boolean checkQuizObj = adminUser.checkQuizObjByWorkload(workload.getId());
+					boolean checkRegisteredSubject = adminUser.checkRegisteredSubjectByWorkload(workload.getId());
 					
-					if (ok) {
-						adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-								" updated workload (ID: \"" + Integer.toString(workload.getId()) + "\") to Lecturer ID: \"" + (String) d.get("lecturer_id") +
-								"\", Subject ID: \"" + (String) d.get("subject_id") + "\"");
+					if (checkTask && checkQuizTF && checkQuizObj && checkRegisteredSubject) {
+						boolean ok = adminUser.updateWorkload(workload.getId(), Integer.parseUnsignedInt((String) d.get("lecturer_id")),
+								(String) d.get("subject_id"), Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 						
-						rc.put("ok", true);
+						if (ok) {
+							adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+									" updated workload (ID: \"" + Integer.toString(workload.getId()) + "\") to Lecturer ID: \"" + (String) d.get("lecturer_id") +
+									"\", Subject ID: \"" + (String) d.get("subject_id") + "\"");
+							
+							rc.put("ok", true);
+						} else {
+							rc.put("error_code", 500);
+							rc.put("description", "Internal Server Error: Database Error");
+						}
 					} else {
-						rc.put("error_code", 500);
-						rc.put("description", "Internal Server Error: Database Error");
+						rc.put("error_code", 400);
+						rc.put("message", "Cannot update workload which has been used in tasks, quizzes and being registered by any student.");
+						rc.put("description", "Bad Request: Cannot update workload which has been used in tasks, quizzes and being registered by any student");
 					}
 				} else {
 					rc.put("error_code", 400);

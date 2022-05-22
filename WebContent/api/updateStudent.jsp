@@ -154,18 +154,26 @@ if (execute) {
 	Student student = adminUser.getStudent((String) d.get("old_student_id"));
 	
 	if (student != null) {
-		boolean ok = adminUser.updateStudent(student.getId(), ((String) d.get("student_id")).toUpperCase(), (String) d.get("student_name"),
-				((String) d.get("student_id")).toLowerCase() + "@siswa.uthm.edu.my", Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		boolean checkRegisteredSubject = adminUser.checkRegisteredSubjectByStudent(student.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated student (ID: \"" + student.getId() + "\") to ID: \"" + ((String) d.get("student_id")).toUpperCase() +
-					"\", Name: \"" + (String) d.get("student_name") + "\"");
+		if (checkRegisteredSubject || d.get("old_student_id").equals(d.get("student_id"))) {
+			boolean ok = adminUser.updateStudent(student.getId(), ((String) d.get("student_id")).toUpperCase(), (String) d.get("student_name"),
+					((String) d.get("student_id")).toLowerCase() + "@siswa.uthm.edu.my", Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 			
-			rc.put("ok", true);
+			if (ok) {
+				adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" updated student (ID: \"" + student.getId() + "\") to ID: \"" + ((String) d.get("student_id")).toUpperCase() +
+						"\", Name: \"" + (String) d.get("student_name") + "\"");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot change ID of student who has registered at least one subject.");
+			rc.put("description", "Bad Request: Cannot change ID of student who has registered at least one subject");
 		}
 	} else {
 		rc.put("error_code", 400);

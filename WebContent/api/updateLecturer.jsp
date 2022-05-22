@@ -172,18 +172,26 @@ if (execute) {
 	Lecturer lecturer = adminUser.getLecturer(Integer.parseUnsignedInt((String) d.get("old_lecturer_id")));
 	
 	if (lecturer != null) {
-		boolean ok = adminUser.updateLecturer(lecturer.getId(), Integer.parseUnsignedInt((String) d.get("lecturer_id")),
-				(String) d.get("lecturer_name"), Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		boolean checkWorkload = adminUser.checkWorkloadByLecturer(lecturer.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated lecturer (ID: \"" + Integer.toString(lecturer.getId()) + "\") to ID: \"" + (String) d.get("lecturer_id") +
-					"\", Name: \"" + (String) d.get("lecturer_name") + "\"");
+		if (checkWorkload || d.get("old_lecturer_id").equals(d.get("lecturer_id"))) {
+			boolean ok = adminUser.updateLecturer(lecturer.getId(), Integer.parseUnsignedInt((String) d.get("lecturer_id")),
+					(String) d.get("lecturer_name"), Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 			
-			rc.put("ok", true);
+			if (ok) {
+				adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" updated lecturer (ID: \"" + Integer.toString(lecturer.getId()) + "\") to ID: \"" + (String) d.get("lecturer_id") +
+						"\", Name: \"" + (String) d.get("lecturer_name") + "\"");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot change ID of lecturer who has been assigned to at least one workload.");
+			rc.put("description", "Bad Request: Cannot change ID of lecturer who has been assigned to at least one workload");
 		}
 	} else {
 		rc.put("error_code", 400);

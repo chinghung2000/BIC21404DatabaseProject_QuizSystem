@@ -156,16 +156,24 @@ if (execute) {
 		Task task = lecturerUser.getTask(Integer.parseUnsignedInt((String) d.get("task_id")), workload.getId());
 		
 		if (task != null) {
-			boolean ok = lecturerUser.deleteTask(task.getId());
+			boolean checkSubmission = lecturerUser.checkSubmissionByTask(task.getId());
 			
-			if (ok) {
-				lecturerUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
-						" deleted task (ID: \"" + Integer.toString(task.getId()) + "\", Name: \"" + task.getName() + "\")");
+			if (checkSubmission) {
+				boolean ok = lecturerUser.deleteTask(task.getId());
 				
-				rc.put("ok", true);
+				if (ok) {
+					lecturerUser.addLogRecord("DELETE", "[" + sdf.format(new Date()) + "] Lecturer " + (String) session.getAttribute("user_id") +
+							" deleted task (ID: \"" + Integer.toString(task.getId()) + "\", Name: \"" + task.getName() + "\")");
+					
+					rc.put("ok", true);
+				} else {
+					rc.put("error_code", 500);
+					rc.put("description", "Internal Server Error: Database Error");
+				}
 			} else {
-				rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+				rc.put("error_code", 400);
+				rc.put("message", "Cannot delete task which has at least one submission.");
+				rc.put("description", "Bad Request: Cannot delete task which has at least one submission");
 			}
 		} else {
 			rc.put("error_code", 400);

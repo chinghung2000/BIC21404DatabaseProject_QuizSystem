@@ -154,18 +154,26 @@ if (execute) {
 	Subject subject = adminUser.getSubject((String) d.get("old_subject_id"));
 	
 	if (subject != null) {
-		boolean ok = adminUser.updateSubject(subject.getId(), ((String) d.get("subject_id")).toUpperCase(), (String) d.get("subject_name"),
-				Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
+		boolean checkWorkload = adminUser.checkWorkloadBySubject(subject.getId());
 		
-		if (ok) {
-			adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
-					" updated subject (ID: \"" + subject.getId() + "\") to ID: \"" + ((String) d.get("subject_id")).toUpperCase() +
-					"\", Name: \"" + (String) d.get("subject_name") + "\"");
+		if (checkWorkload || d.get("old_subject_id").equals(d.get("subject_id"))) {
+			boolean ok = adminUser.updateSubject(subject.getId(), ((String) d.get("subject_id")).toUpperCase(), (String) d.get("subject_name"),
+					Integer.parseUnsignedInt((String) session.getAttribute("user_id")));
 			
-			rc.put("ok", true);
+			if (ok) {
+				adminUser.addLogRecord("UPDATE", "[" + sdf.format(new Date()) + "] Admin " + (String) session.getAttribute("user_id") +
+						" updated subject (ID: \"" + subject.getId() + "\") to ID: \"" + ((String) d.get("subject_id")).toUpperCase() +
+						"\", Name: \"" + (String) d.get("subject_name") + "\"");
+				
+				rc.put("ok", true);
+			} else {
+				rc.put("error_code", 500);
+				rc.put("description", "Internal Server Error: Database Error");
+			}
 		} else {
-			rc.put("error_code", 500);
-			rc.put("description", "Internal Server Error: Database Error");
+			rc.put("error_code", 400);
+			rc.put("message", "Cannot change ID of subject which has been assigned to at least one workload.");
+			rc.put("description", "Bad Request: Cannot change ID of subject which has been assigned to at least one workload");
 		}
 	} else {
 		rc.put("error_code", 400);
