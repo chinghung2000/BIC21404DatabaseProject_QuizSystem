@@ -158,6 +158,8 @@ if (execute) {
 									if (quizObjective.getId() == (int) (double) answer.get("quiz_obj_id")) {
 										if (Character.toString(quizObjective.getAnswer()).equals(answer.get("answer"))) {
 											mark += 2;
+										} else {
+											mark -= 2;
 										}
 									}
 								} else {
@@ -182,6 +184,8 @@ if (execute) {
 					}
 				}
 			}
+			
+			if (mark < 0) mark = 0;
 			
 			boolean ok = studentUser.updateQuizObjMark(registeredSubject.getId(), mark);
 			

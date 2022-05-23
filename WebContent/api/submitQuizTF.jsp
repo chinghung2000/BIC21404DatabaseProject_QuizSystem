@@ -154,6 +154,8 @@ if (execute) {
 									if (quizTrueFalse.getId() == (int) (double) answer.get("quiz_tf_id")) {
 										if (quizTrueFalse.getAnswer() == (boolean) answer.get("answer")) {
 											mark += 2;
+										} else {
+											mark -= 2;
 										}
 									}
 								} else {
@@ -177,6 +179,8 @@ if (execute) {
 					}
 				}
 			}
+			
+			if (mark < 0) mark = 0;
 			
 			boolean ok = studentUser.updateQuizTFMark(registeredSubject.getId(), mark);
 			
