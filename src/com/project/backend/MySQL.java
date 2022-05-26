@@ -1,6 +1,6 @@
 /*
  * MySQL Connector v2.1.0
- * ~~~~~~~~~~~~~~~~~~~~~
+ * ~~~~~~~~~~~~~~~~~~~~~~
  * 
  * MySQL Connector is written in Java, for easy MySQL implementation.
  * Create database connection to MySQL database server by using the

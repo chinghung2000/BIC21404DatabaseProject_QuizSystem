@@ -1,6 +1,6 @@
 /*
  * Database Manager v2.3.2
- * ~~~~~~~~~~~~~~~~~~~~~~
+ * ~~~~~~~~~~~~~~~~~~~~~~~
  * 
  * Database Manager is written in Java, to shorten the code in programming.
  * Provides better database implementation when coding with Java.
