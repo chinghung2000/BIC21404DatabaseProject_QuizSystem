@@ -289,6 +289,28 @@ public class Lecturer extends User implements LecturerInterface {
 	}
 
 	@Override
+	public int getQuizTFCount(int workloadId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT COUNT(*) FROM quiz_tf WHERE workload_id = ?;", workloadId);
+		ResultSet rs = db.executeQuery();
+		
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			} catch (SQLException e) {
+				System.out.println("Lecturer: There are some errors: " + e.toString());
+			}
+		} else {
+			System.out.println("Lecturer: Cannot retrieve result from database");
+		}
+		
+		return -1;
+	}
+
+	@Override
 	public boolean addQuizTF(int workloadId, String question, boolean answer, int modifiedBy) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 
@@ -359,6 +381,28 @@ public class Lecturer extends User implements LecturerInterface {
 		}
 
 		return null;
+	}
+
+	@Override
+	public int getQuizObjCount(int workloadId) {
+		DatabaseManager db = new DatabaseManager(new MySQL().connect());
+		
+		db.prepare("SELECT COUNT(*) FROM quiz_obj WHERE workload_id = ?;", workloadId);
+		ResultSet rs = db.executeQuery();
+		
+		if (rs != null) {
+			try {
+				if (rs.next()) {
+					return rs.getInt(1);
+				}
+			} catch (SQLException e) {
+				System.out.println("Lecturer: There are some errors: " + e.toString());
+			}
+		} else {
+			System.out.println("Lecturer: Cannot retrieve result from database");
+		}
+		
+		return -1;
 	}
 
 	@Override

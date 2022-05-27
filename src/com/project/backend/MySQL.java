@@ -1,5 +1,5 @@
 /*
- * MySQL Connector v2.1.0
+ * MySQL Connector v2.1.1
  * ~~~~~~~~~~~~~~~~~~~~~~
  * 
  * MySQL Connector is written in Java, for easy MySQL implementation.
@@ -38,8 +38,8 @@
  * 
  * 
  * Copyright (c) 2022 BotBox Studio. All rights reserved.
- * Version: 2.1.0
- * Last updated on 19/05/2022, 15:46:58 UTC
+ * Version: 2.1.1
+ * Last updated on 27/05/2022, 16:33:03 UTC
  * Author: Ching Hung Tan
  * GitHub: chinghung2000
  * Email: tanchinghung5098.1@gmail.com
@@ -54,10 +54,10 @@ import java.sql.SQLException;
 public class MySQL {
 	private String serverName = "localhost";
 	private String portNumber = "3306";
-	private String username = "appuser";
-	private String password = "1234";
 	private String database = "app";
 	private String url = "jdbc:mysql://" + serverName + ":" + portNumber + "/" + database;
+	private String username = "appuser";
+	private String password = "1234";
 
 	// to create MySQL database connection
 	public Connection connect() {
@@ -72,7 +72,7 @@ public class MySQL {
 
 		// try connecting to the MySQL database
 		try {
-			Connection connection = DriverManager.getConnection(url, username, password);
+			Connection connection = DriverManager.getConnection(this.url, this.username, this.password);
 			System.out.println("MySQL: Connection successful.");
 			return connection;
 		} catch (SQLException e) {
