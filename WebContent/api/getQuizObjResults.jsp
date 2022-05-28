@@ -129,7 +129,12 @@ if (execute) {
 			result.add(quizTFResultDict);
 		}
 		
+		int quizObjCount = lecturerUser.getQuizObjCount(workload.getId());
+		int totalMark = quizObjCount * 2;
+		int passingMark = totalMark / 2;
+		
 		rc.put("result", result);
+		rc.put("passing_mark", passingMark);
 		rc.put("ok", true);
 	} else {
 		rc.put("error_code", 400);
