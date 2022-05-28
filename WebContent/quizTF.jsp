@@ -44,7 +44,7 @@
 		} else {
 			clearTable();
 			
-			var r = rc["result"]; 
+			var r = rc["result"];
 			var tBody = $e("list").tBodies[0];
 			var row, cell, radio, label, br, button;
 			
@@ -83,7 +83,7 @@
 				cell.appendChild(label);
 			}
 			
-			$e("button-submit").style.display = "block";
+			if (i != undefined) $e("button-submit").style.display = "block";
 		}
 	}
 	

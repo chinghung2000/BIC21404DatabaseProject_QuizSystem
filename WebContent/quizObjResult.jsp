@@ -44,7 +44,8 @@
 		} else {
 			clearTable();
 			
-			var r = rc["result"]; 
+			var passedStudents = 0;
+			var r = rc["result"];
 			var tBody = $e("list").tBodies[0];
 			var row, cell;
 			
@@ -62,7 +63,12 @@
 				
 				cell = row.insertCell();
 				cell.innerHTML = r[i]["mark"];
+				
+				if (r[i]["mark"] >= rc["passing_mark"]) passedStudents++;
 			}
+			
+			$e("span-passed-students").innerHTML = passedStudents;
+			$e("span-total-students").innerHTML = Number(i) + 1;
 		}
 	}
 	
@@ -226,6 +232,8 @@ button:hover {
 				</thead>
 				<tbody></tbody>
 			</table>
+			<br>
+			<span id="span-passed-students">?</span> out of <span id="span-total-students">?</span> student(s) passed the test.
 		</div>
 	</div>
 </body>

@@ -21,19 +21,19 @@ if (userId == null || userType == null || !userType.equals("lecturer")) {
 		}
 	} else if (request.getServletPath().equals("/editQuizTF.jsp")) {
 		if (request.getParameter("subject_id") == null) {
-			response.sendRedirect("worklaod.jsp"); 
+			response.sendRedirect("workload.jsp"); 
 		}
 	} else if (request.getServletPath().equals("/editQuizObj.jsp")) {
 		if (request.getParameter("subject_id") == null) {
-			response.sendRedirect("worklaod.jsp"); 
+			response.sendRedirect("workload.jsp"); 
 		}
 	} else if (request.getServletPath().equals("/quizTFResult.jsp")) {
 		if (request.getParameter("subject_id") == null) {
-			response.sendRedirect("worklaod.jsp"); 
+			response.sendRedirect("workload.jsp"); 
 		}
 	} else if (request.getServletPath().equals("/quizObjResult.jsp")) {
 		if (request.getParameter("subject_id") == null) {
-			response.sendRedirect("worklaod.jsp"); 
+			response.sendRedirect("workload.jsp"); 
 		}
 	}
 }

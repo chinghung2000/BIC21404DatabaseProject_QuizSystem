@@ -6,7 +6,7 @@
 
 
 <%
-//define logic control variables
+// define logic control variables
 boolean execute = false;
 
 
