@@ -36,8 +36,8 @@ public interface AdminInterface {
 	boolean deleteStudent(String studentId);
 
 	ArrayList<String> getSystemLogTypes();
-	ArrayList<Log> getSystemLogs();
-	ArrayList<Log> getSystemLogs(String type);
+	ArrayList<Log> getSystemLogs(int limit);
+	ArrayList<Log> getSystemLogs(String type, int limit);
 	
 	boolean checkLecturerByAdmin(int adminId);
 	boolean checkSubjectByAdmin(int adminId);

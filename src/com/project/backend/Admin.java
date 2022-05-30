@@ -476,10 +476,10 @@ public class Admin extends User implements AdminInterface {
 	}
 
 	@Override
-	public ArrayList<Log> getSystemLogs() {
+	public ArrayList<Log> getSystemLogs(int limit) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 
-		db.prepare("SELECT log_id, type, description FROM log ORDER BY log_id DESC LIMIT 50;");
+		db.prepare("SELECT log_id, type, description FROM log ORDER BY log_id DESC LIMIT ?;", limit);
 		ResultSet rs = db.executeQuery();
 		ArrayList<Log> logs = new ArrayList<Log>();
 
@@ -499,10 +499,10 @@ public class Admin extends User implements AdminInterface {
 	}
 
 	@Override
-	public ArrayList<Log> getSystemLogs(String type) {
+	public ArrayList<Log> getSystemLogs(String type, int limit) {
 		DatabaseManager db = new DatabaseManager(new MySQL().connect());
 
-		db.prepare("SELECT log_id, type, description FROM log WHERE type = ? ORDER BY log_id DESC LIMIT 50;", type);
+		db.prepare("SELECT log_id, type, description FROM log WHERE type = ? ORDER BY log_id DESC LIMIT ?;", type, limit);
 		ResultSet rs = db.executeQuery();
 		ArrayList<Log> logs = new ArrayList<Log>();
 
