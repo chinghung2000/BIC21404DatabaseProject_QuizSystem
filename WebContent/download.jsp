@@ -32,7 +32,7 @@ if (session.getAttribute("user_id") != null && session.getAttribute("user_type")
 			if (!parseUnsignedIntError) {
 				if (Integer.parseUnsignedInt(request.getParameter("task_id")) <= 2147483647) {
 					
-					// validate parameter 'submission_id'
+					// validate parameter 'submission_id' if exists
 					if (request.getParameter("submission_id") != null) {
 						
 						// try to parse 'submission_id' into unsigned integer

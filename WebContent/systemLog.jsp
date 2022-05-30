@@ -23,9 +23,14 @@
 		}
 	}
 	
+	var limit_ = 50;
+	
 	function loadTable(rc = null) {
 		if (rc == null) {
-			XHRequest("getSystemLogs", JSON.stringify({}), {callback: "loadTable"});
+			var d = {};
+			d["limit"] = limit_;
+			
+			XHRequest("getSystemLogs", JSON.stringify(d), {callback: "loadTable"});
 		} else {
 			clearTable();
 			
@@ -53,11 +58,18 @@
 		}
 	}
 	
-	function loadByType(type) {
+	function loadByType(limit = 50) {
+		limit_ = limit;
+		
 		var d = {};
-		d["type"] = type;
+		d["type"] = $e("select-type").value;
+		d["limit"] = limit;
 		
 		XHRequest("getSystemLogs", JSON.stringify(d), {callback: "loadTable"});
+	}
+	
+	function loadMore() {
+		loadByType(limit_ + 50);
 	}
 	
 	function loadSelectionType(rc = null) {
@@ -229,7 +241,7 @@ button:hover {
 		</div>
 		<div class="select-area">
 			<label class="select-field" for="select-type">Show logs of type:</label>
-			<select id="select-type" onchange="loadByType(this.value);">
+			<select id="select-type" onchange="loadByType();">
 				<option value="" selected>ALL</option>
 			</select>
 		</div>
@@ -242,6 +254,12 @@ button:hover {
 					</tr>
 				</thead>
 				<tbody></tbody>
+				<tfoot>
+					<tr>
+						<td></td>
+						<td><button id="button-load-more" onclick="loadMore();">LOAD MORE</button></td>
+					</tr>
+				</tfoot>
 			</table>
 		</div>
 	</div>
