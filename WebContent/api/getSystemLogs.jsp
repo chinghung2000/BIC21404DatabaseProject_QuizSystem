@@ -23,7 +23,7 @@ rc.put("ok", false);
 
 // define logic control variables
 boolean validate = false;
-boolean execute = false;
+boolean execute = true;
 
 
 // check whether request method is 'POST'
@@ -86,21 +86,27 @@ if (validate) {
 		
 		// validate parameter 'type' if exists
 		if (d.containsKey("type")) {
-			if (!d.get("type").equals("")) {
-				if (((String) d.get("type")).length() <= 15) {
-					// permit execution
-					execute = true;
-				} else {
-					rc.put("error_code", 400);
-					rc.put("description", "Bad Request: 'type' length can't be more than 15");
-				}
-			} else {
-				// permit execution
-				execute = true;
+			if (((String) d.get("type")).length() > 15) {
+				// deny execution
+				execute = false;
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'type' length can't be more than 15");
 			}
-		} else {
-			// permit execution
-			execute = true;
+		}
+		
+		// validate parameter 'limit' if exists
+		if (d.containsKey("limit")) {
+			if (!(d.get("limit") instanceof Double)) {
+				// deny execution
+				execute = false;
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'limit' must be an unsigned integer");
+			} else if (0 < (int) (double) d.get("limit") && (int) (double) d.get("limit") > 2147483647) {
+				// deny execution
+				execute = false;
+				rc.put("error_code", 400);
+				rc.put("description", "Bad Request: 'limit' is out of range");
+			}
 		}
 	} else {
 		rc.put("redirect", "index.jsp");
@@ -117,10 +123,13 @@ if (execute) {
 	Admin adminUser = new Admin();
 	ArrayList<Log> logs;
 	
+	int limit = 50;
+	if (d.containsKey("limit")) limit = (int) (double) d.get("limit");
+	
 	if (!d.containsKey("type") || d.get("type").equals("")) {
-		logs = adminUser.getSystemLogs();
+		logs = adminUser.getSystemLogs(limit);
 	} else {
-		logs = adminUser.getSystemLogs((String) d.get("type"));
+		logs = adminUser.getSystemLogs((String) d.get("type"), limit);
 	}
 	
 	for (Log log : logs) {
