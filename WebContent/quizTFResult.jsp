@@ -64,7 +64,11 @@
 				cell = row.insertCell();
 				cell.innerHTML = r[i]["mark"];
 				
-				if (r[i]["mark"] >= rc["passing_mark"]) passedStudents++;
+				if ("passing_mark" in rc) {
+					if (r[i]["mark"] >= rc["passing_mark"]) {
+						passedStudents++;
+					}
+				}
 			}
 			
 			$e("span-passed-students").innerHTML = passedStudents;
