@@ -130,11 +130,14 @@ if (execute) {
 		}
 		
 		int quizTFCount = lecturerUser.getQuizTFCount(workload.getId());
-		int totalMark = quizTFCount * 2;
-		int passingMark = totalMark / 2;
+		
+		if (quizTFCount > 0) {
+			int totalMark = quizTFCount * 2;
+			int passingMark = totalMark / 2;
+			rc.put("passing_mark", passingMark);
+		}
 		
 		rc.put("result", result);
-		rc.put("passing_mark", passingMark);
 		rc.put("ok", true);
 	} else {
 		rc.put("error_code", 400);
